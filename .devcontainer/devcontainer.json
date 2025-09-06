@@ -8,7 +8,6 @@
   "remoteUser": "root",
   "settings": {
     "terminal.integrated.shell.linux": "/bin/bash",
-    "files.autoSave": "afterDelay",
     "files.trimTrailingWhitespace": true
   },
   "extensions": [
