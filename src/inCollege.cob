@@ -61,7 +61,7 @@ main.
 *> Purpose:   Reads in the next line of the input file
 *> Input:     None
 *> Output:    input-buffer - Line from the file
-*> User must open and close input file before calling this
+*> User is responsible for opening and closing the input file when using this
 readInputLine.
        if input-file-status = "00"
            read input-file
