@@ -20,16 +20,19 @@ file-control.
 DATA DIVISION.
 
 file section.
+*>-----readInputLine variables-----
 fd input-file.
-01 input-line pic x(100). *> Need to decide on resonable size for lines
+01 input-buffer pic x(100). *> Need to decide on reasonable size for lines
 
+*>-----outputLine variables-----
 fd output-file.
 01 output-line pic x(100).
 
 working-storage section.
-01 input-buffer pic x(100).
+*>-----readInputLine variables-----
 01 input-file-status pic xx.
 
+*>-----outputLine variables-----
 01 output-buffer pic x(100).
 01 output-file-status pic xx.
 
@@ -38,30 +41,45 @@ local-storage section.
 
 *>###################################################################
 PROCEDURE DIVISION.
+main.
        move "test output line" to output-buffer.
        perform outputLine
 
+       open input input-file.
 
+       perform 4 times
+           perform readInputLine
+           move input-buffer to output-buffer
+           perform outputLine
+       end-perform.
 
+       close input-file.
        stop run.
 
-*> Gets the user's next line of input
-*> Needs to ensure what we are reading from is valid
-*> If file is invalid, set user input string to be blank?
-readInputLine.
-       *> Open and close each time?? Could then check if it is 00
-       *> Will not have a saved place then. Should probably require user to open and close file
-       *> Will need to check for all of the other flags
 
+*> Paragraph: readInputLine
+*> Purpose:   Reads in the next line of the input file
+*> Input:     None
+*> Output:    input-buffer - Line from the file
+*> User must open and close input file before calling this
+readInputLine.
        if input-file-status = "00"
            read input-file
                at end
-                   display " "
-               not at end
-                   move input-line to input-buffer *>Maybe???
+                   *> Input-buffer is stale now, so set to spaces
+                   move spaces to input-buffer
+                   *> Notify user
+                   move "Reached end of input file ( ੭ˊᵕˋ)੭" to output-buffer
+                   perform outputLine
            end-read
        else
-           display "Error opening input file: " output-file-status
+           string
+               "Error reading input file: " delimited by size
+               input-file-status            delimited by size
+               " (｡•́︿•̀｡)"                   delimited by size
+               into output-buffer
+           end-string
+           perform outputLine
        end-if
        exit.
 
@@ -80,6 +98,8 @@ outputLine.
 
        *> Ensure file opened properly
        if output-file-status = "00"
+           *> If we want to ensure that the console and output file are the same,
+           *> console output can only happen if output file opens
            display output-buffer
 
            move output-buffer to output-line
@@ -87,6 +107,9 @@ outputLine.
 
            close output-file
        else
-           display "Error opening output file: " output-file-status
+           display "Error opening output file: " output-file-status " (っ- ‸ - ς)"
        end-if
+
+       *> Some characters get 'stuck', manually clearing fixes it though
+       move spaces to output-buffer.
        exit.
