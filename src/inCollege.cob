@@ -15,6 +15,11 @@ file-control.
            organization is line sequential
            file status is output-file-status.
 
+       select acct-database assign to 'acct-database.dat'
+           organization is indexed
+           access mode is dynamic
+           record key is acct-username
+           file status is acct-database-status.
 
 *>###################################################################
 DATA DIVISION.
@@ -28,6 +33,9 @@ fd input-file.
 fd output-file.
 01 output-line pic x(100).
 
+fd acct-database.
+copy "account.cpy".
+
 working-storage section.
 *>-----readInputLine variables-----
 01 input-file-status pic xx.
@@ -36,25 +44,123 @@ working-storage section.
 01 output-buffer pic x(100).
 01 output-file-status pic xx.
 
+*>-----account database variables-----
+01 acct-database-status pic xx.
+       88 user-already-exists value "22".
+       88 database-does-not-exist value "35".
+       88 database-good-read value "00".
+
+01 acct-status pic x.
+       88 acct-found value "1".
+       88 acct-not-found value "2".
+       88 duplicate-user value "3".
+       88 new-user value "4".
+
+01 buffer-acct-username pic x(100).
+01 buffer-acct-password pic x(12).
+01 num-accounts pic 99.
+
+
 local-storage section.
 
 
 *>###################################################################
 PROCEDURE DIVISION.
 main.
-       move "test output line" to output-buffer.
-       perform outputLine
 
-       open input input-file.
 
-       perform 4 times
-           perform readInputLine
-           move input-buffer to output-buffer
-           perform outputLine
-       end-perform.
 
-       close input-file.
        stop run.
+
+
+*> Paragraph: acctDatabaseSize
+*> Purpose:   Finds the total number of accounts in the database
+*> Input:     None
+*> Output:    num-accounts
+findNumAccounts.
+       open input acct-database.
+
+       if acct-database-status = "00"
+           move buffer-acct-username to acct-username
+           perform until not database-good-read
+               read acct-database
+                   not at end
+                       add 1 to num-accounts
+               end-read
+           end-perform
+       else
+           string
+               "Error opening account database: " delimited by size
+               acct-database-status               delimited by size
+               into output-buffer
+           end-string
+           perform outputLine
+       end-if
+       close acct-database.
+       exit.
+
+
+*> Paragraph: readInputLine
+*> Purpose:   Adds an account to the account database
+*> Input:     buffer-acct-username
+*>            buffer-acct-password
+*> Output:    None
+*> User should verify if the new record was duplicate
+addAcct.
+       open i-o acct-database.
+
+       if database-does-not-exist
+           *> Log file does not exist yet, so create it
+           open output acct-database
+       end-if
+
+
+       if acct-database-status = "00"
+           move buffer-acct-username to acct-username
+           move buffer-acct-password to acct-password
+           write acct-record
+
+           if user-already-exists move "3" to acct-status
+           else move "4" to acct-status
+       else
+           string
+               "Error opening account database: " delimited by size
+               acct-database-status               delimited by size
+               into output-buffer
+           end-string
+           perform outputLine
+       end-if
+       close acct-database.
+       exit.
+
+*> Paragraph: readInputLine
+*> Purpose:   Finds an account in the account database
+*> Input:     buffer-acct-username
+*> Output:    None
+findAcct.
+       open input acct-database.
+
+       if acct-database-status = "00"
+           move buffer-acct-username to acct-username
+           read acct-database
+               key is acct-username
+               invalid key
+                   move '2' to acct-status
+               not invalid key
+                   move '1' to acct-status
+                   move acct-password to buffer-acct-password
+           end-read
+       else
+           string
+               "Error opening account database: " delimited by size
+               acct-database-status               delimited by size
+               into output-buffer
+           end-string
+           perform outputLine
+       end-if
+       close acct-database.
+
+       exit.
 
 
 *> Paragraph: readInputLine
