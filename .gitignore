@@ -1,3 +1,5 @@
+progress.md
+PROJECT_REQUIREMENTS.txt
 # VS Code
 .vscode/*
 !.vscode/tasks.json
