@@ -46,6 +46,23 @@ working-storage section.
 
 *>-----account database variables-----
 01 acct-database-status pic xx.
+       88 user-already-exists value "22".
+       88 database-does-not-exist value "35".
+
+01 acct-exists pic x.
+       88 acct-found value "Y".
+       88 acct-not-found value "N".
+
+01 new-user-added pic x.
+       88 duplicate-user value "N".
+       88 unique-user value "Y".
+
+*>copy "account.cpy"
+*>   replacing ==acct== by ==local-acct==.
+01 buffer-acct-username pic x(100).
+01 buffer-acct-password pic x(12).
+01 acct-count pic 99.
+
 
 local-storage section.
 
@@ -53,32 +70,121 @@ local-storage section.
 *>###################################################################
 PROCEDURE DIVISION.
 main.
-       open output acct-database.
+       move "matthe2983" to buffer-acct-username.
+       move "18979" to buffer-acct-password.
+       perform addAcct.
 
-       display acct-database-status.
+       move "matthe2983" to buffer-acct-username.
+       move "189798" to buffer-acct-password.
+       perform addAcct.
 
-       *> Writing
-       move "matthew198" to acct-username.
-       move "password123" to acct-password.
-       write account.
-       *> Would want to verify that it was written correctly
-       close acct-database.
+       if duplicate-user
+           display "account already exists".
 
-       move spaces to acct-password.
-       move spaces to acct-username.
+       move "testacct" to buffer-acct-username.
+       move "1234567" to buffer-acct-password.
+       perform addAcct.
 
-       open input acct-database.
-       move "matthew198" to acct-username.
-       read acct-database
-           key is acct-username.
-       *> Need to check if it was found 23 is not found
+       move "testa" to buffer-acct-username.
+       move "123456789" to buffer-acct-password.
+       perform addAcct.
 
-       display acct-database-status.
-       display acct-username.
+       move "matthe2983" to buffer-acct-username.
+       perform findAcct.
        display acct-password.
 
-       close acct-database.
+       move "notIndata" to buffer-acct-username.
+       perform findAcct.
+
+       perform acctDatabaseSize.
+       display acct-count.
+
+
        stop run.
+
+
+acctDatabaseSize.
+       open input acct-database.
+
+       if acct-database-status = "00"
+           move buffer-acct-username to acct-username
+           perform until acct-database-status not = "00"
+               read acct-database
+                   not at end
+                       add 1 to acct-count
+               end-read
+           end-perform
+       else
+           string
+               "Error opening account database: " delimited by size
+               acct-database-status               delimited by size
+               into output-buffer
+           end-string
+           perform outputLine
+       end-if
+       close acct-database.
+       exit.
+
+*> Paragraph: readInputLine
+*> Purpose:   Adds an account to the account database
+*> Input:     buffer-acct-username
+*>            buffer-acct-password
+*> Output:    None
+*> User should verify if the new record was duplicate
+addAcct.
+       open i-o acct-database.
+
+       if database-does-not-exist
+           *> Log file does not exist yet, so create it
+           open output acct-database
+       end-if
+
+
+       if acct-database-status = "00"
+           move buffer-acct-username to acct-username
+           move buffer-acct-password to acct-password
+           write acct-record
+
+           if user-already-exists move "N" to new-user-added
+           else move "Y" to new-user-added
+       else
+           string
+               "Error opening account database: " delimited by size
+               acct-database-status               delimited by size
+               into output-buffer
+           end-string
+           perform outputLine
+       end-if
+       close acct-database.
+       exit.
+
+*> Paragraph: readInputLine
+*> Purpose:   Finds an account in the account database
+*> Input:     buffer-acct-username
+*> Output:    None
+findAcct.
+       open input acct-database.
+
+       if acct-database-status = "00"
+           move buffer-acct-username to acct-username
+           read acct-database
+               key is acct-username
+               invalid key
+                   move 'N' to acct-exists
+               not invalid key
+                   move 'Y' to acct-exists
+           end-read
+       else
+           string
+               "Error opening account database: " delimited by size
+               acct-database-status               delimited by size
+               into output-buffer
+           end-string
+           perform outputLine
+       end-if
+       close acct-database.
+
+       exit.
 
 
 *> Paragraph: readInputLine
