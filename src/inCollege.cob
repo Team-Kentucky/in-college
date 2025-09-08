@@ -84,6 +84,25 @@ working-storage section.
 01 menu-border-bottom  pic x(60) value "==============================================".
 01 end-marker          pic x(40) value "--- END_OF_PROGRAM_EXECUTION ---".
 
+*> Post-login menu constants
+01 post-login-1 pic x(16) value "Search for a job".
+01 post-login-2 pic x(23) value "Find someone you know".
+01 post-login-3 pic x(18) value "Learn a new skill".
+01 welcome-user-prefix pic x(10) value "Welcome, ".
+01 incorrect-login-msg pic x(44) value "Incorrect username/password, please try again".
+01 success-login-msg   pic x(27) value "You have successfully logged in".
+01 under-construction  pic x(38) value "is under construction.".
+01 uc-job-prefix       pic x(24) value "Job search/internship ".
+01 uc-find-prefix      pic x(23) value "Find someone you know ".
+01 skills-title        pic x(19) value "Learn a New Skill:".
+01 skill1              pic x(7)  value "Skill 1".
+01 skill2              pic x(7)  value "Skill 2".
+01 skill3              pic x(7)  value "Skill 3".
+01 skill4              pic x(7)  value "Skill 4".
+01 skill5              pic x(7)  value "Skill 5".
+01 go-back             pic x(7)  value "Go Back".
+01 welcome-user-line   pic x(60).
+
 local-storage section.
 
 *>###################################################################
@@ -186,8 +205,146 @@ process-main-menu-choice.
 *> Login process placeholder - will be implemented in commit 3
 *>*******************************************************************
 login-process.
-       move "Login functionality - Under Construction" to output-buffer
-       perform output-line
+       *> Unlimited attempts until successful login
+       perform until logged-in = 'Y' or program-running = 'N'
+           move "Please enter your username:" to output-buffer
+           perform output-line
+           perform read-input-line
+           move function trim(input-buffer trailing) to input-username
+
+           move "Please enter your password:" to output-buffer
+           perform output-line
+           perform read-input-line
+           move function trim(input-buffer trailing) to input-password
+
+           *> Validate against accounts file
+           move 'N' to valid-choice
+           open input accounts-file
+           if accounts-file-status = "00"
+               perform until accounts-file-status not = "00"
+                   read accounts-file
+                       at end
+                           exit perform
+                       not at end
+                           if function trim(username trailing) = function trim(input-username trailing)
+                              and function trim(password trailing) = function trim(input-password trailing)
+                               move 'Y' to valid-choice
+                               exit perform
+                           end-if
+                   end-read
+               end-perform
+               close accounts-file
+           end-if
+
+           if valid-choice = 'Y'
+               move success-login-msg to output-buffer
+               perform output-line
+               move spaces to welcome-user-line
+               string welcome-user-prefix delimited by size
+                      input-username delimited by space
+                      into welcome-user-line
+               end-string
+               move welcome-user-line to output-buffer
+               perform output-line
+               move 'Y' to logged-in
+               move input-username to current-user
+               perform post-login-menu
+           else
+               move incorrect-login-msg to output-buffer
+               perform output-line
+           end-if
+       end-perform
+       exit.
+
+*>*******************************************************************
+*> Post-login menu and navigation
+*>*******************************************************************
+post-login-menu.
+       perform until program-running = 'N' or logged-in = 'N'
+           move post-login-1 to output-buffer
+           perform output-line
+           move post-login-2 to output-buffer
+           perform output-line
+           move post-login-3 to output-buffer
+           perform output-line
+           move choice-prompt to output-buffer
+           perform output-line
+
+           perform read-input-line
+           move input-buffer(1:1) to menu-choice
+
+           evaluate menu-choice
+               when '1'
+                   *> Job search under construction
+                   move spaces to output-buffer
+                   string uc-job-prefix delimited by size
+                          under-construction delimited by size
+                          into output-buffer
+                   end-string
+                   perform output-line
+               when '2'
+                   *> Find someone under construction
+                   move spaces to output-buffer
+                   string uc-find-prefix delimited by size
+                          under-construction delimited by size
+                          into output-buffer
+                   end-string
+                   perform output-line
+               when '3'
+                   perform skills-menu
+               when other
+                   move "Invalid choice. Please try again." to output-buffer
+                   perform output-line
+           end-evaluate
+       end-perform
+       exit.
+
+*>*******************************************************************
+*> Skills list with option to go back
+*>*******************************************************************
+skills-menu.
+       perform until program-running = 'N'
+           move skills-title to output-buffer
+           perform output-line
+           move skill1 to output-buffer
+           perform output-line
+           move skill2 to output-buffer
+           perform output-line
+           move skill3 to output-buffer
+           perform output-line
+           move skill4 to output-buffer
+           perform output-line
+           move skill5 to output-buffer
+           perform output-line
+           move go-back to output-buffer
+           perform output-line
+           move choice-prompt to output-buffer
+           perform output-line
+
+           perform read-input-line
+           move input-buffer(1:1) to menu-choice
+
+           evaluate menu-choice
+               when '1'
+                   move "This skill is under construction." to output-buffer
+                   perform output-line
+               when '2'
+                   move "This skill is under construction." to output-buffer
+                   perform output-line
+               when '3'
+                   move "This skill is under construction." to output-buffer
+                   perform output-line
+               when '4'
+                   move "This skill is under construction." to output-buffer
+                   perform output-line
+               when '5'
+                   move "This skill is under construction." to output-buffer
+                   perform output-line
+               when other
+                   *> Treat any other input as Go Back
+                   exit perform
+           end-evaluate
+       end-perform
        exit.
 
 *>*******************************************************************
