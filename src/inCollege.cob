@@ -39,6 +39,7 @@ working-storage section.
 01 output-file-status pic xx.
 
 *>-----logIn variables-----
+01 welcome-page-selection pic x(100).
 
 local-storage section.
 
@@ -49,18 +50,18 @@ main.
        open input input-file.
 
        perform displayLogo.
-       perform logInScreen.
+       perform welcomePage.
 
        close input-file.
        stop run.
 
 
-*> Paragraph: logInScreen
+*> Paragraph: welcomePage
 *> Purpose:   First menu of the program. Allows the user to sign in or create an account
 *> Input:     None
 *> Output:    None
-logInScreen.
-       perform with test after until (input-buffer = 'q' or input-buffer = 'Q' or not valid-read)
+welcomePage.
+       perform with test after until (welcome-page-selection = 'q' or welcome-page-selection = 'Q' or not valid-read)
            perform outputLine
            perform displayDashedLine
            move "Welcome to inCollege! Select an option" to output-buffer
@@ -76,16 +77,14 @@ logInScreen.
            move "> " to input-prompt
            perform readInputLine
 
-           *> All other, call menu specific function
-           *> q - continue
-           *>default: invalid input
+           move input-buffer to welcome-page-selection
            evaluate true
-               when input-buffer = '0'
-                   perform signIn
-               when input-buffer = '1'
-                   perform accountCreation
-               when (input-buffer = 'q' or input-buffer = 'Q' or not valid-read)
+               when (welcome-page-selection = 'q' or welcome-page-selection = 'Q' or not valid-read)
                    continue
+               when welcome-page-selection = '0'
+                   perform signIn
+               when welcome-page-selection = '1'
+                   perform accountCreation
                when other
                    move "Invalid input" to output-buffer
                    perform outputLine
@@ -99,8 +98,41 @@ signIn.
        exit.
 
 
-accountCreation.
-       *>stub
+accountCreation. *> How do you go back in this menu?
+       *>-------
+       *>Please enter all required info
+       *>------
+
+       *> [0] Username
+       *> [1] Password
+
+       *> All permitted accounts have been created, please come back later
+
+       *> Verify that we aren't at max accounts
+           perform outputLine
+           perform displayDashedLine
+           move "Please enter all required information" to output-buffer
+           perform outputLine
+           perform displayDashedLine
+           perform outputLine.
+
+           move "Username: " to input-prompt
+           perform readInputLine
+
+           *>Verify username isn't taken
+
+           move "Password: " to input-prompt
+           perform readInputLine
+
+           *> verify password is valid
+
+           *> Store passowrd
+
+           *> If all works, run this:
+           perform outputLine.
+           move "Account has successfully been created" to output-buffer.
+           perform outputLine.
+
        exit.
 
 
@@ -185,6 +217,7 @@ outputLine.
 *> Purpose:   Prints the beautiful ascii logo for us
 *> Input:     None
 *> Output:    None
+*> ASCII art was created with https://patorjk.com/software/taag/
 displayLogo.
        perform displayASCIILine.
        perform outputLine.
