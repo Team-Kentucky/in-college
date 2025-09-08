@@ -32,6 +32,7 @@ working-storage section.
 *>-----readInputLine variables-----
 01 input-prompt pic x(100).
 01 input-file-status pic xx.
+       88 valid-read value "00".
 
 *>-----outputLine variables-----
 01 output-buffer pic x(150).
@@ -54,12 +55,52 @@ main.
        stop run.
 
 
-
+*> Paragraph: logInScreen
+*> Purpose:   First menu of the program. Allows the user to sign in or create an account
+*> Input:     None
+*> Output:    None
 logInScreen.
-       move "Create an account? [y\N]:" to input-prompt.
-       perform readInputLine.
+       perform with test after until (input-buffer = 'q' or input-buffer = 'Q' or not valid-read)
+           perform outputLine
+           perform displayDashedLine
+           move "Welcome to inCollege! Select an option" to output-buffer
+           perform outputLine
+           perform displayDashedLine
+
+           move " [0] Sign in" to output-buffer
+           perform outputLine
+           move " [1] Create an account" to output-buffer
+           perform outputLine
+           move " [q] Quit" to output-buffer
+           perform outputLine
+           move "> " to input-prompt
+           perform readInputLine
+
+           *> All other, call menu specific function
+           *> q - continue
+           *>default: invalid input
+           evaluate true
+               when input-buffer = '0'
+                   perform signIn
+               when input-buffer = '1'
+                   perform accountCreation
+               when (input-buffer = 'q' or input-buffer = 'Q' or not valid-read)
+                   continue
+               when other
+                   move "Invalid input" to output-buffer
+                   perform outputLine
+           end-evaluate
+       end-perform.
+       exit.
 
 
+signIn.
+       *>stub
+       exit.
+
+
+accountCreation.
+       *>stub
        exit.
 
 
@@ -71,7 +112,8 @@ logInScreen.
 readInputLine.
        if input-file-status = "00"
            read input-file
-               not at end
+               not at end *>NOTE: Do we want to keep reading until we get a non blank input??
+                   *>Simulating the user entering the input
                    string
                        function trim(input-prompt, trailing) delimited by size
                        " " delimited by size                                   *> Will always have an extra space (even if input has no prompt)
@@ -80,13 +122,24 @@ readInputLine.
                    end-string
                    perform outputLine
                at end
+                   move input-prompt to output-buffer
+                   perform outputLine
+
                    *> Input-buffer is stale now, so set to spaces
                    move spaces to input-buffer
                    *> Notify user
                    move "Reached end of input file ( ੭ˊᵕˋ)੭" to output-buffer
+                   *> We should eithter
+                       *> Make this trigger a use when to end the program?
+                       *> Have the user be responsible for gracefully closing
+                       *> Switch to manual input from accept
+
                    perform outputLine
            end-read
        else
+           move input-prompt to output-buffer
+           perform outputLine
+
            string
                "Error reading input file: " delimited by size
                input-file-status            delimited by size
@@ -100,7 +153,7 @@ readInputLine.
 
 *> Paragraph: outputLine
 *> Purpose:   Prints string in buffer to console and saves to output log
-*> Input:     output-buffer - string you want to be output
+*> Input:     output-buffer - string you want to be output. Will be cleared
 *> Output:    None
 outputLine.
        open extend output-file.
@@ -133,8 +186,7 @@ outputLine.
 *> Input:     None
 *> Output:    None
 displayLogo.
-       move "############################################################################################" to output-buffer.
-       perform outputLine.
+       perform displayASCIILine.
        perform outputLine.
        move "           /##            /######            /## /##                                        " to output-buffer.
        perform outputLine.
@@ -160,9 +212,23 @@ displayLogo.
        perform outputLine.
        move "                                                                             ฅ^•ﻌ•^ฅ        " to output-buffer.
        perform outputLine.
-       move "############################################################################################" to output-buffer.
-       perform outputLine.
+       perform displayASCIILine.
        move "                                                                    Created by Team Kentucky" to output-buffer.
        perform outputLine.
+       move "                            The world's best job site for students                          " to output-buffer.
+       perform outputLine.
+       perform outputLine.
+       perform outputLine.
+       exit.
+
+
+displayASCIILine.
+       move "############################################################################################" to output-buffer.
+       perform outputLine.
+       exit.
+
+
+displayDashedLine.
+       move "————————————————————————————————————————————————————————————————————————————————————————————" to output-buffer.
        perform outputLine.
        exit.
