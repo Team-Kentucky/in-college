@@ -15,6 +15,11 @@ file-control.
            organization is line sequential
            file status is output-file-status.
 
+       select acct-database assign to 'acct-database.dat'
+           organization is indexed
+           access mode is dynamic
+           record key is acct-username
+           file status is acct-database-status.
 
 *>###################################################################
 DATA DIVISION.
@@ -28,6 +33,9 @@ fd input-file.
 fd output-file.
 01 output-line pic x(100).
 
+fd acct-database.
+copy "account.cpy".
+
 working-storage section.
 *>-----readInputLine variables-----
 01 input-file-status pic xx.
@@ -36,24 +44,40 @@ working-storage section.
 01 output-buffer pic x(100).
 01 output-file-status pic xx.
 
+*>-----account database variables-----
+01 acct-database-status pic xx.
+
 local-storage section.
 
 
 *>###################################################################
 PROCEDURE DIVISION.
 main.
-       move "test output line" to output-buffer.
-       perform outputLine
+       open output acct-database.
 
-       open input input-file.
+       display acct-database-status.
 
-       perform 4 times
-           perform readInputLine
-           move input-buffer to output-buffer
-           perform outputLine
-       end-perform.
+       *> Writing
+       move "matthew198" to acct-username.
+       move "password123" to acct-password.
+       write account.
+       *> Would want to verify that it was written correctly
+       close acct-database.
 
-       close input-file.
+       move spaces to acct-password.
+       move spaces to acct-username.
+
+       open input acct-database.
+       move "matthew198" to acct-username.
+       read acct-database
+           key is acct-username.
+       *> Need to check if it was found 23 is not found
+
+       display acct-database-status.
+       display acct-username.
+       display acct-password.
+
+       close acct-database.
        stop run.
 
 
