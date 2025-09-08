@@ -48,20 +48,17 @@ working-storage section.
 01 acct-database-status pic xx.
        88 user-already-exists value "22".
        88 database-does-not-exist value "35".
+       88 database-good-read value "00".
 
-01 acct-exists pic x.
-       88 acct-found value "Y".
-       88 acct-not-found value "N".
+01 acct-status pic x.
+       88 acct-found value "1".
+       88 acct-not-found value "2".
+       88 duplicate-user value "3".
+       88 new-user value "4".
 
-01 new-user-added pic x.
-       88 duplicate-user value "N".
-       88 unique-user value "Y".
-
-*>copy "account.cpy"
-*>   replacing ==acct== by ==local-acct==.
 01 buffer-acct-username pic x(100).
 01 buffer-acct-password pic x(12).
-01 acct-count pic 99.
+01 num-accounts pic 99.
 
 
 local-storage section.
@@ -70,48 +67,25 @@ local-storage section.
 *>###################################################################
 PROCEDURE DIVISION.
 main.
-       move "matthe2983" to buffer-acct-username.
-       move "18979" to buffer-acct-password.
-       perform addAcct.
 
-       move "matthe2983" to buffer-acct-username.
-       move "189798" to buffer-acct-password.
-       perform addAcct.
-
-       if duplicate-user
-           display "account already exists".
-
-       move "testacct" to buffer-acct-username.
-       move "1234567" to buffer-acct-password.
-       perform addAcct.
-
-       move "testa" to buffer-acct-username.
-       move "123456789" to buffer-acct-password.
-       perform addAcct.
-
-       move "matthe2983" to buffer-acct-username.
-       perform findAcct.
-       display acct-password.
-
-       move "notIndata" to buffer-acct-username.
-       perform findAcct.
-
-       perform acctDatabaseSize.
-       display acct-count.
 
 
        stop run.
 
 
-acctDatabaseSize.
+*> Paragraph: acctDatabaseSize
+*> Purpose:   Finds the total number of accounts in the database
+*> Input:     None
+*> Output:    num-accounts
+findNumAccounts.
        open input acct-database.
 
        if acct-database-status = "00"
            move buffer-acct-username to acct-username
-           perform until acct-database-status not = "00"
+           perform until not database-good-read
                read acct-database
                    not at end
-                       add 1 to acct-count
+                       add 1 to num-accounts
                end-read
            end-perform
        else
@@ -124,6 +98,7 @@ acctDatabaseSize.
        end-if
        close acct-database.
        exit.
+
 
 *> Paragraph: readInputLine
 *> Purpose:   Adds an account to the account database
@@ -145,8 +120,8 @@ addAcct.
            move buffer-acct-password to acct-password
            write acct-record
 
-           if user-already-exists move "N" to new-user-added
-           else move "Y" to new-user-added
+           if user-already-exists move "3" to acct-status
+           else move "4" to acct-status
        else
            string
                "Error opening account database: " delimited by size
@@ -170,9 +145,10 @@ findAcct.
            read acct-database
                key is acct-username
                invalid key
-                   move 'N' to acct-exists
+                   move '2' to acct-status
                not invalid key
-                   move 'Y' to acct-exists
+                   move '1' to acct-status
+                   move acct-password to buffer-acct-password
            end-read
        else
            string
