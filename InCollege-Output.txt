@@ -1,0 +1,37 @@
+Welcome to InCollege!
+==============================================
+||             Welcome to InCollege          ||
+||------------------------------------------||
+Log In
+Create New Account
+Enter your choice:
+Invalid choice. Please try again.
+==============================================
+||             Welcome to InCollege          ||
+||------------------------------------------||
+Log In
+Create New Account
+Enter your choice:
+Create account functionality - Under Construction
+==============================================
+||             Welcome to InCollege          ||
+||------------------------------------------||
+Log In
+Create New Account
+Enter your choice:
+Login functionality - Under Construction
+==============================================
+||             Welcome to InCollege          ||
+||------------------------------------------||
+Log In
+Create New Account
+Enter your choice:
+Invalid choice. Please try again.
+==============================================
+||             Welcome to InCollege          ||
+||------------------------------------------||
+Log In
+Create New Account
+Enter your choice:
+Invalid choice. Please try again.
+--- END_OF_PROGRAM_EXECUTION -
