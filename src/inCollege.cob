@@ -7,14 +7,15 @@ ENVIRONMENT DIVISION.
 
 input-output section.
 file-control.
+       *> Input file for automated testing
        select input-file assign to 'input.txt'
            organization is line sequential
            file status is input-file-status.
-
+       *> Output file to preserve program output
        select output-file assign to 'output.txt'
            organization is line sequential
            file status is output-file-status.
-
+       *> Accounts file for persistence
        select acct-database assign to 'acct-database.dat'
            organization is indexed
            access mode is dynamic
@@ -26,13 +27,16 @@ DATA DIVISION.
 
 file section.
 *>-----readInputLine variables-----
+*> Input file record
 fd input-file.
-01 input-buffer pic x(100). *> Need to decide on reasonable size for lines
+01 input-buffer pic x(100).
 
 *>-----outputLine variables-----
+*> Output file record
 fd output-file.
 01 output-line pic x(150).
 
+*> Accounts file record
 fd acct-database.
 copy "account.cpy".
 
@@ -46,25 +50,64 @@ working-storage section.
 01 output-buffer pic x(150).
 01 output-file-status pic xx.
 
-*>-----logIn variables-----
-01 welcome-page-selection pic x(100).
+*> Control flags
+01 logged-in pic x(1) value 'N'.
+01 current-user pic x(30).
 
 *>-----account database variables-----
 01 acct-database-status pic xx.
        88 user-already-exists value "22".
        88 database-does-not-exist value "35".
        88 database-good-read value "00".
-
 01 acct-status pic x.
        88 acct-found value "1".
        88 acct-not-found value "2".
        88 duplicate-user value "3".
        88 new-user value "4".
-
 01 buffer-acct-username pic x(100).
-01 buffer-acct-password pic x(12).
+01 buffer-acct-password pic x(100).
 01 num-accounts pic 99.
 
+*> Password validation working variables
+01 password-validity pic x.
+       88 valid-password value 'Y'.
+       88 invalid-password value 'N'.
+01 pwd-raw              pic x(50).
+01 pwd-length           pic 9(2) value 0.
+01 idx                  pic 9(2) value 1.
+01 pwd-ch               pic x(1).
+01 has-capital          pic x(1) value 'N'.
+01 has-digit            pic x(1) value 'N'.
+01 has-special          pic x(1) value 'N'.
+
+*> User input variables
+01 input-username pic x(30).
+01 input-password pic x(12).
+01 valid-choice pic x(1) value 'N'.
+01 menu-choice pic x(1).
+01 welcome-page-selection pic x(100).
+
+*> Menu constants
+01 incorrect-login-msg constant as "Incorrect username/password, please try again".
+01 success-login-msg   constant as "You have successfully logged in".
+01 welcome-user-prefix constant as "Welcome, ".
+01 welcome-user-line   pic x(60).
+01 choice-prompt constant as "Enter your choice:".
+01 post-login-1 constant as "[1] Search for a job".
+01 post-login-2 constant as "[2] Find someone you know".
+01 post-login-3 constant as "[3] Learn a new skill".
+01 logout constant as "[q] Logout".
+01 under-construction  constant as "is under construction.".
+01 uc-job-prefix       constant as "Job search/internship ".
+01 uc-find-prefix      constant as "Find someone you know ".
+01 skills-title        constant as "Learn a New Skill:".
+01 skill1              constant as "[1] Skill 1".
+01 skill2              constant as "[2] Skill 2".
+01 skill3              constant as "[3] Skill 3".
+01 skill4              constant as "[4] Skill 4".
+01 skill5              constant as "[5] Skill 5".
+01 go-back             constant as "[q] Go Back".
+01 end-marker          constant as "--- END_OF_PROGRAM_EXECUTION ---".
 
 local-storage section.
 
@@ -72,13 +115,27 @@ local-storage section.
 *>###################################################################
 PROCEDURE DIVISION.
 main.
-       open input input-file.
+       perform initialize-program
 
        perform displayLogo.
        perform welcomePage.
 
-       close input-file.
+       *> Clean up and exit
+       perform cleanup-program
        stop run.
+
+
+*>*******************************************************************
+*> Initialize program - open files and display welcome
+*>*******************************************************************
+initialize-program.
+       *> Open input file for reading user choices
+       open input input-file
+       if input-file-status not = "00"
+           move "Error opening input file" to output-buffer
+           perform outputLine
+       end-if
+       exit.
 
 
 *> Paragraph: welcomePage
@@ -107,7 +164,7 @@ welcomePage.
                when (welcome-page-selection = 'q' or welcome-page-selection = 'Q' or not valid-read)
                    continue
                when welcome-page-selection = '0'
-                   perform signIn
+                   perform login-process
                when welcome-page-selection = '1'
                    perform accountCreation
                when other
@@ -118,8 +175,149 @@ welcomePage.
        exit.
 
 
-signIn.
-       *>stub
+*>*******************************************************************
+*> Login process placeholder - will be implemented in commit 3
+*>*******************************************************************
+login-process.
+       *> Unlimited attempts until successful login
+       perform until logged-in = 'Y' or not valid-read
+           move "Please enter your username:" to output-buffer
+           perform outputLine
+           perform readInputLine
+           move function trim(input-buffer trailing) to input-username
+
+           move "Please enter your password:" to output-buffer
+           perform outputLine
+           perform readInputLine
+           move function trim(input-buffer trailing) to input-password
+
+
+           move input-username to buffer-acct-username
+           perform findAcct
+           if acct-found and function trim(buffer-acct-password trailing) = function trim(input-password trailing)
+               move 'Y' to valid-choice
+           end-if
+
+           if valid-choice = 'Y'
+               move success-login-msg to output-buffer
+               perform outputLine
+               move spaces to welcome-user-line
+               string welcome-user-prefix delimited by size
+                      input-username delimited by space
+                      into welcome-user-line
+               end-string
+               move welcome-user-line to output-buffer
+               perform outputLine
+               move 'Y' to logged-in
+               move input-username to current-user
+               perform post-login-menu
+               move 'N' to logged-in
+               move 'N' to valid-choice
+               exit perform
+           else
+               move incorrect-login-msg to output-buffer
+               perform outputLine
+           end-if
+       end-perform
+       exit.
+
+
+*>*******************************************************************
+*> Post-login menu and navigation
+*>*******************************************************************
+post-login-menu.
+       perform until logged-in = 'N' or not valid-read
+           move post-login-1 to output-buffer
+           perform outputLine
+           move post-login-2 to output-buffer
+           perform outputLine
+           move post-login-3 to output-buffer
+           perform outputLine
+           move logout to output-buffer
+           perform outputLine
+           move choice-prompt to output-buffer
+           perform outputLine
+
+           perform readInputLine
+           move input-buffer(1:1) to menu-choice
+
+           evaluate true
+               when menu-choice = '1'
+                   *> Job search under construction
+                   move spaces to output-buffer
+                   string uc-job-prefix delimited by size
+                          under-construction delimited by size
+                          into output-buffer
+                   end-string
+                   perform outputLine
+               when menu-choice = '2'
+                   *> Find someone under construction
+                   move spaces to output-buffer
+                   string uc-find-prefix delimited by size
+                          under-construction delimited by size
+                          into output-buffer
+                   end-string
+                   perform outputLine
+               when menu-choice = '3'
+                   perform skills-menu
+               when menu-choice = 'q' or not valid-read
+                   exit perform
+               when other
+                   move "Invalid choice. Please try again." to output-buffer
+                   perform outputLine
+           end-evaluate
+       end-perform
+       exit.
+
+
+*>*******************************************************************
+*> Skills list with option to go back
+*>*******************************************************************
+skills-menu.
+       perform until not valid-read
+           move skills-title to output-buffer
+           perform outputLine
+           move skill1 to output-buffer
+           perform outputLine
+           move skill2 to output-buffer
+           perform outputLine
+           move skill3 to output-buffer
+           perform outputLine
+           move skill4 to output-buffer
+           perform outputLine
+           move skill5 to output-buffer
+           perform outputLine
+           move go-back to output-buffer
+           perform outputLine
+           move choice-prompt to output-buffer
+           perform outputLine
+
+           perform readInputLine
+           move input-buffer(1:1) to menu-choice
+
+           evaluate true
+               when menu-choice = '1'
+                   move "This skill is under construction." to output-buffer
+                   perform outputLine
+               when menu-choice = '2'
+                   move "This skill is under construction." to output-buffer
+                   perform outputLine
+               when menu-choice = '3'
+                   move "This skill is under construction." to output-buffer
+                   perform outputLine
+               when menu-choice = '4'
+                   move "This skill is under construction." to output-buffer
+                   perform outputLine
+               when menu-choice = '5'
+                   move "This skill is under construction." to output-buffer
+                   perform outputLine
+               when menu-choice = 'q' or not valid-read
+                   exit perform
+               when other
+                   move "Invalid input" to output-buffer
+                   perform outputLine
+           end-evaluate
+       end-perform
        exit.
 
 
@@ -134,7 +332,7 @@ accountCreation.
            perform displayDashedLine
            perform outputLine
 
-           perform with test after until acct-not-found
+           perform with test after until acct-not-found or not valid-read
                 move "Username: " to input-prompt
                 perform readInputLine
                 move input-buffer to buffer-acct-username
@@ -146,23 +344,25 @@ accountCreation.
                 end-if
            end-perform
 
-           *> perform with test after until valid-password
+           perform with test after until valid-password or not valid-read
                move "Password: " to input-prompt
                perform readInputLine
                move input-buffer to buffer-acct-password
 
-               *> perform password-validation
-               *>if not valid-password
-                   *>move "Password must be between 8-12 characters, contain 1 capital letter, 1 digit, and 1 special character"
-                   *>perform outputLine
-               *>end-if
-           *>end-perform
+               perform validate-password
+               if not valid-password
+                   move "Password must be between 8-12 characters, contain 1 capital letter, 1 digit, and 1 special character" to output-buffer
+                   perform outputLine
+               end-if
+           end-perform
 
-           perform addAcct
-           *> If all works, run this:
-           perform outputLine
-           move "Account has successfully been created" to output-buffer
-           perform outputLine
+           if valid-password and valid-read
+               perform addAcct
+               *> If all works, run this:
+               perform outputLine
+               move "Account has successfully been created" to output-buffer
+               perform outputLine
+           end-if
        else
                move "All permitted accounts have been created, please come back later" to output-buffer
                perform outputLine
@@ -177,6 +377,8 @@ accountCreation.
 findNumAccounts.
        open input acct-database.
 
+       move zero to num-accounts
+
        if acct-database-status = "00"
            move buffer-acct-username to acct-username
            perform until not database-good-read
@@ -185,6 +387,8 @@ findNumAccounts.
                        add 1 to num-accounts
                end-read
            end-perform
+           *> Since it doesn't count the one we started on
+           add 1 to num-accounts
        else if database-does-not-exist
            move 0 to num-accounts
        else
@@ -266,6 +470,60 @@ findAcct.
        exit.
 
 
+*>*******************************************************************
+*> Password validation routine
+*>*******************************************************************
+validate-password.
+       *> Capture and trim raw password from input-buffer
+       move function trim(buffer-acct-password trailing) to pwd-raw
+       compute pwd-length = function length(function trim(pwd-raw trailing))
+
+       *> Initialize result to invalid
+       move 'N' to password-validity
+       move 'N' to has-capital
+       move 'N' to has-digit
+       move 'N' to has-special
+
+       *> Length check 8..12
+       if pwd-length < 8 or pwd-length > 12
+           exit paragraph
+       end-if
+
+       *> NOT WORKING
+       *> Scan characters
+       perform varying idx from 1 by 1 until idx > pwd-length
+           move pwd-raw(idx:idx) to pwd-ch
+           evaluate true
+               when pwd-ch >= 'A' and pwd-ch <= 'Z'
+                   move 'Y' to has-capital
+               when pwd-ch >= '0' and pwd-ch <= '9'
+                   move 'Y' to has-digit
+               when (pwd-ch >= 'a' and pwd-ch <= 'z')
+                   continue
+               when other
+                   move 'Y' to has-special
+           end-evaluate
+       end-perform
+
+       if has-capital = 'Y' and has-digit = 'Y' and has-special = 'Y'
+           move 'Y' to password-validity
+           move pwd-raw(1:12) to input-password
+       end-if
+       exit.
+
+
+*>*******************************************************************
+*> Clean up resources before exit
+*>*******************************************************************
+cleanup-program.
+       *> Close input file if open
+       close input-file
+       *> Print end-of-program marker
+       move end-marker to output-buffer
+       perform outputLine
+       exit.
+
+
 *> Paragraph: readInputLine
 *> Purpose:   Reads in the next line of the input file
 *> Input:     None
@@ -291,17 +549,9 @@ readInputLine.
                    move spaces to input-buffer
                    *> Notify user
                    move "Reached end of input file ( ੭ˊᵕˋ)੭" to output-buffer
-                   *> We should eithter
-                       *> Make this trigger a use when to end the program?
-                       *> Have the user be responsible for gracefully closing
-                       *> Switch to manual input from accept
-
                    perform outputLine
            end-read
        else
-           move input-prompt to output-buffer
-           perform outputLine
-
            string
                "Error reading input file: " delimited by size
                input-file-status            delimited by size
