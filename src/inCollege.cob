@@ -156,7 +156,7 @@ accountCreation.
                    *>move "Password must be between 8-12 characters, contain 1 capital letter, 1 digit, and 1 special character"
                    *>perform outputLine
                *>end-if
-           end-perform
+           *>end-perform
 
            perform addAcct
            *> If all works, run this:
@@ -250,6 +250,8 @@ findAcct.
                    move '1' to acct-status
                    move acct-password to buffer-acct-password
            end-read
+       else if database-does-not-exist
+           move '2' to acct-status
        else
            string
                "Error opening account database: " delimited by size
@@ -257,6 +259,7 @@ findAcct.
                into output-buffer
            end-string
            perform outputLine
+       end-if
        end-if
        close acct-database.
 
@@ -271,7 +274,7 @@ findAcct.
 readInputLine.
        if input-file-status = "00"
            read input-file
-               not at end *>NOTE: Do we want to keep reading until we get a non blank input??
+               not at end
                    *>Simulating the user entering the input
                    string
                        function trim(input-prompt, trailing) delimited by size
