@@ -27,8 +27,8 @@ cobc -Isrc/ -x -o bin/inCollege src/inCollege.cob
 ```
 
 ### Run
-If on Docker/Linux, run using test.sh
-It will automatically pull the correct input files and run the full suite of tests (which are located in input-files/)
+If in Docker/Linux, run using test.sh
+It will automatically pull the correct input files and run the full suite of tests (which are located in input-files/). It will also automatically pipe the command line output into bin/cli-output.txt for easier comparison and to automatically use in a diff against output.txt
 ```bash
 ./test.sh
 ```
