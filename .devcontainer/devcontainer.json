@@ -8,7 +8,10 @@
   "remoteUser": "root",
   "settings": {
     "terminal.integrated.shell.linux": "/bin/bash",
-    "files.trimTrailingWhitespace": true
+    "files.trimTrailingWhitespace": true,
+    "[COBOL]": {
+      "editor.rulers": []
+    }
   },
   "extensions": [
     "bitlang.cobol",
