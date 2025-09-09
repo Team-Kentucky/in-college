@@ -123,40 +123,51 @@ signIn.
        exit.
 
 
-accountCreation. *> How do you go back in this menu?
-       *>-------
-       *>Please enter all required info
-       *>------
-
-       *> [0] Username
-       *> [1] Password
-
-       *> All permitted accounts have been created, please come back later
-
+accountCreation.
        *> Verify that we aren't at max accounts
+       perform findNumAccounts.
+       if num-accounts < 6
            perform outputLine
            perform displayDashedLine
            move "Please enter all required information" to output-buffer
            perform outputLine
            perform displayDashedLine
-           perform outputLine.
+           perform outputLine
 
-           move "Username: " to input-prompt
-           perform readInputLine
+           perform with test after until acct-not-found
+                move "Username: " to input-prompt
+                perform readInputLine
+                move input-buffer to buffer-acct-username
 
-           *>Verify username isn't taken
+                perform findAcct
+                if acct-found
+                   move "Username has already been taken" to output-buffer
+                   perform outputLine
+                end-if
+           end-perform
 
-           move "Password: " to input-prompt
-           perform readInputLine
+           *> perform with test after until valid-password
+               move "Password: " to input-prompt
+               perform readInputLine
+               move input-buffer to buffer-acct-password
 
-           *> verify password is valid
+               *> perform password-validation
+               *>if not valid-password
+                   *>move "Password must be between 8-12 characters, contain 1 capital letter, 1 digit, and 1 special character"
+                   *>perform outputLine
+               *>end-if
+           end-perform
 
-           *> Store passowrd
-
+           perform addAcct
            *> If all works, run this:
-           perform outputLine.
-           move "Account has successfully been created" to output-buffer.
-           perform outputLine.
+           perform outputLine
+           move "Account has successfully been created" to output-buffer
+           perform outputLine
+       else
+               move "All permitted accounts have been created, please come back later" to output-buffer
+               perform outputLine
+       end-if
+       exit.
 
 
 *> Paragraph: acctDatabaseSize
@@ -174,6 +185,8 @@ findNumAccounts.
                        add 1 to num-accounts
                end-read
            end-perform
+       else if database-does-not-exist
+           move 0 to num-accounts
        else
            string
                "Error opening account database: " delimited by size
@@ -181,6 +194,7 @@ findNumAccounts.
                into output-buffer
            end-string
            perform outputLine
+       end-if
        end-if
        close acct-database.
        exit.
