@@ -1,3 +1,5 @@
+#Docker configuration taken from 'CEN 4020 Project.zip'
+
 FROM ubuntu:22.04
 
 # Avoid interactive tzdata, etc.
