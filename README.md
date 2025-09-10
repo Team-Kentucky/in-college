@@ -27,15 +27,20 @@ cobc -Isrc/ -x -o bin/inCollege src/inCollege.cob
 ```
 
 ### Run
-If in Docker/Linux, run using test.sh
+If in Docker/Linux, you can run using test.sh
 It will automatically pull the correct input files and run the full suite of tests (which are located in input-files/). It will also automatically pipe the command line output into bin/cli-output.txt for easier comparison and to automatically use in a diff against output.txt
 ```bash
 ./test.sh
 ```
 
-Alternatively you can set the input files correctly and run the executable with:
+Alternatively you can copy the input file into bin (or wherever the binary is), rename it to `input.txt`, cd into bin, and then run the executable.
+Notes: You must ensure that your input file is named `input.txt`. It also must be in the directory you are currently in (eg if you run the program while in the main project folder with `./bin/inCollege`, ensure that `input.txt` is also in the main project folder).
+Example commands:
 ```bash
-./bin/inCollege
+make
+cp <your input file> bin/input.txt
+cd bin
+./inCollege
 ```
 
 ## Input/Output Files
@@ -108,7 +113,7 @@ Password1!
 ## Reset State
 To start fresh testing:
 ```bash
-rm accounts.dat
+rm acct-database.dat
 rm output.txt
 ```
 
