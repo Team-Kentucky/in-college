@@ -107,7 +107,27 @@ working-storage section.
 01 skill4              constant as "[4] Skill 4".
 01 skill5              constant as "[5] Skill 5".
 01 go-back             constant as "[q] Go Back".
-01 end-marker          constant as "--- END_OF_PROGRAM_EXECUTION ---".
+01 END-MARKER          constant as "--- END_OF_PROGRAM_EXECUTION ---".
+
+*> Profile fields
+01 profile-first-name      pic x(30).
+01 profile-last-name       pic x(30).
+01 profile-university      pic x(50).
+01 profile-major           pic x(30).
+01 profile-grad-year       pic x(4).
+01 grad-year-length   pic 99.
+01 profile-about-me        pic x(200).
+
+01 exp-idx                 pic 9 value 1.
+01 profile-exp-title       occurs 3 pic x(30).
+01 profile-exp-company     occurs 3 pic x(30).
+01 profile-exp-dates       occurs 3 pic x(20).
+01 profile-exp-desc        occurs 3 pic x(100).
+
+01 edu-idx                 pic 9 value 1.
+01 profile-edu-degree      occurs 3 pic x(30).
+01 profile-edu-university  occurs 3 pic x(50).
+01 profile-edu-years       occurs 3 pic x(20).
 
 local-storage section.
 
@@ -243,13 +263,7 @@ post-login-menu.
 
            evaluate true
                when menu-choice = '1'
-                   *> Job search under construction
-                   move spaces to output-buffer
-                   string uc-job-prefix delimited by size
-                          under-construction delimited by size
-                          into output-buffer
-                   end-string
-                   perform outputLine
+                   perform profileCreation
                when menu-choice = '2'
                    *> Find someone under construction
                    move spaces to output-buffer
@@ -510,6 +524,78 @@ validate-password.
            move pwd-raw(1:12) to input-password
        end-if
        exit.
+
+profileCreation.
+       move "Create/Edit My Profile" to output-buffer
+       perform outputLine
+       perform displayDashedLine
+
+       *> First Name (Required)
+       perform with test after until profile-first-name not = spaces or not valid-read
+           move "Enter First Name (Required):" to input-prompt
+           perform readInputLine
+           move function trim(input-buffer trailing) to profile-first-name
+       end-perform
+
+       *> Last Name (Required)
+       perform with test after until profile-last-name not = spaces or not valid-read
+           move "Enter Last Name (Required):" to input-prompt
+           perform readInputLine
+           move function trim(input-buffer trailing) to profile-last-name
+       end-perform
+
+       *> University/College Attended (Required)
+       perform with test after until profile-university not = spaces or not valid-read
+           move "Enter University/College Attended (Required):" to input-prompt
+           perform readInputLine
+           move function trim(input-buffer trailing) to profile-university
+       end-perform
+
+       *> Major (Required)
+       perform with test after until profile-major not = spaces or not valid-read
+           move "Enter Major (Required):" to input-prompt
+           perform readInputLine
+           move function trim(input-buffer trailing) to profile-major
+       end-perform
+
+       *> Graduation Year (Required, must be 4 digits)
+          perform until valid-read
+              and function length(function trim(input-buffer trailing)) = 4
+              and function trim(input-buffer trailing) numeric
+
+               move "Enter Graduation Year (Required, e.g., 2025):"
+                    to input-prompt
+               perform readInputLine
+
+           if not valid-read
+              exit paragraph
+           end-if
+
+           if function length(function trim(input-buffer trailing)) not = 4
+              or function trim(input-buffer trailing) not numeric
+              move "Graduation Year must be a valid 4-digit number."
+                   to output-buffer
+              perform outputLine
+           end-if
+
+       end-perform
+
+       *> Safe now: input is exactly 4 digits
+       move function trim(input-buffer trailing) to profile-grad-year
+
+      *> About me (Optional)
+
+      *> Experience section (Optional, up to 3 entries). Inputs: 'DONE' to skip, for other inputs: Experience #1 - Title:
+            *> Experience #1 - Company/Organization:
+            *> Experience #1 - Dates (e.g., Summer 2024):
+            *> Experience #1 - Description (optional, max 100 chars, blank to skip):
+
+      *> Same for Education
+
+
+       move "Profile saved successfully!" to output-buffer
+       perform outputLine
+       exit paragraph.
 
 
 *>*******************************************************************
