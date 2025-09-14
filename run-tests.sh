@@ -5,7 +5,7 @@ if [ -f "acct-database.dat" ]; then rm "acct-database.dat"; fi
 if [ -f "input.txt" ]; then rm "input.txt"; fi
 if [ -f "output.txt" ]; then rm "output.txt"; fi
 if [ -f "cli-output.txt" ]; then rm "cli-output.txt"; fi
-cp ../input-files/inCollege-Test.txt input.txt
+cp ../input-files/inCollege-Profile-Test.txt input.txt
 ./inCollege | tee -a  cli-output.txt
 echo "Here is the diff between cli output and logging: "
 diff cli-output.txt output.txt

@@ -1,0 +1,130 @@
+1
+testuser1
+Passw0rd!
+1
+testuser2
+Passw0rd@
+1
+testuser3
+Passw0rd#
+1
+testuser4
+Passw0rd$
+1
+testuser5
+Passw0rd%
+0
+testuser1
+Passw0rd!
+1
+John
+Doe
+University of Example
+Computer Science
+2025
+I am a passionate developer who loves learning new technologies.
+Software Intern
+Tech Corp
+Summer 2024
+Developed tools for internal testing
+DONE
+Bachelor of Science
+University of Example
+2021-2025
+DONE
+2
+q
+0
+testuser2
+Passw0rd@
+1
+Jane
+Smith
+State University
+Data Science
+2024
+I love working with data and machine learning.
+Data Analyst
+Analytics Inc
+Spring 2024
+Created predictive models for business insights
+DONE
+Master of Science
+State University
+2022-2024
+DONE
+2
+q
+0
+testuser3
+Passw0rd#
+2
+q
+0
+testuser4
+Passw0rd$
+1
+Bob
+Johnson
+Community College
+Business Administration
+2023
+I am interested in entrepreneurship and management.
+DONE
+DONE
+2
+q
+0
+testuser5
+Passw0rd%
+1
+Alice
+Williams
+Tech Institute
+Software Engineering
+2026
+I am a full-stack developer with experience in web technologies.
+Frontend Developer
+Web Solutions
+Summer 2023
+Built responsive web applications
+Backend Developer
+API Corp
+Fall 2023
+Developed REST APIs and microservices
+DONE
+Bachelor of Technology
+Tech Institute
+2022-2026
+Master of Science
+Online University
+2024-2026
+DONE
+2
+q
+0
+testuser1
+Passw0rd!
+2
+q
+0
+testuser2
+Passw0rd@
+2
+q
+0
+testuser3
+Passw0rd#
+2
+q
+0
+testuser4
+Passw0rd$
+2
+q
+0
+testuser5
+Passw0rd%
+2
+q
+q
