@@ -97,6 +97,28 @@ working-storage section.
 01 profile-entry-count pic 9(1).
 01 profile-loop-index pic 9(1).
 
+*> Profile data working storage
+01 ws-profile-first-name pic x(50).
+01 ws-profile-last-name pic x(50).
+01 ws-profile-university pic x(100).
+01 ws-profile-major pic x(100).
+01 ws-profile-graduation-year pic 9(4).
+01 ws-profile-about-me pic x(200).
+01 ws-profile-experience.
+   05 ws-experience-entry occurs 3 times.
+       10 ws-exp-title pic x(100).
+       10 ws-exp-company pic x(100).
+       10 ws-exp-dates pic x(50).
+       10 ws-exp-description pic x(100).
+01 ws-profile-education.
+   05 ws-education-entry occurs 3 times.
+       10 ws-edu-degree pic x(100).
+       10 ws-edu-university pic x(100).
+       10 ws-edu-years pic x(50).
+01 ws-profile-initialized pic x(1).
+   88 ws-profile-exists value 'Y'.
+   88 ws-profile-empty value 'N'.
+
 *> Menu constants
 01 incorrect-login-msg constant as "Incorrect username/password, please try again".
 01 success-login-msg   constant as "You have successfully logged in".
@@ -528,29 +550,29 @@ validate-password.
 *> Input:     None
 *> Output:    None
 initialize-profile.
-    move spaces to profile-first-name
-    move spaces to profile-last-name
-    move spaces to profile-university
-    move spaces to profile-major
-    move 0 to profile-graduation-year
-    move spaces to profile-about-me
+    move spaces to ws-profile-first-name
+    move spaces to ws-profile-last-name
+    move spaces to ws-profile-university
+    move spaces to ws-profile-major
+    move 0 to ws-profile-graduation-year
+    move spaces to ws-profile-about-me
     
     *> Initialize experience entries
     perform varying profile-loop-index from 1 by 1 until profile-loop-index > 3
-        move spaces to exp-title(profile-loop-index)
-        move spaces to exp-company(profile-loop-index)
-        move spaces to exp-dates(profile-loop-index)
-        move spaces to exp-description(profile-loop-index)
+        move spaces to ws-exp-title(profile-loop-index)
+        move spaces to ws-exp-company(profile-loop-index)
+        move spaces to ws-exp-dates(profile-loop-index)
+        move spaces to ws-exp-description(profile-loop-index)
     end-perform
     
     *> Initialize education entries
     perform varying profile-loop-index from 1 by 1 until profile-loop-index > 3
-        move spaces to edu-degree(profile-loop-index)
-        move spaces to edu-university(profile-loop-index)
-        move spaces to edu-years(profile-loop-index)
+        move spaces to ws-edu-degree(profile-loop-index)
+        move spaces to ws-edu-university(profile-loop-index)
+        move spaces to ws-edu-years(profile-loop-index)
     end-perform
     
-    move 'N' to profile-initialized
+    move 'N' to ws-profile-initialized
     exit.
 
 *> Paragraph: validate-graduation-year
@@ -585,8 +607,29 @@ save-profile-data.
                 move "Error: User not found for profile save" to output-buffer
                 perform outputLine
             not invalid key
-                *> Profile data is already in the record structure
-                *> Just need to mark it as initialized
+                *> Copy profile data from working storage to record structure
+                move ws-profile-first-name to profile-first-name
+                move ws-profile-last-name to profile-last-name
+                move ws-profile-university to profile-university
+                move ws-profile-major to profile-major
+                move ws-profile-graduation-year to profile-graduation-year
+                move ws-profile-about-me to profile-about-me
+                
+                *> Copy experience entries
+                perform varying profile-loop-index from 1 by 1 until profile-loop-index > 3
+                    move ws-exp-title(profile-loop-index) to exp-title(profile-loop-index)
+                    move ws-exp-company(profile-loop-index) to exp-company(profile-loop-index)
+                    move ws-exp-dates(profile-loop-index) to exp-dates(profile-loop-index)
+                    move ws-exp-description(profile-loop-index) to exp-description(profile-loop-index)
+                end-perform
+                
+                *> Copy education entries
+                perform varying profile-loop-index from 1 by 1 until profile-loop-index > 3
+                    move ws-edu-degree(profile-loop-index) to edu-degree(profile-loop-index)
+                    move ws-edu-university(profile-loop-index) to edu-university(profile-loop-index)
+                    move ws-edu-years(profile-loop-index) to edu-years(profile-loop-index)
+                end-perform
+                
                 move 'Y' to profile-initialized
                 rewrite acct-record
                 if acct-database-status = "00"
@@ -623,8 +666,32 @@ load-profile-data.
                 *> Profile data is now loaded into the record structure
                 if profile-empty
                     perform initialize-profile
+                else
+                    *> Copy profile data from record structure to working storage
+                    move profile-first-name to ws-profile-first-name
+                    move profile-last-name to ws-profile-last-name
+                    move profile-university to ws-profile-university
+                    move profile-major to ws-profile-major
+                    move profile-graduation-year to ws-profile-graduation-year
+                    move profile-about-me to ws-profile-about-me
+                    
+                    *> Copy experience entries
+                    perform varying profile-loop-index from 1 by 1 until profile-loop-index > 3
+                        move exp-title(profile-loop-index) to ws-exp-title(profile-loop-index)
+                        move exp-company(profile-loop-index) to ws-exp-company(profile-loop-index)
+                        move exp-dates(profile-loop-index) to ws-exp-dates(profile-loop-index)
+                        move exp-description(profile-loop-index) to ws-exp-description(profile-loop-index)
+                    end-perform
+                    
+                    *> Copy education entries
+                    perform varying profile-loop-index from 1 by 1 until profile-loop-index > 3
+                        move edu-degree(profile-loop-index) to ws-edu-degree(profile-loop-index)
+                        move edu-university(profile-loop-index) to ws-edu-university(profile-loop-index)
+                        move edu-years(profile-loop-index) to ws-edu-years(profile-loop-index)
+                    end-perform
+                    
+                    move profile-initialized to ws-profile-initialized
                 end-if
-                *> Profile data is now available in the record structure
         end-read
     else
         move "Error opening database for profile load" to output-buffer
@@ -651,22 +718,22 @@ profile-create-edit-menu.
     move "Enter First Name:" to output-buffer
     perform outputLine
     perform readInputLine
-    move function trim(input-buffer trailing) to profile-first-name
+    move function trim(input-buffer trailing) to ws-profile-first-name
     
     move "Enter Last Name:" to output-buffer
     perform outputLine
     perform readInputLine
-    move function trim(input-buffer trailing) to profile-last-name
+    move function trim(input-buffer trailing) to ws-profile-last-name
     
     move "Enter University/College Attended:" to output-buffer
     perform outputLine
     perform readInputLine
-    move function trim(input-buffer trailing) to profile-university
+    move function trim(input-buffer trailing) to ws-profile-university
     
     move "Enter Major:" to output-buffer
     perform outputLine
     perform readInputLine
-    move function trim(input-buffer trailing) to profile-major
+    move function trim(input-buffer trailing) to ws-profile-major
     
     *> Graduation year with validation
     perform with test after until profile-valid or not valid-read
@@ -680,14 +747,14 @@ profile-create-edit-menu.
             perform outputLine
         end-if
     end-perform
-    move profile-year-numeric to profile-graduation-year
+    move profile-year-numeric to ws-profile-graduation-year
     
     *> Optional About Me
     move "Enter About Me (optional, max 200 chars, enter blank line to skip):" to output-buffer
     perform outputLine
     perform readInputLine
     if function trim(input-buffer trailing) not = spaces
-        move function trim(input-buffer trailing) to profile-about-me
+        move function trim(input-buffer trailing) to ws-profile-about-me
     end-if
     
     *> Experience entries (up to 3)
@@ -700,7 +767,7 @@ profile-create-edit-menu.
             exit perform
         end-if
         add 1 to profile-entry-count
-        move function trim(input-buffer trailing) to exp-title(profile-entry-count)
+        move function trim(input-buffer trailing) to ws-exp-title(profile-entry-count)
         
         move "Experience #" to output-buffer
         string output-buffer delimited by size
@@ -710,7 +777,7 @@ profile-create-edit-menu.
         end-string
         perform outputLine
         perform readInputLine
-        move function trim(input-buffer trailing) to exp-company(profile-entry-count)
+        move function trim(input-buffer trailing) to ws-exp-company(profile-entry-count)
         
         move "Experience #" to output-buffer
         string output-buffer delimited by size
@@ -720,7 +787,7 @@ profile-create-edit-menu.
         end-string
         perform outputLine
         perform readInputLine
-        move function trim(input-buffer trailing) to exp-dates(profile-entry-count)
+        move function trim(input-buffer trailing) to ws-exp-dates(profile-entry-count)
         
         move "Experience #" to output-buffer
         string output-buffer delimited by size
@@ -731,7 +798,7 @@ profile-create-edit-menu.
         perform outputLine
         perform readInputLine
         if function trim(input-buffer trailing) not = spaces
-            move function trim(input-buffer trailing) to exp-description(profile-entry-count)
+            move function trim(input-buffer trailing) to ws-exp-description(profile-entry-count)
         end-if
     end-perform
     
@@ -745,7 +812,7 @@ profile-create-edit-menu.
             exit perform
         end-if
         add 1 to profile-entry-count
-        move function trim(input-buffer trailing) to edu-degree(profile-entry-count)
+        move function trim(input-buffer trailing) to ws-edu-degree(profile-entry-count)
         
         move "Education #" to output-buffer
         string output-buffer delimited by size
@@ -755,7 +822,7 @@ profile-create-edit-menu.
         end-string
         perform outputLine
         perform readInputLine
-        move function trim(input-buffer trailing) to edu-university(profile-entry-count)
+        move function trim(input-buffer trailing) to ws-edu-university(profile-entry-count)
         
         move "Education #" to output-buffer
         string output-buffer delimited by size
@@ -765,7 +832,7 @@ profile-create-edit-menu.
         end-string
         perform outputLine
         perform readInputLine
-        move function trim(input-buffer trailing) to edu-years(profile-entry-count)
+        move function trim(input-buffer trailing) to ws-edu-years(profile-entry-count)
     end-perform
     
     *> Save profile data
@@ -786,39 +853,39 @@ profile-view-menu.
     *> Display basic information
     move "Name: " to output-buffer
     string output-buffer delimited by size
-           function trim(profile-first-name trailing) delimited by size
+           function trim(ws-profile-first-name trailing) delimited by size
            " " delimited by size
-           function trim(profile-last-name trailing) delimited by size
+           function trim(ws-profile-last-name trailing) delimited by size
            into output-buffer
     end-string
     perform outputLine
     
     move "University: " to output-buffer
     string output-buffer delimited by size
-           function trim(profile-university trailing) delimited by size
+           function trim(ws-profile-university trailing) delimited by size
            into output-buffer
     end-string
     perform outputLine
     
     move "Major: " to output-buffer
     string output-buffer delimited by size
-           function trim(profile-major trailing) delimited by size
+           function trim(ws-profile-major trailing) delimited by size
            into output-buffer
     end-string
     perform outputLine
     
     move "Graduation Year: " to output-buffer
     string output-buffer delimited by size
-           profile-graduation-year delimited by size
+           ws-profile-graduation-year delimited by size
            into output-buffer
     end-string
     perform outputLine
     
     *> Display About Me if present
-    if function trim(profile-about-me trailing) not = spaces
+    if function trim(ws-profile-about-me trailing) not = spaces
         move "About Me: " to output-buffer
         string output-buffer delimited by size
-               function trim(profile-about-me trailing) delimited by size
+               function trim(ws-profile-about-me trailing) delimited by size
                into output-buffer
         end-string
         perform outputLine
@@ -827,36 +894,36 @@ profile-view-menu.
     *> Display Experience entries
     move 0 to profile-loop-index
     perform varying profile-loop-index from 1 by 1 until profile-loop-index > 3
-        if function trim(exp-title(profile-loop-index) trailing) not = spaces
+        if function trim(ws-exp-title(profile-loop-index) trailing) not = spaces
             if profile-loop-index = 1
                 move "Experience:" to output-buffer
                 perform outputLine
             end-if
             move "Title: " to output-buffer
             string output-buffer delimited by size
-                   function trim(exp-title(profile-loop-index) trailing) delimited by size
+                   function trim(ws-exp-title(profile-loop-index) trailing) delimited by size
                    into output-buffer
             end-string
             perform outputLine
             
             move "Company: " to output-buffer
             string output-buffer delimited by size
-                   function trim(exp-company(profile-loop-index) trailing) delimited by size
+                   function trim(ws-exp-company(profile-loop-index) trailing) delimited by size
                    into output-buffer
             end-string
             perform outputLine
             
             move "Dates: " to output-buffer
             string output-buffer delimited by size
-                   function trim(exp-dates(profile-loop-index) trailing) delimited by size
+                   function trim(ws-exp-dates(profile-loop-index) trailing) delimited by size
                    into output-buffer
             end-string
             perform outputLine
             
-            if function trim(exp-description(profile-loop-index) trailing) not = spaces
+            if function trim(ws-exp-description(profile-loop-index) trailing) not = spaces
                 move "Description: " to output-buffer
                 string output-buffer delimited by size
-                       function trim(exp-description(profile-loop-index) trailing) delimited by size
+                       function trim(ws-exp-description(profile-loop-index) trailing) delimited by size
                        into output-buffer
                 end-string
                 perform outputLine
@@ -867,28 +934,28 @@ profile-view-menu.
     *> Display Education entries
     move 0 to profile-loop-index
     perform varying profile-loop-index from 1 by 1 until profile-loop-index > 3
-        if function trim(edu-degree(profile-loop-index) trailing) not = spaces
+        if function trim(ws-edu-degree(profile-loop-index) trailing) not = spaces
             if profile-loop-index = 1
                 move "Education:" to output-buffer
                 perform outputLine
             end-if
             move "Degree: " to output-buffer
             string output-buffer delimited by size
-                   function trim(edu-degree(profile-loop-index) trailing) delimited by size
+                   function trim(ws-edu-degree(profile-loop-index) trailing) delimited by size
                    into output-buffer
             end-string
             perform outputLine
             
             move "University: " to output-buffer
             string output-buffer delimited by size
-                   function trim(edu-university(profile-loop-index) trailing) delimited by size
+                   function trim(ws-edu-university(profile-loop-index) trailing) delimited by size
                    into output-buffer
             end-string
             perform outputLine
             
             move "Years: " to output-buffer
             string output-buffer delimited by size
-                   function trim(edu-years(profile-loop-index) trailing) delimited by size
+                   function trim(ws-edu-years(profile-loop-index) trailing) delimited by size
                    into output-buffer
             end-string
             perform outputLine
