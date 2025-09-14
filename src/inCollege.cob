@@ -87,6 +87,16 @@ working-storage section.
 01 menu-choice pic x(1).
 01 welcome-page-selection pic x(100).
 
+*> Profile management variables
+01 profile-input-buffer pic x(200).
+01 profile-validation-flag pic x(1).
+   88 profile-valid value 'Y'.
+   88 profile-invalid value 'N'.
+01 profile-year-numeric pic 9(4).
+01 profile-year-string pic x(10).
+01 profile-entry-count pic 9(1).
+01 profile-loop-index pic 9(1).
+
 *> Menu constants
 01 incorrect-login-msg constant as "Incorrect username/password, please try again".
 01 success-login-msg   constant as "You have successfully logged in".
@@ -422,6 +432,8 @@ addAcct.
        if acct-database-status = "00"
            move buffer-acct-username to acct-username
            move buffer-acct-password to acct-password
+           *> Initialize profile data for new account
+           perform initialize-profile
            write acct-record
 
            if user-already-exists move "3" to acct-status
@@ -511,6 +523,121 @@ validate-password.
        end-if
        exit.
 
+
+*>*******************************************************************
+*> Profile data management functions
+*>*******************************************************************
+
+*> Paragraph: initialize-profile
+*> Purpose:   Initialize profile data for a new user
+*> Input:     None
+*> Output:    None
+initialize-profile.
+    move spaces to profile-first-name
+    move spaces to profile-last-name
+    move spaces to profile-university
+    move spaces to profile-major
+    move 0 to profile-graduation-year
+    move spaces to profile-about-me
+    
+    *> Initialize experience entries
+    perform varying profile-loop-index from 1 by 1 until profile-loop-index > 3
+        move spaces to exp-title(profile-loop-index)
+        move spaces to exp-company(profile-loop-index)
+        move spaces to exp-dates(profile-loop-index)
+        move spaces to exp-description(profile-loop-index)
+    end-perform
+    
+    *> Initialize education entries
+    perform varying profile-loop-index from 1 by 1 until profile-loop-index > 3
+        move spaces to edu-degree(profile-loop-index)
+        move spaces to edu-university(profile-loop-index)
+        move spaces to edu-years(profile-loop-index)
+    end-perform
+    
+    move 'N' to profile-initialized
+    exit.
+
+*> Paragraph: validate-graduation-year
+*> Purpose:   Validate graduation year input
+*> Input:     profile-year-string
+*> Output:    profile-validation-flag
+validate-graduation-year.
+    move 'N' to profile-validation-flag
+    
+    *> Check if year is exactly 4 digits
+    if function length(function trim(profile-year-string trailing)) = 4
+        *> Try to convert to numeric - if it fails, it's invalid
+        move function numval(profile-year-string) to profile-year-numeric
+        if profile-year-numeric >= 1900 and profile-year-numeric <= 2100
+            move 'Y' to profile-validation-flag
+        end-if
+    end-if
+    exit.
+
+*> Paragraph: save-profile-data
+*> Purpose:   Save profile data to the account database
+*> Input:     current-user, profile data
+*> Output:    None
+save-profile-data.
+    open i-o acct-database.
+    
+    if acct-database-status = "00"
+        move current-user to acct-username
+        read acct-database
+            key is acct-username
+            invalid key
+                move "Error: User not found for profile save" to output-buffer
+                perform outputLine
+            not invalid key
+                *> Profile data is already in the record structure
+                *> Just need to mark it as initialized
+                move 'Y' to profile-initialized
+                rewrite acct-record
+                if acct-database-status = "00"
+                    move "Profile saved successfully!" to output-buffer
+                    perform outputLine
+                else
+                    move "Error saving profile data" to output-buffer
+                    perform outputLine
+                end-if
+        end-read
+    else
+        move "Error opening database for profile save" to output-buffer
+        perform outputLine
+    end-if
+    
+    close acct-database.
+    exit.
+
+*> Paragraph: load-profile-data
+*> Purpose:   Load profile data from the account database
+*> Input:     current-user
+*> Output:    profile data loaded into record structure
+load-profile-data.
+    open input acct-database.
+    
+    if acct-database-status = "00"
+        move current-user to acct-username
+        read acct-database
+            key is acct-username
+            invalid key
+                move "Error: User not found for profile load" to output-buffer
+                perform outputLine
+            not invalid key
+                *> Profile data is now loaded into the record structure
+                if profile-empty
+                    perform initialize-profile
+                end-if
+        end-read
+    else
+        move "Error opening database for profile load" to output-buffer
+        perform outputLine
+        perform initialize-profile
+    end-if
+    
+    close acct-database.
+    exit.
 
 *>*******************************************************************
 *> Clean up resources before exit
