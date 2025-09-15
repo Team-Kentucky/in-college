@@ -3,11 +3,43 @@ InCollege is a LinkedIn-like platform for college students, implemented in COBOL
 
 ## Features
 - User account creation with password validation (8-12 chars, 1 uppercase, 1 digit, 1 special character)
-- Account persistence using sequential file storage
+- Account persistence using indexed file storage
 - 5-account limit per system
 - Login with unlimited attempts
-- Post-login navigation: Job Search, Find Someone, Learn New Skills
-- All features show "under construction" messages as specified
+- **NEW: Comprehensive Profile Management**
+  - Create and edit personal profiles
+  - Required fields: First Name, Last Name, University, Major, Graduation Year
+  - Optional fields: About Me, Work Experience (up to 3 entries), Education (up to 3 entries)
+  - Profile validation and persistence
+  - View complete profile information
+- Post-login navigation: Profile Management, Search for User, Learn New Skills
+- All non-profile features show "under construction" messages as specified
+
+## Project Structure
+
+```
+in-college/
+├── .gitignore              # Git ignore file for build outputs and docs
+├── Makefile                # Build configuration
+├── README.md               # This file
+├── run-tests.sh            # Test runner script
+├── TESTING-GUIDE.md        # Concise testing instructions
+├── src/
+│   ├── inCollege.cob       # Main COBOL program
+│   └── account.cpy         # Account and profile data structures
+├── input-files/
+│   ├── inCollege-Test.txt           # Original test file
+│   ├── profile-test-basic.txt       # Basic profile creation test
+│   ├── profile-test-complete.txt    # Complete profile with experience/education
+│   ├── profile-test-validation.txt  # Input validation test
+│   └── profile-test-edit.txt        # Profile editing test
+└── bin/                    # Build output directory (created by make)
+    ├── inCollege           # Compiled executable
+    ├── acct-database.dat   # User accounts and profiles database
+    ├── acct-database.idx   # Database index file
+    ├── input.txt           # Input file (copied from input-files/)
+    └── output.txt          # Program output file
+```
 
 ## How to Build and Run
 
@@ -55,7 +87,12 @@ The program reads all user inputs from this file. input.txt must be located in t
 All program output is mirrored to this file, identical to console output.
 
 ### Accounts File: `acct-database.dat`
-User accounts are persisted in this indexed file (created automatically).
+User accounts and profiles are persisted in this indexed file (created automatically). Each account record includes:
+- Username and password
+- Complete profile information (name, university, major, graduation year)
+- About Me section
+- Up to 3 work experience entries
+- Up to 3 education entries
 
 ## Sample Test
 
@@ -67,18 +104,30 @@ Passw0rd!
 0
 u-demo
 Passw0rd!
-3
 1
+John
+Doe
+University of Example
+Computer Science
+2025
+Enthusiastic developer always learning new things.
+DONE
+DONE
+2
 q
 ```
 
 This test will:
 1. Create a new account (u-demo with Passw0rd!)
 2. Login with the created account
-3. Navigate to "Learn a new skill" menu
-4. Select skill 1 (shows "under construction")
-5. Go back to main menu
-6. End program
+3. Create a profile with required fields and About Me
+4. View the created profile
+5. End program
+
+### Profile Test Files
+- `profile-test-basic.txt`: Basic profile creation test
+- `profile-test-complete.txt`: Complete profile with experience/education
+- `profile-test-validation.txt`: Input validation test cases
 
 ## Testing Different Scenarios
 
