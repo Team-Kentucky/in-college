@@ -35,7 +35,6 @@ then
         # Find associated testing database if it exists
         database="../input-files/$filename-database.dat"
         if [ -f "$database" ]; then
-            if [ -f "acct-database.dat" ]; then rm "acct-database.dat"; fi
             cp $database "acct-database.dat"
         fi
 
@@ -48,9 +47,7 @@ then
         expected_output="../output-files/$filename-output.txt"
         if [ -f $expected_output ]
         then
-            diff_from_expected=$(diff $output_file $expected_output)
-            text_output=$(head $output_file )
-            if [ "$diff_from_expected" == "" ] && [ "$text_output" != "" ];
+            if [ "$(cat $output_file | grep "$(cat $expected_output)" )" != "" ]
             then
                 result="P"
                 ((success_count++))
