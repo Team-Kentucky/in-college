@@ -1,5 +1,8 @@
 #!/bin/bash
 
+printf "InCollege automated testing :)\n"
+printf "%4s %-45s %s\n" "#" "Test Name" "Result"
+
 line_count=0
 success_count=0
 
