@@ -15,3 +15,9 @@ bin/
 # OS
 .DS_Store
 Thumbs.db
+
+# Documentation and test files
+*.md
+!TESTING-GUIDE.md
+test-*.sh
+quick-test.sh

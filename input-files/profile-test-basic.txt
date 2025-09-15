@@ -1,0 +1,17 @@
+1
+testuser1
+Passw0rd!
+0
+testuser1
+Passw0rd!
+1
+John
+Doe
+University of Example
+Computer Science
+2025
+Enthusiastic developer always learning new things.
+DONE
+DONE
+2
+q
