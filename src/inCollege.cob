@@ -97,6 +97,7 @@ working-storage section.
 01 post-login-2 constant as "[2] View My Profile".
 01 post-login-3 constant as "[3] Search for User".
 01 post-login-4 constant as "[4] Learn a New Skill".
+01 post-login-5 constant as "[5] Job search/internship".
 01 logout constant as "[q] Logout".
 01 under-construction  constant as "is under construction.".
 01 uc-job-prefix       constant as "Job search/internship ".
@@ -279,6 +280,8 @@ post-login-menu.
            perform outputLine
            move post-login-4 to output-buffer
            perform outputLine
+           move post-login-5 to output-buffer
+           perform outputLine
            move logout to output-buffer
            perform outputLine
            move choice-prompt to output-buffer
@@ -302,6 +305,14 @@ post-login-menu.
                    perform outputLine
                when menu-choice = '4'
                    perform skills-menu
+               when menu-choice = '5'
+               *> Job search/internship under construction
+                   move spaces to output-buffer
+                   string uc-job-prefix delimited by size
+                          under-construction delimited by size
+                          into output-buffer
+                   end-string
+                   perform outputLine
                when menu-choice = 'q' or not valid-read
                    exit perform
                when other
@@ -322,7 +333,7 @@ post-login-menu.
 create-edit-profile.
        move profile-create-title to output-buffer
        perform outputLine
-       
+
        *> Load existing profile if it exists
        move current-user to buffer-acct-username
        perform findAcct
@@ -334,16 +345,16 @@ create-edit-profile.
            move spaces to acct-profile
            move 'N' to profile-has-data
        end-if
-       
+
        *> Get required profile information
        perform get-required-profile-info
-       
+
        *> Get optional profile information
        perform get-optional-profile-info
-       
+
        *> Save profile
        perform save-profile
-       
+
        move profile-saved-msg to output-buffer
        perform outputLine
        exit.
@@ -357,32 +368,32 @@ get-required-profile-info.
        perform outputLine
        perform readInputLine
        move function trim(input-buffer trailing) to profile-first-name
-       
+
        *> Last Name
        move profile-last-name-prompt to output-buffer
        perform outputLine
        perform readInputLine
        move function trim(input-buffer trailing) to profile-last-name
-       
+
        *> University
        move profile-university-prompt to output-buffer
        perform outputLine
        perform readInputLine
        move function trim(input-buffer trailing) to profile-university
-       
+
        *> Major
        move profile-major-prompt to output-buffer
        perform outputLine
        perform readInputLine
        move function trim(input-buffer trailing) to profile-major
-       
+
        *> Graduation Year with validation
        perform until profile-valid or not valid-read
            move profile-graduation-prompt to output-buffer
            perform outputLine
            perform readInputLine
            move function trim(input-buffer trailing) to profile-input-buffer
-           
+
            perform validate-graduation-year
            if not profile-valid
                move "Invalid graduation year. Please enter a valid 4-digit year." to output-buffer
@@ -404,7 +415,7 @@ get-optional-profile-info.
        else
            move function trim(input-buffer trailing) to profile-about-me
        end-if
-       
+
        *> Experience entries
        move 1 to profile-counter
        move 'N' to profile-done-flag
@@ -417,13 +428,13 @@ get-optional-profile-info.
            end-string
            perform outputLine
            perform readInputLine
-           
-           if function trim(input-buffer trailing) = 'DONE' or 
+
+           if function trim(input-buffer trailing) = 'DONE' or
               function trim(input-buffer trailing) = 'done'
                move 'Y' to profile-done-flag
            else
                move function trim(input-buffer trailing) to exp-title(profile-counter)
-               
+
                move spaces to output-buffer
                string "Experience #" delimited by size
                       profile-counter delimited by size
@@ -433,7 +444,7 @@ get-optional-profile-info.
                perform outputLine
                perform readInputLine
                move function trim(input-buffer trailing) to exp-company(profile-counter)
-               
+
                move spaces to output-buffer
                string "Experience #" delimited by size
                       profile-counter delimited by size
@@ -443,7 +454,7 @@ get-optional-profile-info.
                perform outputLine
                perform readInputLine
                move function trim(input-buffer trailing) to exp-dates(profile-counter)
-               
+
                move spaces to output-buffer
                string "Experience #" delimited by size
                       profile-counter delimited by size
@@ -457,11 +468,11 @@ get-optional-profile-info.
                else
                    move function trim(input-buffer trailing) to exp-description(profile-counter)
                end-if
-               
+
                add 1 to profile-counter
            end-if
        end-perform
-       
+
        *> Education entries
        move 1 to profile-counter
        move 'N' to profile-done-flag
@@ -474,13 +485,13 @@ get-optional-profile-info.
            end-string
            perform outputLine
            perform readInputLine
-           
-           if function trim(input-buffer trailing) = 'DONE' or 
+
+           if function trim(input-buffer trailing) = 'DONE' or
               function trim(input-buffer trailing) = 'done'
                move 'Y' to profile-done-flag
            else
                move function trim(input-buffer trailing) to edu-degree(profile-counter)
-               
+
                move spaces to output-buffer
                string "Education #" delimited by size
                       profile-counter delimited by size
@@ -490,7 +501,7 @@ get-optional-profile-info.
                perform outputLine
                perform readInputLine
                move function trim(input-buffer trailing) to edu-university(profile-counter)
-               
+
                move spaces to output-buffer
                string "Education #" delimited by size
                       profile-counter delimited by size
@@ -500,7 +511,7 @@ get-optional-profile-info.
                perform outputLine
                perform readInputLine
                move function trim(input-buffer trailing) to edu-years(profile-counter)
-               
+
                add 1 to profile-counter
            end-if
        end-perform
@@ -511,11 +522,11 @@ get-optional-profile-info.
 *>*******************************************************************
 validate-graduation-year.
        move 'N' to profile-validation
-       
+
        *> Check if input is numeric and 4 digits
        if function length(function trim(profile-input-buffer trailing)) = 4
            move profile-input-buffer to graduation-year-num
-           if graduation-year-num >= min-graduation-year and 
+           if graduation-year-num >= min-graduation-year and
               graduation-year-num <= max-graduation-year
                move graduation-year-num to profile-graduation-year
                move 'Y' to profile-validation
@@ -539,11 +550,11 @@ view-profile.
        *> Load profile data
        move current-user to buffer-acct-username
        perform findAcct
-       
+
        if acct-found and function trim(profile-first-name trailing) not = spaces
            move profile-view-title to output-buffer
            perform outputLine
-           
+
            *> Display basic information
            move spaces to output-buffer
            string profile-name-prefix delimited by size
@@ -553,28 +564,28 @@ view-profile.
                   into output-buffer
            end-string
            perform outputLine
-           
+
            move spaces to output-buffer
            string profile-univ-prefix delimited by size
                   function trim(profile-university trailing) delimited by size
                   into output-buffer
            end-string
            perform outputLine
-           
+
            move spaces to output-buffer
            string profile-major-prefix delimited by size
                   function trim(profile-major trailing) delimited by size
                   into output-buffer
            end-string
            perform outputLine
-           
+
            move spaces to output-buffer
            string profile-year-prefix delimited by size
                   profile-graduation-year delimited by size
                   into output-buffer
            end-string
            perform outputLine
-           
+
            *> Display About Me if present
            if function trim(profile-about-me trailing) not = spaces
                move spaces to output-buffer
@@ -584,7 +595,7 @@ view-profile.
                end-string
                perform outputLine
            end-if
-           
+
            *> Display Experience
            move profile-exp-prefix to output-buffer
            perform outputLine
@@ -596,21 +607,21 @@ view-profile.
                           into output-buffer
                    end-string
                    perform outputLine
-                   
+
                    move spaces to output-buffer
                    string profile-company-prefix delimited by size
                           function trim(exp-company(profile-counter) trailing) delimited by size
                           into output-buffer
                    end-string
                    perform outputLine
-                   
+
                    move spaces to output-buffer
                    string profile-dates-prefix delimited by size
                           function trim(exp-dates(profile-counter) trailing) delimited by size
                           into output-buffer
                    end-string
                    perform outputLine
-                   
+
                    if function trim(exp-description(profile-counter) trailing) not = spaces
                        move spaces to output-buffer
                        string profile-desc-prefix delimited by size
@@ -621,7 +632,7 @@ view-profile.
                    end-if
                end-if
            end-perform
-           
+
            *> Display Education
            move profile-edu-prefix to output-buffer
            perform outputLine
@@ -633,14 +644,14 @@ view-profile.
                           into output-buffer
                    end-string
                    perform outputLine
-                   
+
                    move spaces to output-buffer
                    string profile-univ-prefix delimited by size
                           function trim(edu-university(profile-counter) trailing) delimited by size
                           into output-buffer
                    end-string
                    perform outputLine
-                   
+
                    move spaces to output-buffer
                    string profile-years-prefix delimited by size
                           function trim(edu-years(profile-counter) trailing) delimited by size
@@ -649,7 +660,7 @@ view-profile.
                    perform outputLine
                end-if
            end-perform
-           
+
            move profile-separator to output-buffer
            perform outputLine
        else

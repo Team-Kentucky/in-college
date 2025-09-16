@@ -87,5 +87,6 @@ elif [ $missing_binary == false ]
 then
     printf "     %s\n" "Bin folder does not exist. Have you built the program? (Try: make)";
 fi
+
 cd ..
 
