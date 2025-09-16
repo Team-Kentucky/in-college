@@ -50,7 +50,10 @@ then
         expected_output="../output-files/$filename-output.txt"
         if [ -f $expected_output ]
         then
-            if [ "$(cat $output_file | grep "$(cat $expected_output)" )" != "" ]
+            expected_tmp=$(<"$expected_output")
+            matched="$(grep -Pzo "$expected_tmp" "$output_file" | tr '\0' '\n' )"
+            #printf "%s" "$matched"
+            if [ "$matched" != "" ]
             then
                 result="P"
                 ((success_count++))

@@ -338,12 +338,11 @@ create-edit-profile.
        move current-user to buffer-acct-username
        perform findAcct
        if acct-found
-           *> Profile data is already loaded in acct-record
+           *> Sucessfully retrieved account
            continue
        else
-           *> Initialize empty profile
-           move spaces to acct-profile
-           move 'N' to profile-has-data
+           *> User somehow does not exist in database yet is signed in
+           continue
        end-if
 
        *> Get required profile information
@@ -724,6 +723,9 @@ accountCreation.
        *> Verify that we aren't at max accounts
        perform findNumAccounts.
        if num-accounts < 6
+           initialize acct-record
+           move "N" to profile-has-data
+
            perform outputLine
            perform displayDashedLine
            move "Please enter all required information" to output-buffer

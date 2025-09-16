@@ -1,2 +1,1 @@
-You have successfully logged in
-Welcome, testuser4
+You have successfully logged in\nWelcome, testuser4
