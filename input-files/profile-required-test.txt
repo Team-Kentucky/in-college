@@ -10,7 +10,7 @@ Doe
 University of Example
 Computer Science
 2025
-Enthusiastic developer always learning new things.
+
 DONE
 DONE
 2

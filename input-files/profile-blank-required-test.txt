@@ -1,0 +1,20 @@
+1
+testuser4
+Passw0rd!
+0
+testuser4
+Passw0rd!
+1
+
+Alice
+
+Johnson
+
+Tech University
+
+Data Science
+
+2025
+Initial profile information.
+DONE
+DONE
