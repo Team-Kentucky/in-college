@@ -60,9 +60,9 @@ cobc -Isrc/ -x -o bin/inCollege src/inCollege.cob
 
 ### Run
 If in Docker/Linux, you can run using test.sh
-It will automatically pull the correct input files and run the full suite of tests (which are located in input-files/). It will also automatically pipe the command line output into bin/cli-output.txt for easier comparison and to automatically use in a diff against output.txt
+It will automatically pull the correct input files and run the full suite of tests (which are located in input-files/). It will also automatically pipe the command line output into bin/test-output for easier comparison
 ```bash
-./test.sh
+./run-tests.sh
 ```
 
 Alternatively you can copy the input file into bin (or wherever the binary is), rename it to `input.txt`, cd into bin, and then run the executable.

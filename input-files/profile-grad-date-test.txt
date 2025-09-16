@@ -1,0 +1,18 @@
+1
+testuser1
+Passw0rd!
+0
+testuser1
+Passw0rd!
+1
+John
+Doe
+School
+Very Smart Degree
+nan-
+2025
+Enthusiastic developer always learning new things.
+DONE
+DONE
+2
+q

@@ -1,0 +1,28 @@
+Name: Bob Smith
+University: Updated University
+Major: Computer Engineering
+Graduation Year: 2027
+About Me: Updated profile with new information and different major.
+Experience:
+Title: Software Engineer
+Company: Tech Corp
+Dates: 2023-2024
+Description: Led development of new features
+Title:
+Company:
+Dates:
+Description:
+Title:
+Company:
+Dates:
+Description:
+Education:
+Degree: Bachelor of Science
+University: Updated University
+Years: 2022-2026
+Degree:
+University:
+Years:
+Degree:
+University:
+Years:

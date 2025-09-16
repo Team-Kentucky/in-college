@@ -1,0 +1,28 @@
+Name: John Doe
+University: University of Example
+Major: Computer Science
+Graduation Year: 2025
+About Me: Enthusiastic developer always learning new things.
+Experience:
+Title: Software Engineer
+Company: Tech Corp
+Dates: 2023-2024
+Description: Led development of new features
+Title:
+Company:
+Dates:
+Description:
+Title:
+Company:
+Dates:
+Description:
+Education:
+Degree: Bachelor of Science
+University: Updated University
+Years: 2022-2026
+Degree:
+University:
+Years:
+Degree:
+University:
+Years:
