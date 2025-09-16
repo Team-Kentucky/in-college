@@ -53,6 +53,7 @@ working-storage section.
 *> Control flags
 01 logged-in pic x(1) value 'N'.
 01 current-user pic x(30).
+01 has-experience pic x(1) value 'N'.
 
 *>-----account database variables-----
 01 acct-database-status pic xx.
@@ -129,7 +130,7 @@ working-storage section.
 01 profile-desc-prefix  constant as "Description: ".
 01 profile-degree-prefix constant as "Degree: ".
 01 profile-years-prefix constant as "Years: ".
-
+01 profile-university-prefix constant as "University: ".
 *> Profile input prompts
 01 profile-first-name-prompt constant as "Enter First Name:".
 01 profile-last-name-prompt constant as "Enter Last Name:".
@@ -153,6 +154,10 @@ working-storage section.
 01 profile-done-flag pic x(1).
        88 profile-done value 'Y'.
        88 profile-continue value 'N'.
+
+01 exp-idx pic 9(1).
+01 edu-idx pic 9(1).
+01 ws-char-count pic 9(4).
 
 local-storage section.
 
@@ -294,7 +299,12 @@ post-login-menu.
                when menu-choice = '1'
                    perform create-edit-profile
                when menu-choice = '2'
-                   perform view-profile
+               if profile-exists
+        perform view-profile
+    else
+        move "No profile found. Please create a profile first." to output-buffer
+        perform outputLine
+    end-if
                when menu-choice = '3'
                    *> Search for user under construction
                    move spaces to output-buffer
@@ -388,6 +398,7 @@ get-required-profile-info.
        move function trim(input-buffer trailing) to profile-major
 
        *> Graduation Year with validation
+       move 'N' to profile-validation
        perform until profile-valid or not valid-read
            move profile-graduation-prompt to output-buffer
            perform outputLine
@@ -434,6 +445,13 @@ get-optional-profile-info.
                move 'Y' to profile-done-flag
            else
                move function trim(input-buffer trailing) to exp-title(profile-counter)
+
+               *> Set individual experience flag
+               if function trim(exp-title(profile-counter) trailing) not = spaces
+                   move 'Y' to exp-has-data(profile-counter)
+               else
+                   move 'N' to exp-has-data(profile-counter)
+               end-if
 
                move spaces to output-buffer
                string "Experience #" delimited by size
@@ -491,6 +509,13 @@ get-optional-profile-info.
                move 'Y' to profile-done-flag
            else
                move function trim(input-buffer trailing) to edu-degree(profile-counter)
+
+               *> Set individual education flag
+               if function trim(edu-degree(profile-counter) trailing) not = spaces
+                   move 'Y' to edu-has-data(profile-counter)
+               else
+                   move 'N' to edu-has-data(profile-counter)
+               end-if
 
                move spaces to output-buffer
                string "Education #" delimited by size
@@ -596,75 +621,77 @@ view-profile.
                perform outputLine
            end-if
 
-           *> Display Experience
-           move profile-exp-prefix to output-buffer
-           perform outputLine
-           perform varying profile-counter from 1 by 1 until profile-counter > 3
-               if function trim(exp-title(profile-counter) trailing) not = spaces
-                   move spaces to output-buffer
-                   string profile-title-prefix delimited by size
-                          function trim(exp-title(profile-counter) trailing) delimited by size
-                          into output-buffer
-                   end-string
+           *> Only display Experience section if at least one exists
+           if exp-has-data(1) = 'Y'
+               move profile-exp-prefix to output-buffer
+               perform outputLine
+               perform varying exp-idx from 1 by 1 until exp-idx > 3
+                   move exp-has-data(exp-idx) to output-buffer
                    perform outputLine
-
-                   move spaces to output-buffer
-                   string profile-company-prefix delimited by size
-                          function trim(exp-company(profile-counter) trailing) delimited by size
-                          into output-buffer
-                   end-string
-                   perform outputLine
-
-                   move spaces to output-buffer
-                   string profile-dates-prefix delimited by size
-                          function trim(exp-dates(profile-counter) trailing) delimited by size
-                          into output-buffer
-                   end-string
-                   perform outputLine
-
-                   if function trim(exp-description(profile-counter) trailing) not = spaces
+                   if exp-has-data(exp-idx) = 'Y'
                        move spaces to output-buffer
-                       string profile-desc-prefix delimited by size
-                              function trim(exp-description(profile-counter) trailing) delimited by size
+                       string profile-title-prefix delimited by size
+                              function trim(exp-title(exp-idx) trailing) delimited by size
+                              into output-buffer
+                       end-string
+                       perform outputLine
+
+                       move spaces to output-buffer
+                       string profile-company-prefix delimited by size
+                              function trim(exp-company(exp-idx) trailing) delimited by size
+                              into output-buffer
+                       end-string
+                       perform outputLine
+
+                       move spaces to output-buffer
+                       string profile-dates-prefix delimited by size
+                              function trim(exp-dates(exp-idx) trailing) delimited by size
+                              into output-buffer
+                       end-string
+                       perform outputLine
+
+                       if function trim(exp-description(exp-idx) trailing) not = spaces
+                           move spaces to output-buffer
+                           string profile-desc-prefix delimited by size
+                                  function trim(exp-description(exp-idx) trailing) delimited by size
+                                  into output-buffer
+                           end-string
+                           perform outputLine
+                       end-if
+                   end-if
+               end-perform
+           end-if
+
+           *> Display Education
+           if edu-has-data(1) = 'Y'
+               move profile-edu-prefix to output-buffer
+               perform outputLine
+               perform varying edu-idx from 1 by 1 until edu-idx > 3
+                   if edu-has-data(edu-idx) = 'Y'
+                       move spaces to output-buffer
+                       string profile-degree-prefix delimited by size
+                              function trim(edu-degree(edu-idx) trailing) delimited by size
+                              into output-buffer
+                       end-string
+                       perform outputLine
+
+                       move spaces to output-buffer
+                       string profile-univ-prefix delimited by size
+                              function trim(edu-university(profile-counter) trailing) delimited by size
+                              into output-buffer
+                       end-string
+                       perform outputLine
+
+                       move spaces to output-buffer
+                       string profile-years-prefix delimited by size
+                              function trim(edu-years(profile-counter) trailing) delimited by size
                               into output-buffer
                        end-string
                        perform outputLine
                    end-if
-               end-if
-           end-perform
-
-           *> Display Education
-           move profile-edu-prefix to output-buffer
-           perform outputLine
-           perform varying profile-counter from 1 by 1 until profile-counter > 3
-               if function trim(edu-degree(profile-counter) trailing) not = spaces
-                   move spaces to output-buffer
-                   string profile-degree-prefix delimited by size
-                          function trim(edu-degree(profile-counter) trailing) delimited by size
-                          into output-buffer
-                   end-string
-                   perform outputLine
-
-                   move spaces to output-buffer
-                   string profile-univ-prefix delimited by size
-                          function trim(edu-university(profile-counter) trailing) delimited by size
-                          into output-buffer
-                   end-string
-                   perform outputLine
-
-                   move spaces to output-buffer
-                   string profile-years-prefix delimited by size
-                          function trim(edu-years(profile-counter) trailing) delimited by size
-                          into output-buffer
-                   end-string
-                   perform outputLine
-               end-if
-           end-perform
+               end-perform
 
            move profile-separator to output-buffer
-           perform outputLine
-       else
-           move "No profile found. Please create a profile first." to output-buffer
            perform outputLine
        end-if
        exit.
