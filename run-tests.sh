@@ -1,5 +1,8 @@
 #!/bin/bash
 
+build_flag=$1
+if [ "$build_flag" == -b ]; then printf "Building Program: \n"; make; printf "\n"; fi
+
 printf "InCollege automated testing :)\n"
 printf "%4s %-45s %s\n" "#" "Test Name" "Result"
 
@@ -86,10 +89,10 @@ then
     printf "See bin/test-output for all test logs\n"
 elif [ $missing_binary == true ]
 then
-    printf "     %s\n" "Program binary does not exist. Have you built it? (Try: make)"
+    printf "     %s\n" "Program binary does not exist. Have you built it? (Try: the -b flag or run make)"
 elif [ $missing_binary == false ]
 then
-    printf "     %s\n" "Bin folder does not exist. Have you built the program? (Try: make)";
+    printf "     %s\n" "Bin folder does not exist. Have you built the program? (Try: the -b flag or run make)";
 fi
 
 cd ..

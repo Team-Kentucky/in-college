@@ -65,8 +65,12 @@ If in Docker/Linux, you can run using test.sh. You are responsible for building 
 ```bash
 ./run-tests.sh
 ```
+Running the `-b` flag will build the program before running the tests
+```bash
+./run-tests.sh -b
+```
 
-Alternatively you can copy the input file into bin (or wherever the binary is), rename it to `input.txt`, cd into bin, and then run the executable.
+Alternatively you can copy the input file into bin/ (or wherever the binary is), rename it to `input.txt`, cd into bin, and then run the executable.
 Notes: You must ensure that your input file is named `input.txt`. It also must be in the directory you are currently in (eg if you run the program while in the main project folder with `./bin/inCollege`, ensure that `input.txt` is also in the main project folder).
 Example commands:
 ```bash
