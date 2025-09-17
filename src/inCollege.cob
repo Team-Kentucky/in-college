@@ -363,28 +363,56 @@ create-edit-profile.
 *>*******************************************************************
 get-required-profile-info.
        *> First Name
-       move profile-first-name-prompt to output-buffer
-       perform outputLine
-       perform readInputLine
-       move function trim(input-buffer trailing) to profile-first-name
+       move 'N' to profile-validation
+       perform until profile-valid or not valid-read
+           move profile-first-name-prompt to output-buffer
+           perform outputLine
+           perform readInputLine
+
+           if input-buffer not equal to spaces
+               move 'Y' to profile-validation
+               move function trim(input-buffer trailing) to profile-first-name
+           end-if
+       end-perform
 
        *> Last Name
-       move profile-last-name-prompt to output-buffer
-       perform outputLine
-       perform readInputLine
-       move function trim(input-buffer trailing) to profile-last-name
+       move 'N' to profile-validation
+       perform until profile-valid or not valid-read
+           move profile-last-name-prompt to output-buffer
+           perform outputLine
+           perform readInputLine
+
+           if input-buffer not equal to spaces
+               move 'Y' to profile-validation
+               move function trim(input-buffer trailing) to profile-last-name
+           end-if
+       end-perform
 
        *> University
-       move profile-university-prompt to output-buffer
-       perform outputLine
-       perform readInputLine
-       move function trim(input-buffer trailing) to profile-university
+       move 'N' to profile-validation
+       perform until profile-valid or not valid-read
+           move profile-university-prompt to output-buffer
+           perform outputLine
+           perform readInputLine
+
+           if input-buffer not equal to spaces
+               move 'Y' to profile-validation
+               move function trim(input-buffer trailing) to profile-university
+           end-if
+       end-perform
 
        *> Major
-       move profile-major-prompt to output-buffer
-       perform outputLine
-       perform readInputLine
-       move function trim(input-buffer trailing) to profile-major
+       move 'N' to profile-validation
+       perform until profile-valid or not valid-read
+           move profile-major-prompt to output-buffer
+           perform outputLine
+           perform readInputLine
+
+           if input-buffer not equal to spaces
+               move 'Y' to profile-validation
+               move function trim(input-buffer trailing) to profile-major
+           end-if
+       end-perform
 
        *> Graduation Year with validation
        move 'N' to profile-validation
