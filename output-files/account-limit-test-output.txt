@@ -1,2 +1,1 @@
-> 1
-All permitted accounts have been created, please come back later
+> 1\nAll permitted accounts have been created, please come back later

@@ -50,7 +50,10 @@ then
         expected_output="../output-files/$filename-output.txt"
         if [ -f $expected_output ]
         then
-            if [ "$(cat $output_file | grep "$(cat $expected_output)" )" != "" ]
+            expected_tmp=$(<"$expected_output")
+            #Change to perl for text matching so the expected output file doesn't have to be all on 1 line
+            matched="$(grep -Pzo "$expected_tmp" "$output_file" | tr '\0' '\n' )"
+            if [ "$matched" != "" ]
             then
                 result="P"
                 ((success_count++))
@@ -80,6 +83,7 @@ then
 
     printf "\nTest suite was"; if [ $success_count == $line_count ]; then printf " sucessful. "; else printf " unsuccessful. "; fi
     printf "%d/%d tests passed\n" $success_count $line_count
+    printf "See bin/test-output for all test logs\n"
 elif [ $missing_binary == true ]
 then
     printf "     %s\n" "Program binary does not exist. Have you built it? (Try: make)"

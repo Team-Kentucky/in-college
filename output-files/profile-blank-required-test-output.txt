@@ -1,0 +1,1 @@
+Name: Alice Johnson\nUniversity: Tech University\nMajor: Data Science\nGraduation Year: 2025\nAbout Me: Initial profile information.\nExperience:\nEducation:

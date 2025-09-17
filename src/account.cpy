@@ -17,6 +17,6 @@
                    15 edu-degree pic x(100).
                    15 edu-university pic x(100).
                    15 edu-years pic x(50).
-               10 profile-has-data pic x(1).
+               10 profile-has-data pic x(1) value 'N'.
                    88 profile-exists value 'Y'.
                    88 profile-empty value 'N'.

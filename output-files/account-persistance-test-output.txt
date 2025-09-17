@@ -1,2 +1,1 @@
-You have successfully logged in
-Welcome, userThree
+You have successfully logged in\nWelcome, userThree
