@@ -387,6 +387,7 @@ get-required-profile-info.
        move function trim(input-buffer trailing) to profile-major
 
        *> Graduation Year with validation
+       move 'N' to profile-validation
        perform until profile-valid or not valid-read
            move profile-graduation-prompt to output-buffer
            perform outputLine
