@@ -1,0 +1,152 @@
+############################################################################################
+
+           /##            /######            /## /##
+          |__/           /##__  ##          | ##| ##
+           /## /####### | ##  \__/  /###### | ##| ##  /######   /######   /######
+          | ##| ##__  ##| ##       /##__  ##| ##| ## /##__  ## /##__  ## /##__  ##
+          | ##| ##  \ ##| ##      | ##  \ ##| ##| ##| ########| ##  \ ##| ########
+          | ##| ##  | ##| ##    ##| ##  | ##| ##| ##| ##_____/| ##  | ##| ##_____/
+          | ##| ##  | ##|  ######/|  ######/| ##| ##|  #######|  #######|  #######
+          |__/|__/  |__/ \______/  \______/ |__/|__/ \_______/ \____  ## \_______/
+                                                               /##  \ ##
+                                                              |  ######/
+                                                               \______/
+                                                                             ฅ^•ﻌ•^ฅ
+############################################################################################
+                                                                    Created by Team Kentucky
+                            The world's best job site for students
+
+
+
+——————————————————————————————————————————————————
+Welcome to inCollege! Select an option
+——————————————————————————————————————————————————
+ [0] Sign in
+ [1] Create an account
+ [q] Quit
+> 1
+
+——————————————————————————————————————————————————
+Please enter all required information
+——————————————————————————————————————————————————
+
+Username: testuser2
+Password: Passw0rd!
+
+Account has successfully been created
+
+——————————————————————————————————————————————————
+Welcome to inCollege! Select an option
+——————————————————————————————————————————————————
+ [0] Sign in
+ [1] Create an account
+ [q] Quit
+> 0
+Please enter your username:
+> testuser2
+Please enter your password:
+> Passw0rd!
+You have successfully logged in
+Welcome, testuser2
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[q] Logout
+Enter your choice:
+> 1
+--- Create/Edit Profile ---
+Enter First Name:
+> Jane
+Enter Last Name:
+> Smith
+Enter University/College Attended:
+> State University
+Enter Major:
+> Software Engineering
+Enter Graduation Year (YYYY):
+> 2026
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+> Passionate about creating innovative solutions and learning new technologies.
+Experience #1 - Title:
+> Software Intern
+Experience #1 - Company/Organization:
+> Tech Solutions Inc.
+Experience #1 - Dates (e.g., Summer 2024):
+> Summer 2024
+Experience #1 - Description (optional, max 100 chars, blank to skip):
+> Developed web applications using React and Node.js
+Experience #2 - Title:
+> Software Developer
+Experience #2 - Company/Organization:
+> StartupXYZ
+Experience #2 - Dates (e.g., Summer 2024):
+> Jan 2023 - May 2024
+Experience #2 - Description (optional, max 100 chars, blank to skip):
+>
+Experience #3 - Title:
+> DONE
+Education #1 - Degree:
+> Bachelor of Science
+Education #1 - University/College:
+> State University
+Education #1 - Years Attended (e.g., 2023-2025):
+> 2022-2026
+Education #2 - Degree:
+> Master of Science
+Education #2 - University/College:
+> Tech Institute
+Education #2 - Years Attended (e.g., 2023-2025):
+> 2026-2028
+Education #3 - Degree:
+> DONE
+Profile saved successfully!
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[q] Logout
+Enter your choice:
+> 2
+--- Your Profile ---
+Name: Jane Smith
+University: State University
+Major: Software Engineering
+Graduation Year: 2026
+About Me: Passionate about creating innovative solutions and learning new technologies.
+Experience:
+Title: Software Intern
+Company: Tech Solutions Inc.
+Dates: Summer 2024
+Description: Developed web applications using React and Node.js
+Title: Software Developer
+Company: StartupXYZ
+Dates: Jan 2023 - May 2024
+Education:
+Degree: Bachelor of Science
+University: State University
+Years: 2022-2026
+Degree: Master of Science
+University: Tech Institute
+Years: 2026-2028
+--------------------
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[q] Logout
+Enter your choice:
+> q
+
+——————————————————————————————————————————————————
+Welcome to inCollege! Select an option
+——————————————————————————————————————————————————
+ [0] Sign in
+ [1] Create an account
+ [q] Quit
+>
+Reached end of input file ( ੭ˊᵕˋ)੭
+--- END_OF_PROGRAM_EXECUTION ---
