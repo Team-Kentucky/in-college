@@ -83,6 +83,7 @@ then
 
     printf "\nTest suite was"; if [ $success_count == $line_count ]; then printf " sucessful. "; else printf " unsuccessful. "; fi
     printf "%d/%d tests passed\n" $success_count $line_count
+    printf "See bin/test-output for all test logs\n"
 elif [ $missing_binary == true ]
 then
     printf "     %s\n" "Program binary does not exist. Have you built it? (Try: make)"
