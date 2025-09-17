@@ -29,12 +29,21 @@ rm -f bin/input.txt bin/output.txt bin/acct-database.dat
 ```
 
 ## Test Files
+#### Epic \#1
 - `account-creation-test.txt` - Tests account creation
 - `account-limit-test.txt` - Tests the account limit
 - `account-persistance-test.txt` - Tests account persistance
 - `incorrect-credentials-test.txt` - Tests logging in with incorrect credentials
 - `job-search-test.txt` - Tests the job search menu button
 - `password-validation-test.txt` - Tests the password requirements on account creation
+- `search-user-test.txt` - Tests the search user button
+- `skill-1-test.txt` - Tests the skill 1
+- `skill-2-test.txt` - Tests the skill 2
+- `skill-3-test.txt` - Tests the skill 3
+- `skill-4-test.txt` - Tests the skill 4
+- `skill-5-test.txt` - Tests the skill 5
+
+#### Epic \#2
 - `profile-all-optional-test.txt` - Tests a creating a full profile
 - `profile-blank-required-test.txt` - Tests attempting to leave required profile fields blank
 - `profile-editing-test.txt` - Tests profile editing
@@ -42,9 +51,3 @@ rm -f bin/input.txt bin/output.txt bin/acct-database.dat
 - `profile-persistance-test.txt` - Tests profile persistance
 - `profile-required-test.txt` - Tests only entering required profile fields
 - `profile-view-empty-test.txt` - Tests attempting to view a profile that hasn't been created yet
-- `search-user-test.txt` - Tests the search user button
-- `skill-1-test.txt` - Tests the skill 1
-- `skill-2-test.txt` - Tests the skill 2
-- `skill-3-test.txt` - Tests the skill 3
-- `skill-4-test.txt` - Tests the skill 4
-- `skill-5-test.txt` - Tests the skill 5
