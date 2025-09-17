@@ -1,5 +1,8 @@
 #!/bin/bash
 
+build_flag=$1
+if [ "$build_flag" == -b ]; then printf "Building Program: \n"; make; printf "\n"; fi
+
 printf "InCollege automated testing :)\n"
 printf "%4s %-45s %s\n" "#" "Test Name" "Result"
 

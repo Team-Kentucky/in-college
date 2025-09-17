@@ -1,13 +1,18 @@
 # InCollege Testing Guide
 
 ## Quick Start
-To run the full suite of tests, run `./run-test.sh`. Each test will be compared against its pass fail condition. Each test will display a P (pass) or a F (fail). All test output will be stored in bin/test-output
+To run the full suite of tests, run `./run-test.sh`. Each test will be compared against its pass fail condition. Each test will display a P (pass) or a F (fail). All test output will be stored in bin/test-output. Running with the `-b` option will build the program before running the tests
 
 ### Build and Run
 ```bash
 make clean && make
 ./run-tests.sh
 ```
+Or
+```bash
+./run-tests.sh -b
+```
+
 
 ### Manual Testing
 You can also run tests manually. To do so, ensure that your input file is located in `bin/input.txt` and your account database is located `bin/acct-database.dat`. Once you have done so, you can simply run `./inCollege`:
