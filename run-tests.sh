@@ -51,8 +51,8 @@ then
         if [ -f $expected_output ]
         then
             expected_tmp=$(<"$expected_output")
+            #Change to perl for text matching so the expected output file doesn't have to be all on 1 line
             matched="$(grep -Pzo "$expected_tmp" "$output_file" | tr '\0' '\n' )"
-            #printf "%s" "$matched"
             if [ "$matched" != "" ]
             then
                 result="P"
