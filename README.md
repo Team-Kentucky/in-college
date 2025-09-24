@@ -6,14 +6,14 @@ InCollege is a LinkedIn-like platform for college students, implemented in COBOL
 - Account persistence using indexed file storage
 - 5-account limit per system
 - Login with unlimited attempts
-- **NEW: Comprehensive Profile Management**
-  - Create and edit personal profiles
+- Create and edit personal profiles
   - Required fields: First Name, Last Name, University, Major, Graduation Year
   - Optional fields: About Me, Work Experience (up to 3 entries), Education (up to 3 entries)
-  - Profile validation and persistence
-  - View complete profile information
+- Profile validation and persistence
+- View complete profile information
 - Post-login navigation: Profile Management, Search for User, Learn New Skills
-- All non-profile features show "under construction" messages as specified
+- **NEW: User search functionality**
+  - Search for fellow users by name and view their profile information   
 
 ## Project Structure
 
