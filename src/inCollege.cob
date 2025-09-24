@@ -53,6 +53,7 @@ working-storage section.
 *> Control flags
 01 logged-in pic x(1) value 'N'.
 01 current-user pic x(30).
+01 temp-current-user pic x(30).
 
 *>-----account database variables-----
 01 acct-database-status pic xx.
@@ -113,7 +114,8 @@ working-storage section.
 
 *> Profile management constants
 01 profile-create-title constant as "--- Create/Edit Profile ---".
-01 profile-view-title   constant as "--- Your Profile ---".
+01 PROFILE-VIEW-TITLE   constant as "--- User Profile ---".
+01 display_profile      constant as "Displaying profile...".
 01 profile-saved-msg    constant as "Profile saved successfully!".
 01 profile-separator    constant as "--------------------".
 01 profile-name-prefix  constant as "Name: ".
@@ -153,6 +155,10 @@ working-storage section.
 01 profile-done-flag pic x(1).
        88 profile-done value 'Y'.
        88 profile-continue value 'N'.
+
+*> Name search variables
+01 buffer-first-name pic x(50).
+01 buffer-last-name pic x(50).
 
 local-storage section.
 
@@ -296,13 +302,7 @@ post-login-menu.
                when menu-choice = '2'
                    perform view-profile
                when menu-choice = '3'
-                   *> Search for user under construction
-                   move spaces to output-buffer
-                   string uc-find-prefix delimited by size
-                          under-construction delimited by size
-                          into output-buffer
-                   end-string
-                   perform outputLine
+                   perform searchUserProfile
                when menu-choice = '4'
                    perform skills-menu
                when menu-choice = '5'
@@ -580,6 +580,8 @@ view-profile.
        perform findAcct
 
        if acct-found and function trim(profile-first-name trailing) not = spaces
+           move display_profile to output-buffer
+           perform outputLine
            move profile-view-title to output-buffer
            perform outputLine
 
@@ -925,6 +927,93 @@ findAcct.
        end-if
        close acct-database.
 
+       exit.
+*>*******************************************************************
+*> Find Profile by First and Last Name
+*> Input: buffer-first-name, buffer-last-name
+*> Output: Sets acct-status and loads profile data if found
+*>*******************************************************************
+findProfile.
+       open input acct-database.
+
+       move '2' to acct-status  *> Initialize as not found
+
+       if acct-database-status = "00"
+           *> Sequential search through all records to find name match
+           perform until not database-good-read or acct-found
+               read acct-database next record
+                   at end
+                       exit perform
+                   not at end
+                       *> Check if first and last names match
+                       if function trim(profile-first-name trailing) =
+                          function trim(buffer-first-name trailing) and
+                          function trim(profile-last-name trailing) =
+                          function trim(buffer-last-name trailing)
+                           move '1' to acct-status
+                           move acct-username to buffer-acct-username
+                           exit perform
+                       end-if
+               end-read
+           end-perform
+       else
+           if database-does-not-exist
+               move '2' to acct-status
+           else
+               string
+                   "Error opening account database: " delimited by size
+                   acct-database-status               delimited by size
+                   into output-buffer
+               end-string
+               perform outputLine
+           end-if
+       end-if
+       close acct-database.
+       exit.
+
+*>*******************************************************************
+*> Search User by Name - Uses findProfile function
+*> Input: Takes first and last name input from user
+*> Output: Displays profile if found, error message if not
+*>*******************************************************************
+searchUserProfile.
+       move "Enter the first name to search for:" to output-buffer
+       perform outputLine
+       perform readInputLine
+       move function trim(input-buffer trailing) to buffer-first-name
+
+       move "Enter the last name to search for:" to output-buffer
+       perform outputLine
+       perform readInputLine
+       move function trim(input-buffer trailing) to buffer-last-name
+
+       *> Use new findProfile module
+       perform findProfile
+
+       *> Check result and display appropriate response
+       if acct-found
+           move "User found!" to output-buffer
+           perform outputLine
+
+           *> Check if user has a profile created
+           if profile-exists
+               *> Temporarily store current user and switch to searched user
+               move current-user to temp-current-user
+               move buffer-acct-username to current-user
+
+               *> Use existing view-profile function
+               perform view-profile
+
+               *> Restore original current user
+               move temp-current-user to current-user
+           else
+               move "This user has not created a profile yet." to output-buffer
+               perform outputLine
+           end-if
+       else
+           move "User not found." to output-buffer
+           perform outputLine
+       end-if
        exit.
 
 

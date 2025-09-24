@@ -1,0 +1,48 @@
+1
+TestUser
+Passw0rd!
+0
+TestUser
+Passw0rd!
+1
+John
+Smith
+University State
+BS in BS
+1999
+Entrepreneur, Self-Published Author
+President
+Books R Us
+Aug 2025 - Aug 2025
+Redefining the state of books
+DONE
+BS in BS
+University State
+2010-2025
+DONE
+q
+1
+TestUser3
+Passw0rd!
+0
+TestUser3
+Passw0rd!
+1
+Jane
+Doe
+State University
+Computer Science
+2025
+
+DONE
+DONE
+q
+1
+testuser2
+Passw0rd!
+0
+testuser2
+Passw0rd!
+3
+John
+Smith
