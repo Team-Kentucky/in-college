@@ -114,7 +114,8 @@ working-storage section.
 
 *> Profile management constants
 01 profile-create-title constant as "--- Create/Edit Profile ---".
-01 profile-view-title   pic x(60) value "--- Your Profile ---".
+01 PROFILE-VIEW-TITLE   constant as "--- User Profile ---".
+01 display_profile      constant as "Displaying profile...".
 01 profile-saved-msg    constant as "Profile saved successfully!".
 01 profile-separator    constant as "--------------------".
 01 profile-name-prefix  constant as "Name: ".
@@ -299,7 +300,6 @@ post-login-menu.
                when menu-choice = '1'
                    perform create-edit-profile
                when menu-choice = '2'
-                   move "Your profile" to profile-view-title
                    perform view-profile
                when menu-choice = '3'
                    perform searchUserProfile
@@ -580,6 +580,8 @@ view-profile.
        perform findAcct
 
        if acct-found and function trim(profile-first-name trailing) not = spaces
+           move display_profile to output-buffer
+           perform outputLine
            move profile-view-title to output-buffer
            perform outputLine
 
@@ -949,7 +951,6 @@ findProfile.
                           function trim(profile-last-name trailing) =
                           function trim(buffer-last-name trailing)
                            move '1' to acct-status
-                           move acct-password to buffer-acct-password
                            move acct-username to buffer-acct-username
                            exit perform
                        end-if
@@ -997,7 +998,6 @@ searchUserProfile.
            *> Check if user has a profile created
            if profile-exists
                *> Temporarily store current user and switch to searched user
-               move "Displaying profile..." to profile-view-title
                move current-user to temp-current-user
                move buffer-acct-username to current-user
 
