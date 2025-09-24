@@ -109,8 +109,53 @@ Profile saved successfully!
 [5] Job search/internship
 [q] Logout
 Enter your choice:
-> 2
---- Your Profile ---
+> q
+
+——————————————————————————————————————————————————
+Welcome to inCollege! Select an option
+——————————————————————————————————————————————————
+ [0] Sign in
+ [1] Create an account
+ [q] Quit
+> 1
+
+——————————————————————————————————————————————————
+Please enter all required information
+——————————————————————————————————————————————————
+
+Username: testuser1
+Password: Passw0rd!
+
+Account has successfully been created
+
+——————————————————————————————————————————————————
+Welcome to inCollege! Select an option
+——————————————————————————————————————————————————
+ [0] Sign in
+ [1] Create an account
+ [q] Quit
+> 0
+Please enter your username:
+> testuser1
+Please enter your password:
+> Passw0rd!
+You have successfully logged in
+Welcome, testuser1
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[q] Logout
+Enter your choice:
+> 3
+Enter the first name to search for:
+> Jane
+Enter the last name to search for:
+> Smith
+User found!
+Displaying profile...
+--- User Profile ---
 Name: Jane Smith
 University: State University
 Major: Software Engineering
