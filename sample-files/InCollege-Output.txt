@@ -150,6 +150,19 @@ Welcome, testuser1
 Enter your choice:
 > 3
 Enter the first name to search for:
+> Jan
+Enter the last name to search for:
+> Smith
+User not found.
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[q] Logout
+Enter your choice:
+> 3
+Enter the first name to search for:
 > Jane
 Enter the last name to search for:
 > Smith

@@ -35,6 +35,9 @@ Passw0rd!
 testuser1
 Passw0rd!
 3
+Jan
+Smith
+3
 Jane
 Smith
 q
