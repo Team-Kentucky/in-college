@@ -12,8 +12,11 @@ InCollege is a LinkedIn-like platform for college students, implemented in COBOL
 - Profile validation and persistence
 - View complete profile information
 - Post-login navigation: Profile Management, Search for User, Learn New Skills
-- **NEW: User search functionality**
-  - Search for fellow users by name and view their profile information   
+- User search functionality
+  - Search for fellow users by name and view their profile information
+- **NEW: User connection requests**
+  - Send fellow users connection requests
+  - View all pending connection requests
 
 ## Project Structure
 
@@ -39,6 +42,7 @@ in-college/
     │   ├── *-test-output.txt # Output from assocaited test in run-tests.sh
     │   └── cli-output.txt    # Command line output from run-tests.sh stored as a file
     ├── acct-database.dat     # User accounts and profiles database
+    ├── pending-requests.dat  # User connection database
     ├── input.txt             # Input file (copied from input-files/)
     └── output.txt            # Program output file
 ```
