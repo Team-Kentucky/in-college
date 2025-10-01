@@ -22,6 +22,14 @@ file-control.
            record key is acct-username
            file status is acct-database-status.
 
+       *> Pending connection requests file for persistence
+       select pending-requests assign to 'pending-requests.dat'
+           organization is indexed
+           access mode is dynamic
+           record key is req-key
+           file status is pending-status.
+
+
 *>###################################################################
 DATA DIVISION.
 
@@ -40,7 +48,22 @@ fd output-file.
 fd acct-database.
 copy "account.cpy".
 
+*> Pending requests record
+fd pending-requests.
+copy "connections.cpy".
+
 working-storage section.
+*>-----pending requests file variables-----
+01 pending-status          pic xx.
+       88 pending-ok               value "00".
+       88 pending-not-found        value "23".
+       88 pending-file-missing     value "35".
+01 pending-key-buffer     pic x(64).
+01 pending-alt-key        pic x(64).
+01 pending-sender         pic x(30).
+01 pending-recipient      pic x(30).
+01 pending-count          pic 9(4) value 0.
+
 *>-----readInputLine variables-----
 01 input-prompt pic x(100).
 01 input-file-status pic xx.
@@ -99,6 +122,18 @@ working-storage section.
 01 post-login-3 constant as "[3] Search for User".
 01 post-login-4 constant as "[4] Learn a New Skill".
 01 post-login-5 constant as "[5] Job search/internship".
+
+01 post-login-6 constant as "[6] View My Pending Connection Requests".
+01 send-conn-1  constant as "[1] Send Connection Request".
+01 send-conn-2  constant as "[2] Back to Main Menu".
+01 conn-sent-prefix constant as "Connection request sent to ".
+01 conn-dup-msg constant as "You have already sent a connection request to this user.".
+01 conn-recv-pending constant as "This user has already sent you a connection request.".
+01 conn-invalid-msg constant as "You cannot send a request to yourself.".
+01 pending-title constant as "--- Pending Connection Requests ---".
+01 pending-empty constant as "You have no pending connection requests at this time.".
+01 conn-choice-prompt constant as "Enter your choice:".
+
 01 logout constant as "[q] Logout".
 01 under-construction  constant as "is under construction.".
 01 uc-job-prefix       constant as "Job search/internship ".
@@ -207,7 +242,7 @@ welcomePage.
            perform outputLine
            move " [q] Quit" to output-buffer
            perform outputLine
-           move "> " to input-prompt
+           move choice-prompt to input-prompt
            perform readInputLine
 
            move input-buffer to welcome-page-selection
@@ -288,11 +323,11 @@ post-login-menu.
            perform outputLine
            move post-login-5 to output-buffer
            perform outputLine
+           move post-login-6 to output-buffer
+           perform outputLine
            move logout to output-buffer
            perform outputLine
-           move choice-prompt to output-buffer
-           perform outputLine
-
+           move choice-prompt to input-prompt
            perform readInputLine
            move input-buffer(1:1) to menu-choice
 
@@ -313,7 +348,9 @@ post-login-menu.
                           into output-buffer
                    end-string
                    perform outputLine
-               when menu-choice = 'q' or not valid-read
+               when menu-choice = '6'
+                    perform viewPendingRequests
+                when menu-choice = 'q' or not valid-read
                    exit perform
                when other
                    move "Invalid choice. Please try again." to output-buffer
@@ -718,9 +755,7 @@ skills-menu.
            perform outputLine
            move go-back to output-buffer
            perform outputLine
-           move choice-prompt to output-buffer
-           perform outputLine
-
+           move choice-prompt to input-prompt
            perform readInputLine
            move input-buffer(1:1) to menu-choice
 
@@ -1003,6 +1038,19 @@ searchUserProfile.
 
                *> Use existing view-profile function
                perform view-profile
+               *> EPIC4 SEND-REQUEST (additive)
+               move send-conn-1 to output-buffer
+               perform outputLine
+               move send-conn-2 to output-buffer
+               perform outputLine
+               move conn-choice-prompt to input-prompt
+               perform readInputLine
+               move input-buffer(1:1) to menu-choice
+               if menu-choice = '1'
+                   move temp-current-user to pending-sender
+                   move buffer-acct-username to pending-recipient
+                   perform sendConnectionRequest
+               end-if
 
                *> Restore original current user
                move temp-current-user to current-user
@@ -1191,4 +1239,140 @@ displayASCIILine.
 displayDashedLine.
        move "————————————————————————————————————————————————————————————————————————————————————————————" to output-buffer.
        perform outputLine.
+       exit.
+
+
+*>*******************************************************************
+*> View list of pending connection requests for current user
+*>*******************************************************************
+viewPendingRequests.
+       move pending-title to output-buffer
+       perform outputLine
+       move 0 to pending-count
+
+       open input pending-requests
+       if pending-status = "00"
+           perform until pending-status not = "00"
+               read pending-requests next record
+                   at end
+                       exit perform
+                   not at end
+                       if function trim(req-recipient trailing) = function trim(current-user trailing)
+                           add 1 to pending-count
+                           move spaces to output-buffer
+                           string "- " delimited by size
+                                  function trim(req-sender trailing) delimited by size
+                                  into output-buffer
+                           end-string
+                           perform outputLine
+                       end-if
+               end-read
+           end-perform
+       end-if
+       close pending-requests
+
+       if pending-count = 0
+           move pending-empty to output-buffer
+           perform outputLine
+       end-if
+
+       move "--------------------" to output-buffer
+       perform outputLine
+
+       exit.
+
+*>*******************************************************************
+*> Send a connection request from pending-sender to pending-recipient
+*>*******************************************************************
+sendConnectionRequest.
+       if function trim(pending-sender trailing) = function trim(pending-recipient trailing)
+           move conn-invalid-msg to output-buffer
+           perform outputLine
+           move "--------------------" to output-buffer
+           perform outputLine
+           exit paragraph
+       end-if
+
+*> Validate that recipient account exists
+       move function trim(pending-recipient trailing) to buffer-acct-username
+       perform findAcct
+       if acct-status not = '1'
+           move "No such user found." to output-buffer
+           perform outputLine
+           move "--------------------" to output-buffer
+           perform outputLine
+           exit paragraph
+       end-if
+
+       *> Build keys: primary (recipient|sender) and alternate (sender|recipient)
+       move spaces to pending-key-buffer
+       move spaces to pending-alt-key
+       string function trim(pending-recipient trailing) delimited by size
+              '|' delimited by size
+              function trim(pending-sender trailing) delimited by size
+              into pending-key-buffer
+       end-string
+       string function trim(pending-sender trailing) delimited by size
+              '|' delimited by size
+              function trim(pending-recipient trailing) delimited by size
+              into pending-alt-key
+       end-string
+
+       open i-o pending-requests
+       if pending-status = "35"
+           open output pending-requests
+           close pending-requests
+           open i-o pending-requests
+       end-if
+
+       if pending-status = "00"
+           *> Check if duplicate request already exists (you -> them)
+           move pending-key-buffer to req-key
+           read pending-requests
+               key is req-key
+               invalid key
+                   continue
+               not invalid key
+                   move conn-dup-msg to output-buffer
+                   perform outputLine
+                   close pending-requests
+                   move "--------------------" to output-buffer
+                   perform outputLine
+                   exit paragraph
+           end-read
+
+           *> Check if recipient already sent you a request (them -> you)
+           move pending-alt-key to req-key
+           read pending-requests
+               key is req-key
+               invalid key
+                   continue
+               not invalid key
+                   move conn-recv-pending to output-buffer
+                   perform outputLine
+                   close pending-requests
+                   move "--------------------" to output-buffer
+                   perform outputLine
+                   exit paragraph
+           end-read
+
+           *> Write new pending record
+           move pending-key-buffer to req-key
+           move function trim(pending-recipient trailing) to req-recipient
+           move function trim(pending-sender trailing)    to req-sender
+           write pending-record
+           move spaces to output-buffer
+           string conn-sent-prefix delimited by size
+                  function trim(pending-recipient trailing) delimited by size
+                  '.' delimited by size
+                  into output-buffer
+           end-string
+           perform outputLine
+           move "--------------------" to output-buffer
+           perform outputLine
+       else
+           move "Error opening pending requests file." to output-buffer
+           perform outputLine
+       end-if
+       close pending-requests
        exit.

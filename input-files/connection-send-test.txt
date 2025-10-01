@@ -1,0 +1,56 @@
+1
+alice
+Password1!
+1
+bob
+Password2@
+0
+alice
+Password1!
+1
+Alice
+Cooper
+University of Kentucky
+Computer Science
+2025
+Software engineering enthusiast.
+Software Intern
+Tech Solutions
+Summer 2024
+Built mobile applications
+DONE
+Bachelor of Science
+University of Kentucky
+2021-2025
+DONE
+q
+0
+bob
+Password2@
+1
+Bob
+Wilson
+University of Louisville
+Information Technology
+2024
+Data science passionate student.
+Data Analyst
+Analytics Corp
+Fall 2023
+Worked on data visualization projects
+DONE
+Master of Science
+University of Louisville
+2022-2024
+DONE
+3
+Alice
+Cooper
+1
+q
+0
+alice
+Password1!
+6
+q
+q

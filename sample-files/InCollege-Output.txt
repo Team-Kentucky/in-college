@@ -24,14 +24,14 @@ Welcome to inCollege! Select an option
  [0] Sign in
  [1] Create an account
  [q] Quit
-> 1
+Enter your choice: 1
 
 ——————————————————————————————————————————————————
 Please enter all required information
 ——————————————————————————————————————————————————
 
-Username: testuser2
-Password: Passw0rd!
+Username: charlie
+Password: Password1!
 
 Account has successfully been created
 
@@ -41,75 +41,78 @@ Welcome to inCollege! Select an option
  [0] Sign in
  [1] Create an account
  [q] Quit
-> 0
+Enter your choice: 1
+
+——————————————————————————————————————————————————
+Please enter all required information
+——————————————————————————————————————————————————
+
+Username: david
+Password: Password2@
+
+Account has successfully been created
+
+——————————————————————————————————————————————————
+Welcome to inCollege! Select an option
+——————————————————————————————————————————————————
+ [0] Sign in
+ [1] Create an account
+ [q] Quit
+Enter your choice: 0
 Please enter your username:
-> testuser2
+Enter your choice: charlie
 Please enter your password:
-> Passw0rd!
+Enter your choice: Password1!
 You have successfully logged in
-Welcome, testuser2
+Welcome, charlie
 [1] Create/Edit My Profile
 [2] View My Profile
 [3] Search for User
 [4] Learn a New Skill
 [5] Job search/internship
+[6] View My Pending Connection Requests
 [q] Logout
-Enter your choice:
-> 1
+Enter your choice: 1
 --- Create/Edit Profile ---
 Enter First Name:
-> Jane
+Enter your choice: Charlie
 Enter Last Name:
-> Smith
+Enter your choice: Brown
 Enter University/College Attended:
-> State University
+Enter your choice: Eastern Kentucky University
 Enter Major:
-> Software Engineering
+Enter your choice: Engineering
 Enter Graduation Year (YYYY):
-> 2026
+Enter your choice: 2025
 Enter About Me (optional, max 200 chars, enter blank line to skip):
-> Passionate about creating innovative solutions and learning new technologies.
+Enter your choice: Mechanical engineering student.
 Experience #1 - Title:
-> Software Intern
+Enter your choice: Lab Assistant
 Experience #1 - Company/Organization:
-> Tech Solutions Inc.
+Enter your choice: Engineering Lab
 Experience #1 - Dates (e.g., Summer 2024):
-> Summer 2024
+Enter your choice: Spring 2024
 Experience #1 - Description (optional, max 100 chars, blank to skip):
-> Developed web applications using React and Node.js
+Enter your choice: Assisted with research projects
 Experience #2 - Title:
-> Software Developer
-Experience #2 - Company/Organization:
-> StartupXYZ
-Experience #2 - Dates (e.g., Summer 2024):
-> Jan 2023 - May 2024
-Experience #2 - Description (optional, max 100 chars, blank to skip):
->
-Experience #3 - Title:
-> DONE
+Enter your choice: DONE
 Education #1 - Degree:
-> Bachelor of Science
+Enter your choice: Bachelor of Engineering
 Education #1 - University/College:
-> State University
+Enter your choice: Eastern Kentucky University
 Education #1 - Years Attended (e.g., 2023-2025):
-> 2022-2026
+Enter your choice: 2021-2025
 Education #2 - Degree:
-> Master of Science
-Education #2 - University/College:
-> Tech Institute
-Education #2 - Years Attended (e.g., 2023-2025):
-> 2026-2028
-Education #3 - Degree:
-> DONE
+Enter your choice: DONE
 Profile saved successfully!
 [1] Create/Edit My Profile
 [2] View My Profile
 [3] Search for User
 [4] Learn a New Skill
 [5] Job search/internship
+[6] View My Pending Connection Requests
 [q] Logout
-Enter your choice:
-> q
+Enter your choice: q
 
 ——————————————————————————————————————————————————
 Welcome to inCollege! Select an option
@@ -117,87 +120,96 @@ Welcome to inCollege! Select an option
  [0] Sign in
  [1] Create an account
  [q] Quit
-> 1
-
-——————————————————————————————————————————————————
-Please enter all required information
-——————————————————————————————————————————————————
-
-Username: testuser1
-Password: Passw0rd!
-
-Account has successfully been created
-
-——————————————————————————————————————————————————
-Welcome to inCollege! Select an option
-——————————————————————————————————————————————————
- [0] Sign in
- [1] Create an account
- [q] Quit
-> 0
+Enter your choice: 0
 Please enter your username:
-> testuser1
+Enter your choice: david
 Please enter your password:
-> Passw0rd!
+Enter your choice: Password2@
 You have successfully logged in
-Welcome, testuser1
+Welcome, david
 [1] Create/Edit My Profile
 [2] View My Profile
 [3] Search for User
 [4] Learn a New Skill
 [5] Job search/internship
+[6] View My Pending Connection Requests
 [q] Logout
-Enter your choice:
-> 3
-Enter the first name to search for:
-> Jan
-Enter the last name to search for:
-> Smith
-User not found.
+Enter your choice: 1
+--- Create/Edit Profile ---
+Enter First Name:
+Enter your choice: David
+Enter Last Name:
+Enter your choice: Smith
+Enter University/College Attended:
+Enter your choice: Western Kentucky University
+Enter Major:
+Enter your choice: Business
+Enter Graduation Year (YYYY):
+Enter your choice: 2024
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+Enter your choice: Business administration student.
+Experience #1 - Title:
+Enter your choice: Marketing Intern
+Experience #1 - Company/Organization:
+Enter your choice: Business Solutions
+Experience #1 - Dates (e.g., Summer 2024):
+Enter your choice: Summer 2024
+Experience #1 - Description (optional, max 100 chars, blank to skip):
+Enter your choice: Worked on marketing campaigns
+Experience #2 - Title:
+Enter your choice: DONE
+Education #1 - Degree:
+Enter your choice: Bachelor of Business
+Education #1 - University/College:
+Enter your choice: Western Kentucky University
+Education #1 - Years Attended (e.g., 2023-2025):
+Enter your choice: 2020-2024
+Education #2 - Degree:
+Enter your choice: DONE
+Profile saved successfully!
 [1] Create/Edit My Profile
 [2] View My Profile
 [3] Search for User
 [4] Learn a New Skill
 [5] Job search/internship
+[6] View My Pending Connection Requests
 [q] Logout
-Enter your choice:
-> 3
+Enter your choice: 3
 Enter the first name to search for:
-> Jane
+Enter your choice: Charlie
 Enter the last name to search for:
-> Smith
+Enter your choice: Brown
 User found!
 Displaying profile...
 --- User Profile ---
-Name: Jane Smith
-University: State University
-Major: Software Engineering
-Graduation Year: 2026
-About Me: Passionate about creating innovative solutions and learning new technologies.
+Name: Charlie Brown
+University: Eastern Kentucky University
+Major: Engineering
+Graduation Year: 2025
+About Me: Mechanical engineering student.
 Experience:
-Title: Software Intern
-Company: Tech Solutions Inc.
-Dates: Summer 2024
-Description: Developed web applications using React and Node.js
-Title: Software Developer
-Company: StartupXYZ
-Dates: Jan 2023 - May 2024
+Title: Lab Assistant
+Company: Engineering Lab
+Dates: Spring 2024
+Description: Assisted with research projects
 Education:
-Degree: Bachelor of Science
-University: State University
-Years: 2022-2026
-Degree: Master of Science
-University: Tech Institute
-Years: 2026-2028
+Degree: Bachelor of Engineering
+University: Eastern Kentucky University
+Years: 2021-2025
+--------------------
+[1] Send Connection Request
+[2] Back to Main Menu
+Enter your choice: 1
+Connection request sent to charlie.
 --------------------
 [1] Create/Edit My Profile
 [2] View My Profile
 [3] Search for User
 [4] Learn a New Skill
 [5] Job search/internship
+[6] View My Pending Connection Requests
 [q] Logout
-Enter your choice:
-> q
+Enter your choice: q
 
 ——————————————————————————————————————————————————
 Welcome to inCollege! Select an option
@@ -205,6 +217,73 @@ Welcome to inCollege! Select an option
  [0] Sign in
  [1] Create an account
  [q] Quit
->
-Reached end of input file ( ੭ˊᵕˋ)੭
+Enter your choice: 0
+Please enter your username:
+Enter your choice: charlie
+Please enter your password:
+Enter your choice: Password1!
+You have successfully logged in
+Welcome, charlie
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[6] View My Pending Connection Requests
+[q] Logout
+Enter your choice: 6
+--- Pending Connection Requests ---
+- david
+--------------------
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[6] View My Pending Connection Requests
+[q] Logout
+Enter your choice: 3
+Enter the first name to search for:
+Enter your choice: David
+Enter the last name to search for:
+Enter your choice: Smith
+User found!
+Displaying profile...
+--- User Profile ---
+Name: David Smith
+University: Western Kentucky University
+Major: Business
+Graduation Year: 2024
+About Me: Business administration student.
+Experience:
+Title: Marketing Intern
+Company: Business Solutions
+Dates: Summer 2024
+Description: Worked on marketing campaigns
+Education:
+Degree: Bachelor of Business
+University: Western Kentucky University
+Years: 2020-2024
+--------------------
+[1] Send Connection Request
+[2] Back to Main Menu
+Enter your choice: 1
+This user has already sent you a connection request.
+--------------------
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[6] View My Pending Connection Requests
+[q] Logout
+Enter your choice: q
+
+——————————————————————————————————————————————————
+Welcome to inCollege! Select an option
+——————————————————————————————————————————————————
+ [0] Sign in
+ [1] Create an account
+ [q] Quit
+Enter your choice: q
 --- END_OF_PROGRAM_EXECUTION ---
