@@ -22,7 +22,10 @@ jobs:
       run: docker run docker-cobol-image
 
     - name: Make test script executable
-      run: chmod 777 ./run_tests.sh
+      run: ls -la
+
+    - name: Make test script executable
+      run: chmod 777 run_tests.sh
 
     - name: Run automated tests
       run: ./run_tests.sh -b
