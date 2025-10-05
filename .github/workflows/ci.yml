@@ -1,0 +1,27 @@
+name: Run Tests via Bash Script
+
+on:
+  push:
+    branches: - '**'
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build Docker image
+      run: docker build -t docker-cobol-image .devcontainer/
+
+    - name: Run container (run_tests.sh inside image)
+      run: docker run Dockerfile
+
+    - name: Make test script executable
+      run: chmod 777 ./run_tests.sh
+
+    - name: Run automated tests
+      run: ./run_tests.sh -b
