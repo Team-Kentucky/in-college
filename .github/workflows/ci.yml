@@ -19,10 +19,4 @@ jobs:
       run: docker build -t docker-cobol-image .devcontainer/
 
     - name: Run container (run_tests.sh inside image)
-      run: docker run docker-cobol-image
-
-    - name: Make test script executable
-      run: chmod 777 run-tests.sh
-
-    - name: Run automated tests
-      run: ./run-tests.sh -b
+      run: docker run --rm  -v ${{ github.workspace }}:/app -w /app docker-cobol-image /bin/bash -c "chmod 777 run_tests && ./run-tests.sh -b"
