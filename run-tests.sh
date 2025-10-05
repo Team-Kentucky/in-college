@@ -85,24 +85,24 @@ then
 
     cp output.txt test-output
 
-    result=0
+    result=1
     printf "\nTest suite was"; if [ $success_count == $line_count ]; then
         printf " sucessful. "
-        result=1
+        result=0
     else
         printf " unsuccessful. "
-        result=0
+        result=1
     fi
     printf "%d/%d tests passed\n" $success_count $line_count
     printf "See bin/test-output for all test logs\n"
 elif [ $missing_binary == true ]
 then
     printf "     %s\n" "Program binary does not exist. Have you built it? (Try: the -b flag or run make)"
-    result=0
+    result=1
 elif [ $missing_binary == false ]
 then
     printf "     %s\n" "Bin folder does not exist. Have you built the program? (Try: the -b flag or run make)";
-    result=0
+    result=1
 fi
 
 cd ..
