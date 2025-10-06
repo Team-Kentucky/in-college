@@ -29,6 +29,7 @@ file-control.
            record key is req-key
            file status is pending-status.
 
+<<<<<<< HEAD
        *> Connections database file for persistence
        select connections-database assign to 'connections-database.dat'
            organization is indexed
@@ -36,6 +37,8 @@ file-control.
            record key is conn-key
            file status is connections-status.
 
+=======
+>>>>>>> parent of 5273809 (Delete src/inCollege.cob)
 
 *>###################################################################
 DATA DIVISION.
@@ -59,10 +62,13 @@ copy "account.cpy".
 fd pending-requests.
 copy "connections.cpy".
 
+<<<<<<< HEAD
 
 *> Connections database record
 fd connections-database.
 copy "connections-db.cpy".
+=======
+>>>>>>> parent of 5273809 (Delete src/inCollege.cob)
 working-storage section.
 *>-----pending requests file variables-----
 01 pending-status          pic xx.
@@ -210,6 +216,7 @@ local-storage section.
 
 
 *>###################################################################
+<<<<<<< HEAD
 
 *>-----connections database variables-----
 01 connections-status          pic xx.
@@ -223,6 +230,8 @@ local-storage section.
 01 post-login-7 constant as "[7] View My Connections".
 01 connections-title constant as "--- My Connections ---".
 01 connections-empty constant as "You have no connections.".
+=======
+>>>>>>> parent of 5273809 (Delete src/inCollege.cob)
 PROCEDURE DIVISION.
 main.
        perform initialize-program
@@ -349,8 +358,11 @@ post-login-menu.
            perform outputLine
            move post-login-6 to output-buffer
            perform outputLine
+<<<<<<< HEAD
            move post-login-7 to output-buffer
            perform outputLine
+=======
+>>>>>>> parent of 5273809 (Delete src/inCollege.cob)
            move logout to output-buffer
            perform outputLine
            move choice-prompt to input-prompt
@@ -376,8 +388,11 @@ post-login-menu.
                    perform outputLine
                when menu-choice = '6'
                     perform viewPendingRequests
+<<<<<<< HEAD
                when menu-choice = '7'
                    perform viewConnections
+=======
+>>>>>>> parent of 5273809 (Delete src/inCollege.cob)
                 when menu-choice = 'q' or not valid-read
                    exit perform
                when other
@@ -388,6 +403,7 @@ post-login-menu.
        exit.
 
 
+<<<<<<< HEAD
 
 *>*******************************************************************
 *> View established connections for current user
@@ -432,6 +448,8 @@ viewConnections.
        move "--------------------" to output-buffer
        perform outputLine
        exit.
+=======
+>>>>>>> parent of 5273809 (Delete src/inCollege.cob)
 *>*******************************************************************
 *> Profile Management Procedures
 *>*******************************************************************
