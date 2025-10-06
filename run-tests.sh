@@ -33,6 +33,7 @@ then
     for file in ../input-files/*.txt; do
         if [ -f "acct-database.dat" ]; then rm "acct-database.dat"; fi
         if [ -f "pending-requests.dat" ]; then rm "pending-requests.dat"; fi
+        if [ -f "connection-database.dat" ]; then rm "connection-database.dat"; fi
         if [ -f "input.txt" ]; then rm "input.txt"; fi
 
         file_no_path=$(basename "$file")
