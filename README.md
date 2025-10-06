@@ -18,6 +18,7 @@ InCollege is a LinkedIn-like platform for college students, implemented in COBOL
   - Send fellow users connection requests
   - View all pending connection requests
   - **NEW: Accept or reject user connection requests**
+  - **NEW: View list of user connections**
 
 ## Project Structure
 

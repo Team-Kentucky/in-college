@@ -59,7 +59,7 @@ copy "account.cpy".
 fd pending-requests.
 copy "req-connections.cpy".
 
-*> Pending requests record
+*> Connections database record
 fd connection-database.
 copy "connections.cpy". *>replacing ==req== by ==connection==.
 
@@ -81,6 +81,8 @@ working-storage section.
        88 connection-ok               value "00".
        88 connection-not-found        value "23".
        88 connection-file-missing     value "35".
+01 connection-count                 pic 9(4) value 0.
+01 connection-other                 pic x(30).
 
 *>-----readInputLine variables-----
 01 input-prompt pic x(100).
@@ -152,6 +154,9 @@ working-storage section.
 01 pending-title constant as "--- Pending Connection Requests ---".
 01 pending-empty constant as "You have no pending connection requests at this time.".
 01 conn-choice-prompt constant as "Enter your choice:".
+01 post-login-7 constant as "[7] View My Connections".
+01 connections-title constant as "--- My Connections ---".
+01 connections-empty constant as "You have no connections.".
 
 01 logout constant as "[q] Logout".
 01 under-construction  constant as "is under construction.".
@@ -344,6 +349,8 @@ post-login-menu.
            perform outputLine
            move post-login-6 to output-buffer
            perform outputLine
+           move post-login-7 to output-buffer
+           perform outputLine
            move logout to output-buffer
            perform outputLine
            move choice-prompt to input-prompt
@@ -369,6 +376,8 @@ post-login-menu.
                    perform outputLine
                when menu-choice = '6'
                     perform viewPendingRequests
+              when menu-choice = '7'
+                   perform viewConnections
                 when menu-choice = 'q' or not valid-read
                    exit perform
                when other
@@ -379,6 +388,49 @@ post-login-menu.
        exit.
 
 
+*>*******************************************************************
+*> View established connections for current user
+*>*******************************************************************
+viewConnections.
+       move connections-title to output-buffer
+       perform outputLine
+       move 0 to connection-count
+
+       open input connection-database
+       if connection-database-status = "00"
+           perform until connection-database-status not = "00"
+               read connection-database next record
+                   at end
+                       exit perform
+                   not at end
+                       if function trim(connection-user-1 trailing) = function trim(current-user trailing) or
+                          function trim(connection-user-2 trailing) = function trim(current-user trailing)
+                           if function trim(connection-user-1 trailing) = function trim(current-user trailing)
+                               move connection-user-2 to connection-other
+                           else
+                               move connection-user-1 to connection-other
+                           end-if
+                           add 1 to connection-count
+                           move spaces to output-buffer
+                           string "- " delimited by size
+                                  function trim(connection-other trailing) delimited by size
+                                  into output-buffer
+                           end-string
+                           perform outputLine
+                       end-if
+               end-read
+           end-perform
+       end-if
+       close connection-database
+
+       if connection-count = 0
+           move connections-empty to output-buffer
+           perform outputLine
+       end-if
+
+       move "--------------------" to output-buffer
+       perform outputLine
+       exit.
 *>*******************************************************************
 *> Profile Management Procedures
 *>*******************************************************************
@@ -1299,7 +1351,7 @@ viewPendingRequests.
        else
            move "--------------------" to output-buffer
            perform outputLine
-           move "Enter the username of the user you wish to handle (q to quit)" to output-buffer
+           move "Enter the username of the connection request you wish to respond to (q to quit)" to output-buffer
            perform outputLine
            move "> " to input-prompt
            perform readInputLine
@@ -1313,9 +1365,9 @@ viewPendingRequests.
            end-evaluate
        end-if
 
-       perform outputLine
+      perform outputLine
 
-      exit.
+     exit.
 
 processPendingRequests.
        open i-o pending-requests
@@ -1350,8 +1402,8 @@ processPendingRequests.
                                when input-buffer = '0'
                                    *> call paragraph to save to established connections database
                                    move req-key to connection-key
-                                   move req-recipient to connection-recipient
-                                   move req-sender to connection-sender
+                                   move req-recipient to connection-user-1
+                                   move req-sender to connection-user-2
 
                                    perform createConnection
 
@@ -1461,7 +1513,7 @@ sendConnectionRequest.
                invalid key
                    continue
                not invalid key
-                   move conn-dup-request-msg to output-buffer
+                  move conn-dup-request-msg to output-buffer
                    perform outputLine
                    close pending-requests
                    move "--------------------" to output-buffer
