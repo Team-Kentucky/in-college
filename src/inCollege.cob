@@ -1279,7 +1279,42 @@ viewPendingRequests.
        move "--------------------" to output-buffer
        perform outputLine
 
+       *> Menu input (username to prompt if you want to accept or deny)
+       *> q for quit
+       move "Enter the username of the user you wish to connect with (q to quit)" to output-buffer
+       perform outputLine.
+       move "> " to input-prompt
+       perform readInputLine
+
+       *>input-buffer
+       *> Check if input-buffer is not q
+       *> If it isn't, call the request processing menu
+           *> Search for connection request and ensure it exists
+           *> If profile found, then show connection request processing menu
+       *> If q, do nothing
+
+       evaluate true
+          when input-buffer = 'q'
+              continue
+          when other
+              perform requestProcessingMenu
+      end-evaluate
+
+      exit.
+
+requestProcessingMenu.
+       *> Check if connection request exists
+           *> If it doesn't, output that to use
+           *> If it does, display menu options
+                *> If user chooses to accept
+                   *> Call makeConnection function to save into file
+                   *> Call delete pending request function
+                   *> Display message to user
+                *> If user chooses to reject connection
+                     *> Call delete pending request function
+                     *> Display message to user
        exit.
+
 
 *>*******************************************************************
 *> Send a connection request from pending-sender to pending-recipient
