@@ -411,10 +411,34 @@ viewConnections.
                                move connection-user-1 to connection-other
                            end-if
                            add 1 to connection-count
+
                            move spaces to output-buffer
                            string "- " delimited by size
                                   function trim(connection-other trailing) delimited by size
                                   into output-buffer
+                           end-string
+                           perform outputLine
+
+                           *> connection-other username of connection
+                           *> Need to search up profile to get first and last name
+                           move connection-other to buffer-acct-username
+                           perform findAcct
+
+                           string
+                               "    " delimited by size
+                               function trim(profile-first-name trailing) delimited by size
+                               " "
+                               function trim(profile-last-name trailing) delimited by size
+                               into output-buffer
+                           end-string
+                           perform outputLine
+
+                          string
+                               "    " delimited by size
+                               function trim(profile-major trailing) delimited by size
+                               ", "
+                               function trim(profile-university trailing) delimited by size
+                               into output-buffer
                            end-string
                            perform outputLine
                        end-if
