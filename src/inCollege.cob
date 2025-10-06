@@ -29,7 +29,6 @@ file-control.
            record key is req-key
            file status is pending-status.
 
-<<<<<<< HEAD
        *> Connections database file for persistence
        select connections-database assign to 'connections-database.dat'
            organization is indexed
@@ -37,8 +36,6 @@ file-control.
            record key is conn-key
            file status is connections-status.
 
-=======
->>>>>>> parent of 5273809 (Delete src/inCollege.cob)
 
 *>###################################################################
 DATA DIVISION.
@@ -62,14 +59,12 @@ copy "account.cpy".
 fd pending-requests.
 copy "connections.cpy".
 
-<<<<<<< HEAD
 
 *> Connections database record
 fd connections-database.
 copy "connections-db.cpy".
-=======
->>>>>>> parent of 5273809 (Delete src/inCollege.cob)
 working-storage section.
+
 *>-----pending requests file variables-----
 01 pending-status          pic xx.
        88 pending-ok               value "00".
