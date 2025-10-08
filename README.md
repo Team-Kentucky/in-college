@@ -31,6 +31,8 @@ in-college/
 ├── TESTING-GUIDE.md             # Concise testing instructions
 ├── src/
 │   ├── inCollege.cob            # Main COBOL program
+│   ├── connections.cpy          # Connection data structure
+│   ├── req-connections.cpy      # Connection request data structure
 │   └── account.cpy              # Account and profile data structures
 ├── input-files/
 │   ├── *-test.txt               # Test input files
