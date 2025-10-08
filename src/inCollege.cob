@@ -1361,6 +1361,28 @@ viewPendingRequests.
                                   into output-buffer
                            end-string
                            perform outputLine
+
+                           move req-sender to buffer-acct-username
+                           perform findAcct
+
+                           string
+                               "    " delimited by size
+                               function trim(profile-first-name trailing) delimited by size
+                               " "
+                               function trim(profile-last-name trailing) delimited by size
+                               into output-buffer
+                           end-string
+                           perform outputLine
+
+
+                          string
+                               "    " delimited by size
+                               function trim(profile-major trailing) delimited by size
+                               ", "
+                               function trim(profile-university trailing) delimited by size
+                               into output-buffer
+                           end-string
+                           perform outputLine
                        end-if
                end-read
            end-perform
