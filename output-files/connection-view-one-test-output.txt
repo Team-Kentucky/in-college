@@ -1,1 +1,1 @@
-Pending Connection Requests ---\n- bob
+Pending Connection Requests ---\n- bob\n    Bob Wilson\n    Information Technology, University of Louisville

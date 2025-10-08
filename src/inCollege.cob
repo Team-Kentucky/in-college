@@ -29,6 +29,13 @@ file-control.
            record key is req-key
            file status is pending-status.
 
+       *> Established connections file
+       select connection-database assign to 'connection-database.dat'
+           organization is indexed
+           access mode is dynamic
+           record key is connection-key
+           file status is connection-database-status.
+
 
 *>###################################################################
 DATA DIVISION.
@@ -50,7 +57,11 @@ copy "account.cpy".
 
 *> Pending requests record
 fd pending-requests.
-copy "connections.cpy".
+copy "req-connections.cpy".
+
+*> Connections database record
+fd connection-database.
+copy "connections.cpy". *>replacing ==req== by ==connection==.
 
 working-storage section.
 *>-----pending requests file variables-----
@@ -58,11 +69,20 @@ working-storage section.
        88 pending-ok               value "00".
        88 pending-not-found        value "23".
        88 pending-file-missing     value "35".
-01 pending-key-buffer     pic x(64).
-01 pending-alt-key        pic x(64).
-01 pending-sender         pic x(30).
-01 pending-recipient      pic x(30).
+01 pending-key-buffer     pic x(204).
+01 pending-alt-key        pic x(204).
+01 pending-sender         pic x(100).
+01 pending-recipient      pic x(100).
 01 pending-count          pic 9(4) value 0.
+01 pending-searched-user  pic x(100).
+
+*>-----connection file variables-----
+01 connection-database-status pic xx.
+       88 connection-ok               value "00".
+       88 connection-not-found        value "23".
+       88 connection-file-missing     value "35".
+01 connection-count                 pic 9(4) value 0.
+01 connection-other                 pic x(30).
 
 *>-----readInputLine variables-----
 01 input-prompt pic x(100).
@@ -127,12 +147,16 @@ working-storage section.
 01 send-conn-1  constant as "[1] Send Connection Request".
 01 send-conn-2  constant as "[2] Back to Main Menu".
 01 conn-sent-prefix constant as "Connection request sent to ".
-01 conn-dup-msg constant as "You have already sent a connection request to this user.".
+01 conn-dup-request-msg constant as "You have already sent a connection request to this user.".
 01 conn-recv-pending constant as "This user has already sent you a connection request.".
+01 conn-dup-msg constant as "You are already connected with this user".
 01 conn-invalid-msg constant as "You cannot send a request to yourself.".
 01 pending-title constant as "--- Pending Connection Requests ---".
 01 pending-empty constant as "You have no pending connection requests at this time.".
 01 conn-choice-prompt constant as "Enter your choice:".
+01 post-login-7 constant as "[7] View My Connections".
+01 connections-title constant as "--- My Connections ---".
+01 connections-empty constant as "You have no connections.".
 
 01 logout constant as "[q] Logout".
 01 under-construction  constant as "is under construction.".
@@ -325,6 +349,8 @@ post-login-menu.
            perform outputLine
            move post-login-6 to output-buffer
            perform outputLine
+           move post-login-7 to output-buffer
+           perform outputLine
            move logout to output-buffer
            perform outputLine
            move choice-prompt to input-prompt
@@ -350,6 +376,8 @@ post-login-menu.
                    perform outputLine
                when menu-choice = '6'
                     perform viewPendingRequests
+              when menu-choice = '7'
+                   perform viewConnections
                 when menu-choice = 'q' or not valid-read
                    exit perform
                when other
@@ -360,6 +388,73 @@ post-login-menu.
        exit.
 
 
+*>*******************************************************************
+*> View established connections for current user
+*>*******************************************************************
+viewConnections.
+       move connections-title to output-buffer
+       perform outputLine
+       move 0 to connection-count
+
+       open input connection-database
+       if connection-database-status = "00"
+           perform until connection-database-status not = "00"
+               read connection-database next record
+                   at end
+                       exit perform
+                   not at end
+                       if function trim(connection-user-1 trailing) = function trim(current-user trailing) or
+                          function trim(connection-user-2 trailing) = function trim(current-user trailing)
+                           if function trim(connection-user-1 trailing) = function trim(current-user trailing)
+                               move connection-user-2 to connection-other
+                           else
+                               move connection-user-1 to connection-other
+                           end-if
+                           add 1 to connection-count
+
+                           move spaces to output-buffer
+                           string "- " delimited by size
+                                  function trim(connection-other trailing) delimited by size
+                                  into output-buffer
+                           end-string
+                           perform outputLine
+
+                           *> connection-other username of connection
+                           *> Need to search up profile to get first and last name
+                           move connection-other to buffer-acct-username
+                           perform findAcct
+
+                           string
+                               "    " delimited by size
+                               function trim(profile-first-name trailing) delimited by size
+                               " "
+                               function trim(profile-last-name trailing) delimited by size
+                               into output-buffer
+                           end-string
+                           perform outputLine
+
+                          string
+                               "    " delimited by size
+                               function trim(profile-major trailing) delimited by size
+                               ", "
+                               function trim(profile-university trailing) delimited by size
+                               into output-buffer
+                           end-string
+                           perform outputLine
+                       end-if
+               end-read
+           end-perform
+       end-if
+       close connection-database
+
+       if connection-count = 0
+           move connections-empty to output-buffer
+           perform outputLine
+       end-if
+
+       move "--------------------" to output-buffer
+       perform outputLine
+       exit.
 *>*******************************************************************
 *> Profile Management Procedures
 *>*******************************************************************
@@ -1246,6 +1341,7 @@ displayDashedLine.
 *> View list of pending connection requests for current user
 *>*******************************************************************
 viewPendingRequests.
+       perform outputLine
        move pending-title to output-buffer
        perform outputLine
        move 0 to pending-count
@@ -1265,6 +1361,28 @@ viewPendingRequests.
                                   into output-buffer
                            end-string
                            perform outputLine
+
+                           move req-sender to buffer-acct-username
+                           perform findAcct
+
+                           string
+                               "    " delimited by size
+                               function trim(profile-first-name trailing) delimited by size
+                               " "
+                               function trim(profile-last-name trailing) delimited by size
+                               into output-buffer
+                           end-string
+                           perform outputLine
+
+
+                          string
+                               "    " delimited by size
+                               function trim(profile-major trailing) delimited by size
+                               ", "
+                               function trim(profile-university trailing) delimited by size
+                               into output-buffer
+                           end-string
+                           perform outputLine
                        end-if
                end-read
            end-perform
@@ -1274,12 +1392,120 @@ viewPendingRequests.
        if pending-count = 0
            move pending-empty to output-buffer
            perform outputLine
+           move "--------------------" to output-buffer
+           perform outputLine
+       else
+           move "--------------------" to output-buffer
+           perform outputLine
+           move "Enter the username of the connection request you wish to respond to (q to quit)" to output-buffer
+           perform outputLine
+           move "> " to input-prompt
+           perform readInputLine
+           move input-buffer to pending-searched-user
+
+           evaluate true
+           when pending-searched-user = 'q'
+                  continue
+           when other
+                  perform processPendingRequests
+           end-evaluate
        end-if
 
-       move "--------------------" to output-buffer
-       perform outputLine
+      perform outputLine
+
+     exit.
+
+processPendingRequests.
+       open i-o pending-requests
+       if pending-status = "00"
+           perform until pending-status not = "00"
+               read pending-requests next record
+                   at end
+                       *> Tell user that request not found
+                       string
+                           "Connection request from user " delimited by size
+                           function trim(pending-searched-user trailing) delimited by size
+                           " was not found" delimited by size
+                           into output-buffer
+                       end-string
+                       perform outputLine
+                       exit perform
+                   not at end
+                       if function trim(req-recipient trailing) = function trim(current-user trailing)
+                       and function trim(req-sender trailing) = function trim(pending-searched-user)
+                           *> Menu asking to accept or reject connection
+                           move "[0] Connect with user" to output-buffer
+                           perform outputLine
+                           move "[1] Reject request" to output-buffer
+                           perform outputLine
+                           move "[q] Quit" to output-buffer
+                           perform outputLine
+
+                           move "> " to input-prompt
+                           perform readInputLine
+
+                           evaluate true
+                               when input-buffer = '0'
+                                   *> call paragraph to save to established connections database
+                                   move req-key to connection-key
+                                   move req-recipient to connection-user-1
+                                   move req-sender to connection-user-2
+
+                                   perform createConnection
+
+                                   if connection-ok
+                                   *> Then delete from old database
+                                       delete pending-requests
+                                           invalid key
+                                               move "Failed to accept request" to output-buffer
+                                               perform outputLine
+                                           not invalid key
+                                               move "Sucessfully accepted connection request!" to output-buffer
+                                               perform outputLine
+                                       end-delete
+                                   end-if
+                                   exit perform
+                               when input-buffer = '1'
+                                   *> Delete from pending database
+                                   delete pending-requests
+                                       invalid key
+                                           move "Could not reject request" to output-buffer
+                                           perform outputLine
+                                       not invalid key
+                                           move "Sucessfully rejected request" to output-buffer
+                                           perform outputLine
+                                   end-delete
+                                   exit perform
+                               when other
+                                   exit perform
+                           end-evaluate
+                       end-if
+               end-read
+           end-perform
+       end-if
+
+       close pending-requests
+       exit.
+
+createConnection.
+       *> Open connection database file
+       open i-o connection-database
+       if connection-database-status = "35"
+           open output connection-database
+           close connection-database
+           open i-o connection-database
+       end-if
+       *> Store in file
+       write connection-record.
+       *> Close connection database file
+       close connection-database
+       if not connection-ok
+           move "Failed to create connection" to output-buffer
+           perform outputLine
+       end-if
 
        exit.
+
 
 *>*******************************************************************
 *> Send a connection request from pending-sender to pending-recipient
@@ -1333,7 +1559,7 @@ sendConnectionRequest.
                invalid key
                    continue
                not invalid key
-                   move conn-dup-msg to output-buffer
+                  move conn-dup-request-msg to output-buffer
                    perform outputLine
                    close pending-requests
                    move "--------------------" to output-buffer
@@ -1356,11 +1582,48 @@ sendConnectionRequest.
                    exit paragraph
            end-read
 
+
+           *> Check if you two are already connected!
+           open i-o connection-database
+           if connection-ok
+               move pending-key-buffer to connection-key
+               read connection-database
+                   key is connection-key
+                   invalid key
+                       continue
+                   not invalid key
+                       move conn-dup-msg to output-buffer
+                       perform outputLine
+                       close pending-requests
+                       close connection-database
+                       move "--------------------" to output-buffer
+                       perform outputLine
+                       exit paragraph
+               end-read
+
+               move pending-alt-key to connection-key
+               read connection-database
+                   key is connection-key
+                   invalid key
+                       continue
+                   not invalid key
+                       move conn-dup-msg to output-buffer
+                       perform outputLine
+                       close pending-requests
+                       close connection-database
+                       move "--------------------" to output-buffer
+                       perform outputLine
+                       exit paragraph
+               end-read
+           end-if
+           close connection-database
+
+
            *> Write new pending record
            move pending-key-buffer to req-key
            move function trim(pending-recipient trailing) to req-recipient
            move function trim(pending-sender trailing)    to req-sender
-           write pending-record
+           write req-record
            move spaces to output-buffer
            string conn-sent-prefix delimited by size
                   function trim(pending-recipient trailing) delimited by size
