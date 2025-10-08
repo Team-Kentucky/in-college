@@ -1,0 +1,106 @@
+1
+testuser1
+Password1!
+1
+testuser2
+Password2@
+1
+testuser3
+Password3#
+0
+testuser1
+Password1!
+1
+John
+Doe
+University of Kentucky
+Computer Science
+2025
+I am a computer science student interested in software development.
+Software Intern
+Tech Corp
+Summer 2024
+Developed web applications using React and Node.js
+DONE
+Bachelor of Science
+University of Kentucky
+2021-2025
+DONE
+q
+0
+testuser2
+Password2@
+1
+Jane
+Smith
+University of Louisville
+Information Systems
+2024
+Passionate about data analytics and business intelligence.
+Data Analyst Intern
+Data Solutions Inc
+Fall 2023
+Analyzed customer data and created dashboards
+DONE
+Master of Science
+University of Louisville
+2022-2024
+DONE
+q
+0
+testuser3
+Password3#
+1
+Mike
+Johnson
+Eastern Kentucky University
+Engineering
+2026
+Mechanical engineering student with interest in robotics.
+Lab Assistant
+Engineering Lab
+Spring 2024
+Assisted with robotics projects
+Research Assistant
+Robotics Lab
+Fall 2024
+Conducted research on autonomous systems
+DONE
+Bachelor of Engineering
+Eastern Kentucky University
+2022-2026
+DONE
+3
+John
+Doe
+1
+3
+Jane
+Smith
+1
+q
+0
+testuser2
+Password2@
+6
+testuser3
+0
+q
+0
+testuser3
+Password3#
+7
+q
+0
+testuser1
+Password1!
+6
+testuser3
+1
+q
+0
+testuser3
+Password3#
+7
+q
+q

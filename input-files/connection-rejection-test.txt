@@ -1,0 +1,89 @@
+1
+user1
+Password1!
+1
+user2
+Password2@
+1
+user3
+Password3#
+0
+user1
+Password1!
+1
+David
+Brown
+Western Kentucky University
+Psychology
+2025
+Psychology major interested in research.
+Research Assistant
+Psychology Lab
+Fall 2024
+Conducted behavioral studies
+DONE
+Bachelor of Arts
+Western Kentucky University
+2021-2025
+DONE
+q
+0
+user2
+Password2@
+1
+Emma
+Davis
+University of Kentucky
+Mathematics
+2024
+Mathematics student with statistics focus.
+Data Analyst
+Analytics Corp
+Summer 2024
+Analyzed statistical data
+DONE
+Master of Science
+University of Kentucky
+2022-2024
+DONE
+3
+David
+Brown
+1
+q
+0
+user3
+Password3#
+1
+Frank
+Miller
+University of Louisville
+Chemistry
+2026
+Chemistry student interested in organic chemistry.
+Lab Technician
+Chemistry Lab
+Spring 2024
+Conducted chemical experiments
+DONE
+Bachelor of Science
+University of Louisville
+2022-2026
+DONE
+3
+David
+Brown
+1
+q
+0
+user1
+Password1!
+6
+user2
+1
+6
+user3
+1
+7
+q
+q
