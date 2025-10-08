@@ -1,1 +1,1 @@
-Pending Connection Requests ---\n- frank\n- grace
+Pending Connection Requests ---\n- frank\n    Frank Miller\n    Mathematics, University of Louisville\n- grace\n    Grace Taylor\n    Chemistry, Eastern Kentucky University
