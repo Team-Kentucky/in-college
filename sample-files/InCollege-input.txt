@@ -1,60 +1,59 @@
 1
-charlie
+user1
 Password1!
 1
-david
+user2
 Password2@
 0
-charlie
+user1
 Password1!
 1
-Charlie
-Brown
-Eastern Kentucky University
-Engineering
+Alice
+Johnson
+University of Kentucky
+Computer Science
 2025
-Mechanical engineering student.
-Lab Assistant
-Engineering Lab
-Spring 2024
-Assisted with research projects
+Software engineering student.
+Software Developer
+Tech Corp
+Summer 2024
+Developed applications
 DONE
-Bachelor of Engineering
-Eastern Kentucky University
+Bachelor of Science
+University of Kentucky
 2021-2025
 DONE
 q
 0
-david
+user2
 Password2@
 1
-David
+Bob
 Smith
-Western Kentucky University
-Business
+University of Louisville
+Engineering
 2024
-Business administration student.
-Marketing Intern
-Business Solutions
-Summer 2024
-Worked on marketing campaigns
+Engineering student.
+Engineering Intern
+Manufacturing Inc
+Fall 2023
+Worked on systems
 DONE
-Bachelor of Business
-Western Kentucky University
-2020-2024
+Master of Engineering
+University of Louisville
+2022-2024
 DONE
 3
-Charlie
-Brown
+Alice
+Johnson
 1
 q
 0
-charlie
+user1
 Password1!
 6
-3
-David
-Smith
-1
+user2
+0
+7
 q
 q
