@@ -1745,6 +1745,13 @@ createJobListing.
 
            write job-record
 
+           if job-database-ok
+               move "Job posted successfully!" to output-buffer
+               perform outputLine
+           else
+               move "Failed to post job" to output-buffer
+               perform outputLine
+           end-if
        else
            move "Job database failed to open :O" to output-buffer
            perform outputLine
