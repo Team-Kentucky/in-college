@@ -6,9 +6,13 @@ testuser1
 Password1!
 5
 1
+
 Software Intern
+
 Assist with coding and debugging software.
+
 John Doe
+
 Tampa, FL
 $20/Hour
 5

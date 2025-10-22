@@ -30,7 +30,7 @@ Enter your choice: 1
 Please enter all required information
 ——————————————————————————————————————————————————
 
-Username: user1
+Username: testuser1
 Password: Password1!
 
 Account has successfully been created
@@ -41,30 +41,13 @@ Welcome to inCollege! Select an option
  [0] Sign in
  [1] Create an account
  [q] Quit
-Enter your choice: 1
-
-——————————————————————————————————————————————————
-Please enter all required information
-——————————————————————————————————————————————————
-
-Username: user2
-Password: Password2@
-
-Account has successfully been created
-
-——————————————————————————————————————————————————
-Welcome to inCollege! Select an option
-——————————————————————————————————————————————————
- [0] Sign in
- [1] Create an account
- [q] Quit
 Enter your choice: 0
 Please enter your username:
-Enter your choice: user1
+Enter your choice: testuser1
 Please enter your password:
 Enter your choice: Password1!
 You have successfully logged in
-Welcome, user1
+Welcome, testuser1
 [1] Create/Edit My Profile
 [2] View My Profile
 [3] Search for User
@@ -73,39 +56,17 @@ Welcome, user1
 [6] View My Pending Connection Requests
 [7] View My Connections
 [q] Logout
-Enter your choice: 1
---- Create/Edit Profile ---
-Enter First Name:
-Enter your choice: Alice
-Enter Last Name:
-Enter your choice: Johnson
-Enter University/College Attended:
-Enter your choice: University of Kentucky
-Enter Major:
-Enter your choice: Computer Science
-Enter Graduation Year (YYYY):
-Enter your choice: 2025
-Enter About Me (optional, max 200 chars, enter blank line to skip):
-Enter your choice: Software engineering student.
-Experience #1 - Title:
-Enter your choice: Software Developer
-Experience #1 - Company/Organization:
-Enter your choice: Tech Corp
-Experience #1 - Dates (e.g., Summer 2024):
-Enter your choice: Summer 2024
-Experience #1 - Description (optional, max 100 chars, blank to skip):
-Enter your choice: Developed applications
-Experience #2 - Title:
-Enter your choice: DONE
-Education #1 - Degree:
-Enter your choice: Bachelor of Science
-Education #1 - University/College:
-Enter your choice: University of Kentucky
-Education #1 - Years Attended (e.g., 2023-2025):
-Enter your choice: 2021-2025
-Education #2 - Degree:
-Enter your choice: DONE
-Profile saved successfully!
+Enter your choice: 5
+[0] Browse Jobs/Internships
+[1] Post a Job/Internship
+[q] Back
+> 1
+Enter Job Title (Required): Software Intern
+Enter Job Description (Required): Assist with coding and debugging software.
+Enter Employer (Required): John Doe
+Enter Job Location (Required): Tampa, FL
+Enter salary: $20/Hour
+Job posted successfully!
 [1] Create/Edit My Profile
 [2] View My Profile
 [3] Search for User
@@ -114,156 +75,21 @@ Profile saved successfully!
 [6] View My Pending Connection Requests
 [7] View My Connections
 [q] Logout
-Enter your choice: q
-
-——————————————————————————————————————————————————
-Welcome to inCollege! Select an option
-——————————————————————————————————————————————————
- [0] Sign in
- [1] Create an account
- [q] Quit
-Enter your choice: 0
-Please enter your username:
-Enter your choice: user2
-Please enter your password:
-Enter your choice: Password2@
-You have successfully logged in
-Welcome, user2
-[1] Create/Edit My Profile
-[2] View My Profile
-[3] Search for User
-[4] Learn a New Skill
-[5] Job search/internship
-[6] View My Pending Connection Requests
-[7] View My Connections
-[q] Logout
-Enter your choice: 1
---- Create/Edit Profile ---
-Enter First Name:
-Enter your choice: Bob
-Enter Last Name:
-Enter your choice: Smith
-Enter University/College Attended:
-Enter your choice: University of Louisville
-Enter Major:
-Enter your choice: Engineering
-Enter Graduation Year (YYYY):
-Enter your choice: 2024
-Enter About Me (optional, max 200 chars, enter blank line to skip):
-Enter your choice: Engineering student.
-Experience #1 - Title:
-Enter your choice: Engineering Intern
-Experience #1 - Company/Organization:
-Enter your choice: Manufacturing Inc
-Experience #1 - Dates (e.g., Summer 2024):
-Enter your choice: Fall 2023
-Experience #1 - Description (optional, max 100 chars, blank to skip):
-Enter your choice: Worked on systems
-Experience #2 - Title:
-Enter your choice: DONE
-Education #1 - Degree:
-Enter your choice: Master of Engineering
-Education #1 - University/College:
-Enter your choice: University of Louisville
-Education #1 - Years Attended (e.g., 2023-2025):
-Enter your choice: 2022-2024
-Education #2 - Degree:
-Enter your choice: DONE
-Profile saved successfully!
-[1] Create/Edit My Profile
-[2] View My Profile
-[3] Search for User
-[4] Learn a New Skill
-[5] Job search/internship
-[6] View My Pending Connection Requests
-[7] View My Connections
-[q] Logout
-Enter your choice: 3
-Enter the first name to search for:
-Enter your choice: Alice
-Enter the last name to search for:
-Enter your choice: Johnson
-User found!
-Displaying profile...
---- User Profile ---
-Name: Alice Johnson
-University: University of Kentucky
-Major: Computer Science
-Graduation Year: 2025
-About Me: Software engineering student.
-Experience:
-Title: Software Developer
-Company: Tech Corp
-Dates: Summer 2024
-Description: Developed applications
-Education:
-Degree: Bachelor of Science
-University: University of Kentucky
-Years: 2021-2025
---------------------
-[1] Send Connection Request
-[2] Back to Main Menu
-Enter your choice: 1
-Connection request sent to user1.
---------------------
-[1] Create/Edit My Profile
-[2] View My Profile
-[3] Search for User
-[4] Learn a New Skill
-[5] Job search/internship
-[6] View My Pending Connection Requests
-[7] View My Connections
-[q] Logout
-Enter your choice: q
-
-——————————————————————————————————————————————————
-Welcome to inCollege! Select an option
-——————————————————————————————————————————————————
- [0] Sign in
- [1] Create an account
- [q] Quit
-Enter your choice: 0
-Please enter your username:
-Enter your choice: user1
-Please enter your password:
-Enter your choice: Password1!
-You have successfully logged in
-Welcome, user1
-[1] Create/Edit My Profile
-[2] View My Profile
-[3] Search for User
-[4] Learn a New Skill
-[5] Job search/internship
-[6] View My Pending Connection Requests
-[7] View My Connections
-[q] Logout
-Enter your choice: 6
-
---- Pending Connection Requests ---
-- user2
---------------------
-Enter the username of the connection request you wish to respond to (q to quit)
-> user2
-[0] Connect with user
-[1] Reject request
-[q] Quit
-> 0
-Sucessfully accepted connection request!
-
-[1] Create/Edit My Profile
-[2] View My Profile
-[3] Search for User
-[4] Learn a New Skill
-[5] Job search/internship
-[6] View My Pending Connection Requests
-[7] View My Connections
-[q] Logout
-Enter your choice: 7
---- My Connections ---
-- user2
-    Bob Smith
-    Engineering, University of Louisville
---------------------
+Enter your choice: 5
+[0] Browse Jobs/Internships
+[1] Post a Job/Internship
+[q] Back
+> 1
+Enter Job Title (Required):
+Enter Job Title (Required): Database Analyst
+Enter Job Description (Required):
+Enter Job Description (Required): Analyze and optimize databases for accuracy and performance.
+Enter Employer (Required):
+Enter Employer (Required): Emily Smith
+Enter Job Location (Required):
+Enter Job Location (Required): Austin, TX
+Enter salary:
+Job posted successfully!
 [1] Create/Edit My Profile
 [2] View My Profile
 [3] Search for User

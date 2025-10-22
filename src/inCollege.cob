@@ -36,6 +36,13 @@ file-control.
            record key is connection-key
            file status is connection-database-status.
 
+      *> Job Listing File
+       select job-database assign to 'job-database.dat'
+           organization is indexed
+           access mode is dynamic
+           record key is job-key
+           file status is job-database-status.
+
 
 *>###################################################################
 DATA DIVISION.
@@ -63,6 +70,10 @@ copy "req-connections.cpy".
 fd connection-database.
 copy "connections.cpy". *>replacing ==req== by ==connection==.
 
+*> Job database record
+fd job-database.
+copy "job.cpy".
+
 working-storage section.
 *>-----pending requests file variables-----
 01 pending-status          pic xx.
@@ -83,6 +94,14 @@ working-storage section.
        88 connection-file-missing     value "35".
 01 connection-count                 pic 9(4) value 0.
 01 connection-other                 pic x(30).
+
+
+*>-----job file variables-----
+01 job-database-status pic xx.
+       88 job-database-ok               value "00".
+       88 job-not-found        value "23".
+       88 job-file-missing     value "35".
+
 
 *>-----readInputLine variables-----
 01 input-prompt pic x(100).
@@ -367,13 +386,7 @@ post-login-menu.
                when menu-choice = '4'
                    perform skills-menu
                when menu-choice = '5'
-               *> Job search/internship under construction
-                   move spaces to output-buffer
-                   string uc-job-prefix delimited by size
-                          under-construction delimited by size
-                          into output-buffer
-                   end-string
-                   perform outputLine
+                   perform jobSearch
                when menu-choice = '6'
                     perform viewPendingRequests
               when menu-choice = '7'
@@ -1639,3 +1652,111 @@ sendConnectionRequest.
        end-if
        close pending-requests
        exit.
+
+jobSearch.
+       move "[0] Browse Jobs/Internships" to output-buffer.
+       perform outputLine.
+       move "[1] Post a Job/Internship" to output-buffer.
+       perform outputLine.
+       move "[q] Back" to output-buffer.
+       perform outputLine.
+
+       move ">" to input-prompt.
+       perform readInputLine.
+       *>move input-buffer(1:1) to menu-choice
+
+       evaluate true
+           when input-buffer = '0'
+               move "Under Construction" to output-buffer
+               perform outputLine
+           when input-buffer = '1'
+               perform createJobListing
+           when other
+               continue
+       end-evaluate
+
+       exit.
+
+
+createJobListing.
+       open i-o job-database
+       if job-database-status = "35"
+           open output job-database
+           close job-database
+           open i-o job-database
+       end-if
+
+       if job-database-ok
+           *> Get Job Title (Loop)
+           move 'N' to profile-validation
+           perform until profile-valid or not valid-read
+               move "Enter Job Title (Required): " to input-prompt
+               perform readInputLine
+               if input-buffer not equal to spaces
+                   move 'Y' to profile-validation
+                   move function trim(input-buffer trailing) to job-title
+               end-if
+           end-perform
+
+           *> Get Description
+           move 'N' to profile-validation
+           perform until profile-valid or not valid-read
+               move "Enter Job Description (Required): " to input-prompt
+               perform readInputLine
+               if input-buffer not equal to spaces
+                   move 'Y' to profile-validation
+                   move function trim(input-buffer trailing) to job-title
+               end-if
+           end-perform
+
+           *> Get Employer (loop)
+           move 'N' to profile-validation
+           perform until profile-valid or not valid-read
+               move "Enter Employer (Required): " to input-prompt
+               perform readInputLine
+               if input-buffer not equal to spaces
+                   move 'Y' to profile-validation
+                   move function trim(input-buffer trailing) to job-employer
+               end-if
+           end-perform
+
+           *> Get Location
+           move 'N' to profile-validation
+           perform until profile-valid or not valid-read
+               move "Enter Job Location (Required): " to input-prompt
+               perform readInputLine
+               if input-buffer not equal to spaces
+                   move 'Y' to profile-validation
+                   move function trim(input-buffer trailing) to job-location
+               end-if
+           end-perform
+
+           *> Get Salary (Optional)
+           move "Enter salary: " to input-prompt
+           perform readInputLine
+           move function trim(input-buffer trailing) to job-salary
+
+           move current-user to job-creator
+
+           string
+               function trim(job-creator trailing) delimited by size
+               function trim(job-title trailing) delimited by size
+           into job-key
+
+           write job-record
+
+           if job-database-ok
+               move "Job posted successfully!" to output-buffer
+               perform outputLine
+           else
+               move "Failed to post job" to output-buffer
+               perform outputLine
+           end-if
+       else
+           move "Job database failed to open :O" to output-buffer
+           perform outputLine
+       end-if
+
+       close job-database.
+       exit.
+
