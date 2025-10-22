@@ -1,0 +1,1 @@
+Enter Job Title \(Required\):\nEnter Job Title \(Required\): Database Analyst\nEnter Job Description \(Required\):\nEnter Job Description \(Required\): Analyze and optimize databases for accuracy and performance.\nEnter Employer \(Required\):\nEnter Employer \(Required\): Emily Smith\nEnter Job Location \(Required\):\nEnter Job Location \(Required\): Austin, TX\nEnter salary:
