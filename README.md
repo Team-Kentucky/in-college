@@ -17,8 +17,9 @@ InCollege is a LinkedIn-like platform for college students, implemented in COBOL
 - User connection requests
   - Send fellow users connection requests
   - View all pending connection requests
-  - **NEW: Accept or reject user connection requests**
-  - **NEW: View list of user connections**
+  - Accept or reject user connection requests
+  - View list of user connections
+- **NEW: Post Job/Internship Listings to the Persistent Database**
 
 ## Project Structure
 
@@ -33,6 +34,7 @@ in-college/
 │   ├── inCollege.cob            # Main COBOL program
 │   ├── connections.cpy          # Connection data structure
 │   ├── req-connections.cpy      # Connection request data structure
+│   ├── job.cpy                  # Job listing data structure
 │   └── account.cpy              # Account and profile data structures
 ├── input-files/
 │   ├── *-test.txt               # Test input files
@@ -48,6 +50,7 @@ in-college/
     ├── acct-database.dat        # User accounts and profiles database
     ├── pending-requests.dat     # User connection request database
     ├── connections-database.dat # User connection database
+    ├── job-database.dat         # Job listing database
     ├── input.txt                # Input file (copied from input-files/)
     └── output.txt               # Program output file
 ```
