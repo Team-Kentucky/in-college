@@ -42,6 +42,12 @@ file-control.
            access mode is dynamic
            record key is job-key
            file status is job-database-status.
+        *> Applications database (persistence for job applications)
+        select application-database assign to 'application-database.dat'
+            organization is indexed
+            access mode is dynamic
+            record key is application-key
+            file status is application-database-status.
 
 
 *>###################################################################
@@ -74,6 +80,10 @@ copy "connections.cpy". *>replacing ==req== by ==connection==.
 fd job-database.
 copy "job.cpy".
 
+    *> Applications persistence — use copybook for consistency with other FDs
+    fd application-database.
+        copy "application.cpy".
+
 working-storage section.
 *>-----pending requests file variables-----
 01 pending-status          pic xx.
@@ -101,6 +111,35 @@ working-storage section.
        88 job-database-ok               value "00".
        88 job-not-found        value "23".
        88 job-file-missing     value "35".
+
+*>-----application file variables-----
+01 application-database-status pic xx.
+    88 application-ok               value "00".
+    88 application-not-found        value "23".
+    88 application-file-missing     value "35".
+01 application-key-buffer pic x(64).
+01 application-job-key-buffer pic x(200).
+01 application-job-title-buffer pic x(100).
+01 application-employer-buffer pic x(100).
+01 application-location-buffer pic x(100).
+01 application-counter pic 9(4) value 0.
+01 application-id-seq pic 9(9) comp-5 value 1.
+01 browse-choice pic x(1).
+01 browse-index pic 9(4) value 0.
+01 selected-job-index pic 9(4) value 0.
+01 browse-done-flag pic x(1) value 'N'.
+     88 browse-done value 'Y'.
+     88 browse-continue value 'N'.
+
+*> In-memory job listing tables for browse selection
+01 job-list-keys.
+    05 job-key-entry occurs 100 pic x(200).
+01 job-list-titles.
+    05 job-title-entry occurs 100 pic x(100).
+01 job-list-employers.
+    05 job-employer-entry occurs 100 pic x(100).
+01 job-list-locations.
+    05 job-location-entry occurs 100 pic x(100).
 
 
 *>-----readInputLine variables-----
@@ -1658,7 +1697,9 @@ jobSearch.
        perform outputLine.
        move "[1] Post a Job/Internship" to output-buffer.
        perform outputLine.
-       move "[q] Back" to output-buffer.
+    move "[2] View My Applications" to output-buffer.
+    perform outputLine.
+    move "[q] Back" to output-buffer.
        perform outputLine.
 
        move ">" to input-prompt.
@@ -1667,10 +1708,11 @@ jobSearch.
 
        evaluate true
            when input-buffer = '0'
-               move "Under Construction" to output-buffer
-               perform outputLine
+               perform browseJobs
            when input-buffer = '1'
                perform createJobListing
+           when input-buffer = '2'
+               perform viewMyApplications
            when other
                continue
        end-evaluate
@@ -1705,7 +1747,7 @@ createJobListing.
                perform readInputLine
                if input-buffer not equal to spaces
                    move 'Y' to profile-validation
-                   move function trim(input-buffer trailing) to job-title
+                    move function trim(input-buffer trailing) to job-description
                end-if
            end-perform
 
@@ -1758,5 +1800,243 @@ createJobListing.
        end-if
 
        close job-database.
+       exit.
+
+*>*******************************************************************
+*> Browse available jobs and view details
+*>*******************************************************************
+browseJobs.
+       *> Browse loop
+       move 'N' to browse-done-flag
+       perform until browse-done or not valid-read
+           move "--- Available Job Listings ---" to output-buffer
+           perform outputLine
+           move 0 to browse-index
+
+           open input job-database
+           if job-database-ok
+               perform until job-database-status not = "00"
+                   read job-database next record
+                       at end
+                           exit perform
+                       not at end
+                           add 1 to browse-index
+                           *> store mapping - ensure keys are properly stored
+                           move function trim(job-key trailing) to job-key-entry(browse-index)
+                           move job-title to job-title-entry(browse-index)
+                           move job-employer to job-employer-entry(browse-index)
+                           move job-location to job-location-entry(browse-index)
+
+                           move spaces to output-buffer
+                           string "[" delimited by size
+                                  function trim(browse-index leading) delimited by size
+                                  "] " delimited by size
+                                  function trim(job-title trailing) delimited by size
+                                  " at " delimited by size
+                                  function trim(job-employer trailing) delimited by size
+                                  " (" delimited by size
+                                  function trim(job-location trailing) delimited by size
+                                  ")" delimited by size
+                                  into output-buffer
+                           end-string
+                           perform outputLine
+                   end-read
+               end-perform
+           else
+               move "Job database is not available." to output-buffer
+               perform outputLine
+           end-if
+           close job-database
+
+           move "Enter number to view details (q to go back):" to output-buffer
+           perform outputLine
+           move "> " to input-prompt
+           perform readInputLine
+           if input-buffer = 'q' or not valid-read
+               move 'Y' to browse-done-flag
+           else
+               *> Convert numeric entry to index by direct move
+               move function trim(input-buffer trailing) to selected-job-index
+               if selected-job-index >= 1 and selected-job-index <= browse-index
+                   *> Move exact key without any trimming to preserve full value
+                   move job-key-entry(selected-job-index) to application-job-key-buffer
+                   perform viewJobDetails
+               else
+                   move "Invalid selection." to output-buffer
+                   perform outputLine
+               end-if
+           end-if
+       end-perform
+       exit.
+
+*>*******************************************************************
+*> View full details for a single job
+*> Input: application-job-key-buffer (job-key)
+*>*******************************************************************
+viewJobDetails.
+       *> Ensure key is properly trimmed for lookup
+       move function trim(application-job-key-buffer trailing) to job-key
+       open input job-database
+       if job-database-ok
+           read job-database key is job-key
+               invalid key
+                   move "Job not found." to output-buffer
+                   perform outputLine
+               not invalid key
+                   *> Display details
+                           move "--- Job Details ---" to output-buffer
+                           perform outputLine
+                           move spaces to output-buffer
+                           string "Title: " delimited by size
+                                  function trim(job-title trailing) delimited by size
+                                  into output-buffer
+                           end-string
+                           perform outputLine
+
+                           move spaces to output-buffer
+                           string "Employer: " delimited by size
+                                  function trim(job-employer trailing) delimited by size
+                                  into output-buffer
+                           end-string
+                           perform outputLine
+
+                           move spaces to output-buffer
+                           string "Location: " delimited by size
+                                  function trim(job-location trailing) delimited by size
+                                  into output-buffer
+                           end-string
+                           perform outputLine
+
+                           move spaces to output-buffer
+                           string "Salary: " delimited by size
+                                  function trim(job-salary trailing) delimited by size
+                                  into output-buffer
+                           end-string
+                           perform outputLine
+
+                           move spaces to output-buffer
+                           string "Description: " delimited by size
+                                  function trim(job-description trailing) delimited by size
+                                  into output-buffer
+                           end-string
+                           perform outputLine
+
+                           *> Offer to apply
+                           move "[1] Apply to this job" to output-buffer
+                           perform outputLine
+                           move "[q] Back" to output-buffer
+                           perform outputLine
+                           move "> " to input-prompt
+                           perform readInputLine
+                           evaluate true
+                               when input-buffer = '1'
+                                   *> Prepare buffers for application
+                                   move function trim(current-user trailing) to application-username
+                                   move function trim(job-key trailing) to application-job-key
+                                   move function trim(job-title trailing) to application-job-title
+                                   move function trim(job-employer trailing) to application-employer
+                                   move function trim(job-location trailing) to application-location
+                                   perform createApplication
+                               when input-buffer = '0' or input-buffer = 'q'
+                                   *> go back to listings
+                                   continue
+                               when other
+                                   continue
+                           end-evaluate
+           end-read
+       else
+           move "Unable to open job database." to output-buffer
+           perform outputLine
+       end-if
+       close job-database
+       exit.
+
+*>*******************************************************************
+*> Create an application record for the current user for a job
+*> Relies on application-* fields populated: application-username, application-job-key, application-job-title, application-employer, application-location
+*>*******************************************************************
+createApplication.
+       open i-o application-database
+       if application-database-status = "35"
+           open output application-database
+           close application-database
+           open i-o application-database
+       end-if
+
+       if application-ok
+           *> Build key as username|jobkey
+           move spaces to application-key
+           string function trim(application-username trailing) delimited by size
+                  '|' delimited by size
+                  function trim(application-job-key trailing) delimited by size
+                  into application-key
+           end-string
+
+           *> Fill record fields
+           move function trim(application-key trailing) to application-key
+           move function trim(application-username trailing) to application-username
+           move function trim(application-job-key trailing) to application-job-key
+           move function trim(application-job-title trailing) to application-job-title
+           move function trim(application-employer trailing) to application-employer
+           move function trim(application-location trailing) to application-location
+           move application-id-seq to application-id
+
+           write application-record
+
+           if application-ok
+               move "Application submitted successfully!" to output-buffer
+               perform outputLine
+               add 1 to application-id-seq
+           else
+               move "Failed to submit application." to output-buffer
+               perform outputLine
+           end-if
+       else
+           move "Unable to open/create application database." to output-buffer
+           perform outputLine
+       end-if
+       close application-database
+       exit.
+
+*>*******************************************************************
+*> View applications submitted by current user
+*>*******************************************************************
+viewMyApplications.
+       move "--- My Applications ---" to output-buffer
+       perform outputLine
+       move 0 to application-counter
+
+       open input application-database
+       if application-ok
+           perform until application-database-status not = "00"
+               read application-database next record
+                   at end
+                       exit perform
+                   not at end
+                       if function trim(application-username trailing) = function trim(current-user trailing)
+                           add 1 to application-counter
+                           move spaces to output-buffer
+                           string "[" delimited by size
+                                  application-id delimited by size
+                                  "] " delimited by size
+                                  function trim(application-job-title trailing) delimited by size
+                                  " - " delimited by size
+                                  function trim(application-employer trailing) delimited by size
+                                  into output-buffer
+                           end-string
+                           perform outputLine
+                       end-if
+               end-read
+           end-perform
+       else
+           move "No applications found or database unavailable." to output-buffer
+           perform outputLine
+       end-if
+       close application-database
+
+       if application-counter = 0
+           move "You have not submitted any applications yet." to output-buffer
+           perform outputLine
+       end-if
        exit.
 
