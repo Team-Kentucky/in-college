@@ -16,6 +16,19 @@ bin/
 .DS_Store
 Thumbs.db
 
+# Runtime database files (generated during execution)
+*.dat
+
+# Runtime I/O files (overwritten during testing)
+input.txt
+output.txt
+
+# Generated test output files
+output-files/
+
+# Temporary test files
+test-job-input.txt
+
 # Documentation and test files
 *.md
 !TESTING-GUIDE.md

@@ -1,0 +1,109 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+1
+Please enter your username:
+TestUser
+Please enter your password:
+Password123
+You have successfully logged in.
+Welcome, TestUser!
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[6] View My Pending Connection Requests
+[7] View My Connections
+[q] Log Out
+Enter your choice:
+5
+[0] Browse Jobs/Internships
+[1] Post a Job/Internship
+[2] View My Applications
+[q] Back
+Enter your choice:
+0
+--- Available Job Listings ---
+1. Software Intern at TechCorp (New York, NY)
+2. Data Analyst at DataSolutions (Remote)
+3. Marketing Specialist at BrandInc (Chicago, IL)
+-----------------------------
+Enter job number to view details, or 0 to go back:
+1
+--- Job Details ---
+Title: Software Intern
+Description: Develop tools for internal testing and automation.
+Employer: TechCorp
+Location: New York, NY
+Salary: $25/hour
+-------------------
+[1] Apply for this Job
+[0] Back to Job List
+Enter your choice:
+1
+Your application for Software Intern at TechCorp has been submitted.
+--- Available Job Listings ---
+1. Software Intern at TechCorp (New York, NY)
+2. Data Analyst at DataSolutions (Remote)
+3. Marketing Specialist at BrandInc (Chicago, IL)
+-----------------------------
+Enter job number to view details, or 0 to go back:
+2
+--- Job Details ---
+Title: Data Analyst
+Description: Analyze data and create reports for business insights.
+Employer: DataSolutions
+Location: Remote
+Salary: $30/hour
+-------------------
+[1] Apply for this Job
+[0] Back to Job List
+Enter your choice:
+1
+Your application for Data Analyst at DataSolutions has been submitted.
+--- Available Job Listings ---
+1. Software Intern at TechCorp (New York, NY)
+2. Data Analyst at DataSolutions (Remote)
+3. Marketing Specialist at BrandInc (Chicago, IL)
+-----------------------------
+Enter job number to view details, or 0 to go back:
+0
+[0] Browse Jobs/Internships
+[1] Post a Job/Internship
+[2] View My Applications
+[q] Back
+Enter your choice:
+2
+--- Your Job Applications ---
+Application Summary for TestUser
+------------------------------
+Job Title: Software Intern
+Employer: TechCorp
+Location: New York, NY
+---
+Job Title: Data Analyst
+Employer: DataSolutions
+Location: Remote
+------------------------------
+Total Applications: 2
+------------------------------
+[0] Browse Jobs/Internships
+[1] Post a Job/Internship
+[2] View My Applications
+[q] Back
+Enter your choice:
+q
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[6] View My Pending Connection Requests
+[7] View My Connections
+[q] Log Out
+Enter your choice:
+q
+--- END_OF_PROGRAM_EXECUTION ---
+

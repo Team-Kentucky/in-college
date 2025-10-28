@@ -1,0 +1,9 @@
+0
+testuser2
+Password2!
+5
+0
+1
+1
+q
+q

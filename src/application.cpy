@@ -5,4 +5,4 @@
     05 application-job-title     pic x(100).
     05 application-employer      pic x(100).
     05 application-location      pic x(100).
-    05 application-id             pic 9(9) comp-5.
+    05 application-id             pic 9(9).

@@ -123,7 +123,7 @@ working-storage section.
 01 application-employer-buffer pic x(100).
 01 application-location-buffer pic x(100).
 01 application-counter pic 9(4) value 0.
-01 application-id-seq pic 9(9) comp-5 value 1.
+01 application-id-seq pic 9(9) value 1.
 01 browse-choice pic x(1).
 01 browse-index pic 9(4) value 0.
 01 selected-job-index pic 9(4) value 0.
@@ -2002,8 +2002,19 @@ createApplication.
 *> View applications submitted by current user
 *>*******************************************************************
 viewMyApplications.
-       move "--- My Applications ---" to output-buffer
+       move "--- Your Job Applications ---" to output-buffer
        perform outputLine
+       
+       move spaces to output-buffer
+       string "Application Summary for " delimited by size
+              function trim(current-user trailing) delimited by size
+              into output-buffer
+       end-string
+       perform outputLine
+       
+       move "------------------------------" to output-buffer
+       perform outputLine
+       
        move 0 to application-counter
 
        open input application-database
@@ -2015,15 +2026,31 @@ viewMyApplications.
                    not at end
                        if function trim(application-username trailing) = function trim(current-user trailing)
                            add 1 to application-counter
-                           move spaces to output-buffer
-                           string "[" delimited by size
-                                  application-id delimited by size
-                                  "] " delimited by size
-                                  function trim(application-job-title trailing) delimited by size
-                                  " - " delimited by size
-                                  function trim(application-employer trailing) delimited by size
-                                  into output-buffer
+                           move "Job Title: " to output-buffer
+                           string
+                               function trim(output-buffer trailing) delimited by size
+                               function trim(application-job-title trailing) delimited by size
+                           into output-buffer
                            end-string
+                           perform outputLine
+                           
+                           move "Employer: " to output-buffer
+                           string
+                               function trim(output-buffer trailing) delimited by size
+                               function trim(application-employer trailing) delimited by size
+                           into output-buffer
+                           end-string
+                           perform outputLine
+                           
+                           move "Location: " to output-buffer
+                           string
+                               function trim(output-buffer trailing) delimited by size
+                               function trim(application-location trailing) delimited by size
+                           into output-buffer
+                           end-string
+                           perform outputLine
+                           
+                           move "---" to output-buffer
                            perform outputLine
                        end-if
                end-read
@@ -2034,6 +2061,19 @@ viewMyApplications.
        end-if
        close application-database
 
+       move "------------------------------" to output-buffer
+       perform outputLine
+       
+       move spaces to output-buffer
+       string "Total Applications: " delimited by size
+              application-counter delimited by size
+              into output-buffer
+       end-string
+       perform outputLine
+       
+       move "------------------------------" to output-buffer
+       perform outputLine
+       
        if application-counter = 0
            move "You have not submitted any applications yet." to output-buffer
            perform outputLine
