@@ -31,7 +31,24 @@ Please enter all required information
 ——————————————————————————————————————————————————
 
 Username: testuser1
-Password: Password1!
+Password: Password2!
+
+Account has successfully been created
+
+——————————————————————————————————————————————————
+Welcome to inCollege! Select an option
+——————————————————————————————————————————————————
+ [0] Sign in
+ [1] Create an account
+ [q] Quit
+Enter your choice: 1
+
+——————————————————————————————————————————————————
+Please enter all required information
+——————————————————————————————————————————————————
+
+Username: testuser2
+Password: Password2!
 
 Account has successfully been created
 
@@ -43,9 +60,72 @@ Welcome to inCollege! Select an option
  [q] Quit
 Enter your choice: 0
 Please enter your username:
+Enter your choice: testuser2
+Please enter your password:
+Enter your choice: Password2!
+You have successfully logged in
+Welcome, testuser2
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[6] View My Pending Connection Requests
+[7] View My Connections
+[q] Logout
+Enter your choice: 5
+[0] Browse Jobs/Internships
+[1] Post a Job/Internship
+[2] View My Applications
+[q] Back
+> 1
+Enter Job Title (Required): Internship
+Enter Job Description (Required): Job Description Here
+Enter Employer (Required): Big Tech Corp
+Enter Job Location (Required): California
+Enter salary: $0/hr
+Job posted successfully!
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[6] View My Pending Connection Requests
+[7] View My Connections
+[q] Logout
+Enter your choice: 5
+[0] Browse Jobs/Internships
+[1] Post a Job/Internship
+[2] View My Applications
+[q] Back
+> 1
+Enter Job Title (Required): Internship2
+Enter Job Description (Required): Job Desc
+Enter Employer (Required): Tech Startup
+Enter Job Location (Required): Washington
+Enter salary: $9.9999/hr
+Job posted successfully!
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[6] View My Pending Connection Requests
+[7] View My Connections
+[q] Logout
+Enter your choice: q
+
+——————————————————————————————————————————————————
+Welcome to inCollege! Select an option
+——————————————————————————————————————————————————
+ [0] Sign in
+ [1] Create an account
+ [q] Quit
+Enter your choice: 0
+Please enter your username:
 Enter your choice: testuser1
 Please enter your password:
-Enter your choice: Password1!
+Enter your choice: Password2!
 You have successfully logged in
 Welcome, testuser1
 [1] Create/Edit My Profile
@@ -59,14 +139,44 @@ Welcome, testuser1
 Enter your choice: 5
 [0] Browse Jobs/Internships
 [1] Post a Job/Internship
+[2] View My Applications
+[q] Back
+> 0
+--- Available Job Listings ---
+[0001] Internship at Big Tech Corp (California)
+[0002] Internship2 at Tech Startup (Washington)
+Enter number to view details (q to go back):
+> 1
+--- Job Details ---
+Title: Internship
+Employer: Big Tech Corp
+Location: California
+Salary: $0/hr
+Description: Job Description Here
+[1] Apply to this job
 [q] Back
 > 1
-Enter Job Title (Required): Software Intern
-Enter Job Description (Required): Assist with coding and debugging software.
-Enter Employer (Required): John Doe
-Enter Job Location (Required): Tampa, FL
-Enter salary: $20/Hour
-Job posted successfully!
+Application submitted successfully!
+--- Available Job Listings ---
+[0001] Internship at Big Tech Corp (California)
+[0002] Internship2 at Tech Startup (Washington)
+Enter number to view details (q to go back):
+> 2
+--- Job Details ---
+Title: Internship2
+Employer: Tech Startup
+Location: Washington
+Salary: $9.9999/hr
+Description: Job Desc
+[1] Apply to this job
+[q] Back
+> 1
+Application submitted successfully!
+--- Available Job Listings ---
+[0001] Internship at Big Tech Corp (California)
+[0002] Internship2 at Tech Startup (Washington)
+Enter number to view details (q to go back):
+> q
 [1] Create/Edit My Profile
 [2] View My Profile
 [3] Search for User
@@ -78,18 +188,23 @@ Job posted successfully!
 Enter your choice: 5
 [0] Browse Jobs/Internships
 [1] Post a Job/Internship
+[2] View My Applications
 [q] Back
-> 1
-Enter Job Title (Required):
-Enter Job Title (Required): Database Analyst
-Enter Job Description (Required):
-Enter Job Description (Required): Analyze and optimize databases for accuracy and performance.
-Enter Employer (Required):
-Enter Employer (Required): Emily Smith
-Enter Job Location (Required):
-Enter Job Location (Required): Austin, TX
-Enter salary:
-Job posted successfully!
+> 2
+--- Your Job Applications ---
+Application Summary for testuser1
+------------------------------
+Job Title:Internship
+Employer:Big Tech Corp
+Location:California
+---
+Job Title:Internship2
+Employer:Tech Startup
+Location:Washington
+---
+------------------------------
+Total Applications: 0002
+------------------------------
 [1] Create/Edit My Profile
 [2] View My Profile
 [3] Search for User
