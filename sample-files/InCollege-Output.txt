@@ -1,53 +1,14 @@
-############################################################################################
-
-           /##            /######            /## /##
-          |__/           /##__  ##          | ##| ##
-           /## /####### | ##  \__/  /###### | ##| ##  /######   /######   /######
-          | ##| ##__  ##| ##       /##__  ##| ##| ## /##__  ## /##__  ## /##__  ##
-          | ##| ##  \ ##| ##      | ##  \ ##| ##| ##| ########| ##  \ ##| ########
-          | ##| ##  | ##| ##    ##| ##  | ##| ##| ##| ##_____/| ##  | ##| ##_____/
-          | ##| ##  | ##|  ######/|  ######/| ##| ##|  #######|  #######|  #######
-          |__/|__/  |__/ \______/  \______/ |__/|__/ \_______/ \____  ## \_______/
-                                                               /##  \ ##
-                                                              |  ######/
-                                                               \______/
-                                                                             ฅ^•ﻌ•^ฅ
-############################################################################################
-                                                                    Created by Team Kentucky
-                            The world's best job site for students
-
-
-
-——————————————————————————————————————————————————
-Welcome to inCollege! Select an option
-——————————————————————————————————————————————————
- [0] Sign in
- [1] Create an account
- [q] Quit
-Enter your choice: 1
-
-——————————————————————————————————————————————————
-Please enter all required information
-——————————————————————————————————————————————————
-
-Username: testuser1
-Password: Password1!
-
-Account has successfully been created
-
-——————————————————————————————————————————————————
-Welcome to inCollege! Select an option
-——————————————————————————————————————————————————
- [0] Sign in
- [1] Create an account
- [q] Quit
-Enter your choice: 0
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+1
 Please enter your username:
-Enter your choice: testuser1
+TestUser
 Please enter your password:
-Enter your choice: Password1!
-You have successfully logged in
-Welcome, testuser1
+Password123
+You have successfully logged in.
+Welcome, TestUser!
 [1] Create/Edit My Profile
 [2] View My Profile
 [3] Search for User
@@ -55,41 +16,85 @@ Welcome, testuser1
 [5] Job search/internship
 [6] View My Pending Connection Requests
 [7] View My Connections
-[q] Logout
-Enter your choice: 5
+[q] Log Out
+Enter your choice:
+5
 [0] Browse Jobs/Internships
 [1] Post a Job/Internship
+[2] View My Applications
 [q] Back
-> 1
-Enter Job Title (Required): Software Intern
-Enter Job Description (Required): Assist with coding and debugging software.
-Enter Employer (Required): John Doe
-Enter Job Location (Required): Tampa, FL
-Enter salary: $20/Hour
-Job posted successfully!
-[1] Create/Edit My Profile
-[2] View My Profile
-[3] Search for User
-[4] Learn a New Skill
-[5] Job search/internship
-[6] View My Pending Connection Requests
-[7] View My Connections
-[q] Logout
-Enter your choice: 5
+Enter your choice:
+0
+--- Available Job Listings ---
+1. Software Intern at TechCorp (New York, NY)
+2. Data Analyst at DataSolutions (Remote)
+3. Marketing Specialist at BrandInc (Chicago, IL)
+-----------------------------
+Enter job number to view details, or 0 to go back:
+1
+--- Job Details ---
+Title: Software Intern
+Description: Develop tools for internal testing and automation.
+Employer: TechCorp
+Location: New York, NY
+Salary: $25/hour
+-------------------
+[1] Apply for this Job
+[0] Back to Job List
+Enter your choice:
+1
+Your application for Software Intern at TechCorp has been submitted.
+--- Available Job Listings ---
+1. Software Intern at TechCorp (New York, NY)
+2. Data Analyst at DataSolutions (Remote)
+3. Marketing Specialist at BrandInc (Chicago, IL)
+-----------------------------
+Enter job number to view details, or 0 to go back:
+2
+--- Job Details ---
+Title: Data Analyst
+Description: Analyze data and create reports for business insights.
+Employer: DataSolutions
+Location: Remote
+Salary: $30/hour
+-------------------
+[1] Apply for this Job
+[0] Back to Job List
+Enter your choice:
+1
+Your application for Data Analyst at DataSolutions has been submitted.
+--- Available Job Listings ---
+1. Software Intern at TechCorp (New York, NY)
+2. Data Analyst at DataSolutions (Remote)
+3. Marketing Specialist at BrandInc (Chicago, IL)
+-----------------------------
+Enter job number to view details, or 0 to go back:
+0
 [0] Browse Jobs/Internships
 [1] Post a Job/Internship
+[2] View My Applications
 [q] Back
-> 1
-Enter Job Title (Required):
-Enter Job Title (Required): Database Analyst
-Enter Job Description (Required):
-Enter Job Description (Required): Analyze and optimize databases for accuracy and performance.
-Enter Employer (Required):
-Enter Employer (Required): Emily Smith
-Enter Job Location (Required):
-Enter Job Location (Required): Austin, TX
-Enter salary:
-Job posted successfully!
+Enter your choice:
+2
+--- Your Job Applications ---
+Application Summary for TestUser
+------------------------------
+Job Title: Software Intern
+Employer: TechCorp
+Location: New York, NY
+---
+Job Title: Data Analyst
+Employer: DataSolutions
+Location: Remote
+------------------------------
+Total Applications: 2
+------------------------------
+[0] Browse Jobs/Internships
+[1] Post a Job/Internship
+[2] View My Applications
+[q] Back
+Enter your choice:
+q
 [1] Create/Edit My Profile
 [2] View My Profile
 [3] Search for User
@@ -97,14 +102,8 @@ Job posted successfully!
 [5] Job search/internship
 [6] View My Pending Connection Requests
 [7] View My Connections
-[q] Logout
-Enter your choice: q
-
-——————————————————————————————————————————————————
-Welcome to inCollege! Select an option
-——————————————————————————————————————————————————
- [0] Sign in
- [1] Create an account
- [q] Quit
-Enter your choice: q
+[q] Log Out
+Enter your choice:
+q
 --- END_OF_PROGRAM_EXECUTION ---
+

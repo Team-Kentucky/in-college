@@ -1,0 +1,1 @@
+No applications found or database unavailable.\n------------------------------\nTotal Applications: 0000\n------------------------------\nYou have not submitted any applications yet.

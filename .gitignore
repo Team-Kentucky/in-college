@@ -23,9 +23,6 @@ Thumbs.db
 input.txt
 output.txt
 
-# Generated test output files
-output-files/
-
 # Temporary test files
 test-job-input.txt
 
