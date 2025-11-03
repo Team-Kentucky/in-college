@@ -49,6 +49,13 @@ file-control.
             record key is application-key
             file status is application-database-status.
 
+       *> Message database for persistent messaging
+       select message-database assign to 'message-database.dat'
+           organization is indexed
+           access mode is dynamic
+           record key is message-key
+           file status is message-database-status.
+
 
 *>###################################################################
 DATA DIVISION.
@@ -83,6 +90,10 @@ copy "job.cpy".
     *> Applications persistence — use copybook for consistency with other FDs
     fd application-database.
         copy "application.cpy".
+
+*> Message database record
+fd message-database.
+copy "message.cpy".
 
 working-storage section.
 *>-----pending requests file variables-----
@@ -130,6 +141,18 @@ working-storage section.
 01 browse-done-flag pic x(1) value 'N'.
      88 browse-done value 'Y'.
      88 browse-continue value 'N'.
+
+*>-----message file variables-----
+01 message-database-status pic xx.
+    88 message-ok               value "00".
+    88 message-not-found        value "23".
+    88 message-file-missing     value "35".
+01 message-key-buffer pic x(64).
+01 message-sender-buffer pic x(100).
+01 message-recipient-buffer pic x(100).
+01 message-content-buffer pic x(500).
+01 message-counter pic 9(4) value 0.
+01 message-id-seq pic 9(9) value 1.
 
 *> In-memory job listing tables for browse selection
 01 job-list-keys.
@@ -214,7 +237,19 @@ working-storage section.
 01 conn-choice-prompt constant as "Enter your choice:".
 01 post-login-7 constant as "[7] View My Connections".
 01 connections-title constant as "--- My Connections ---".
-01 connections-empty constant as "You have no connections.".
+01 connections-empty constant as "You have no connections".
+
+01 post-login-8 constant as "[8] Messages".
+01 messages-title constant as "--- Messages ---".
+01 messages-menu-1 constant as "[1] Send a New Message".
+01 messages-menu-2 constant as "[2] View My Messages".
+01 messages-back constant as "[q] Back to Main Menu".
+01 message-sent-msg constant as "Message sent successfully!".
+01 message-recipient-prompt constant as "Enter the username of the recipient:".
+01 message-content-prompt constant as "Enter your message:".
+01 message-not-connected constant as "You can only message users you are connected with.".
+01 message-user-not-found constant as "User not found in your network.".
+01 view-messages-uc constant as "View My Messages is under construction.".
 
 01 logout constant as "[q] Logout".
 01 under-construction  constant as "is under construction.".
@@ -409,6 +444,8 @@ post-login-menu.
            perform outputLine
            move post-login-7 to output-buffer
            perform outputLine
+           move post-login-8 to output-buffer
+           perform outputLine
            move logout to output-buffer
            perform outputLine
            move choice-prompt to input-prompt
@@ -430,6 +467,8 @@ post-login-menu.
                     perform viewPendingRequests
               when menu-choice = '7'
                    perform viewConnections
+               when menu-choice = '8'
+                   perform messaging-menu
                 when menu-choice = 'q' or not valid-read
                    exit perform
                when other
@@ -2078,5 +2117,185 @@ viewMyApplications.
            move "You have not submitted any applications yet." to output-buffer
            perform outputLine
        end-if
+       exit.
+
+*>*******************************************************************
+*> Messaging Menu
+*>*******************************************************************
+messaging-menu.
+       perform until not valid-read
+           move messages-title to output-buffer
+           perform outputLine
+           move messages-menu-1 to output-buffer
+           perform outputLine
+           move messages-menu-2 to output-buffer
+           perform outputLine
+           move messages-back to output-buffer
+           perform outputLine
+           move choice-prompt to input-prompt
+           perform readInputLine
+           move input-buffer(1:1) to menu-choice
+
+           evaluate true
+               when menu-choice = '1'
+                   perform sendNewMessage
+               when menu-choice = '2'
+                   perform viewMyMessages
+               when menu-choice = 'q' or not valid-read
+                   exit perform
+               when other
+                   move "Invalid choice. Please try again." to output-buffer
+                   perform outputLine
+           end-evaluate
+       end-perform
+       exit.
+
+*>*******************************************************************
+*> Send a New Message
+*> Validates that recipient is a connection before sending
+*>*******************************************************************
+sendNewMessage.
+       *> Prompt for recipient username
+       move message-recipient-prompt to output-buffer
+       perform outputLine
+       perform readInputLine
+       move function trim(input-buffer trailing) to message-recipient-buffer
+
+       *> Validate recipient exists
+       move message-recipient-buffer to buffer-acct-username
+       perform findAcct
+       if not acct-found
+           move message-user-not-found to output-buffer
+           perform outputLine
+           exit paragraph
+       end-if
+
+       *> Validate that recipient is a connection
+       perform checkConnection
+       if connection-not-found
+           move message-not-connected to output-buffer
+           perform outputLine
+           exit paragraph
+       end-if
+
+       *> Prompt for message content
+       move message-content-prompt to output-buffer
+       perform outputLine
+       perform readInputLine
+       move function trim(input-buffer trailing) to message-content-buffer
+
+       *> Save message to database
+       move current-user to message-sender-buffer
+       perform saveMessage
+
+       move message-sent-msg to output-buffer
+       perform outputLine
+       exit.
+
+*>*******************************************************************
+*> Check if two users are connected
+*> Input: current-user (sender), message-recipient-buffer (recipient)
+*> Output: Sets connection-database-status
+*>*******************************************************************
+checkConnection.
+       *> Build connection keys for both directions
+       move spaces to connection-key
+       string function trim(current-user trailing) delimited by size
+              '|' delimited by size
+              function trim(message-recipient-buffer trailing) delimited by size
+              into connection-key
+       end-string
+
+       open input connection-database
+       if connection-ok
+           *> Check first direction (current-user|recipient)
+           read connection-database
+               key is connection-key
+               invalid key
+                   *> Try reverse direction (recipient|current-user)
+                   move spaces to connection-key
+                   string function trim(message-recipient-buffer trailing) delimited by size
+                          '|' delimited by size
+                          function trim(current-user trailing) delimited by size
+                          into connection-key
+                   end-string
+                   read connection-database
+                       key is connection-key
+                       invalid key
+                           *> Not connected
+                           move "23" to connection-database-status
+                       not invalid key
+                           *> Connected (reverse direction)
+                           move "00" to connection-database-status
+                   end-read
+               not invalid key
+                   *> Connected (forward direction)
+                   move "00" to connection-database-status
+           end-read
+       else
+           move "23" to connection-database-status
+       end-if
+       close connection-database
+       exit.
+
+*>*******************************************************************
+*> Save Message to Database
+*> Input: message-sender-buffer, message-recipient-buffer, message-content-buffer
+*>*******************************************************************
+saveMessage.
+       open i-o message-database
+       if message-database-status = "35"
+           open output message-database
+           close message-database
+           open i-o message-database
+       end-if
+
+       if message-ok
+           *> Build unique message key using sender, recipient and sequence
+           move spaces to message-key
+           string function trim(message-sender-buffer trailing) delimited by size
+                  '|' delimited by size
+                  function trim(message-recipient-buffer trailing) delimited by size
+                  '|' delimited by size
+                  message-id-seq delimited by size
+                  into message-key
+           end-string
+
+           *> Set message fields
+           move function trim(message-sender-buffer trailing) to message-sender
+           move function trim(message-recipient-buffer trailing) to message-recipient
+           move function trim(message-content-buffer trailing) to message-content
+           
+           *> Generate timestamp (simple format: using sequence number for now)
+           move spaces to message-timestamp
+           string "MSG-" delimited by size
+                  message-id-seq delimited by size
+                  into message-timestamp
+           end-string
+           
+           move 'N' to message-read-flag
+
+           *> Write message record
+           write message-record
+
+           if message-ok
+               add 1 to message-id-seq
+           else
+               move "Error saving message." to output-buffer
+               perform outputLine
+           end-if
+       else
+           move "Unable to open message database." to output-buffer
+           perform outputLine
+       end-if
+       close message-database
+       exit.
+
+*>*******************************************************************
+*> View My Messages (Under Construction)
+*>*******************************************************************
+viewMyMessages.
+       move view-messages-uc to output-buffer
+       perform outputLine
        exit.
 
