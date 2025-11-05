@@ -88,10 +88,7 @@ user3
 8
 1
 user2
-TestMessage
-1
-user2
-test Message2
+Super long Test message testing the limits of the message. Hopefully it's still working for you!
 q
 q
 q

@@ -37,6 +37,7 @@ then
         if [ -f "job-database.dat" ]; then rm "job-database.dat"; fi
         if [ -f "input.txt" ]; then rm "input.txt"; fi
         if [ -f "application-database.dat" ]; then rm "application-database.dat"; fi
+        if [ -f "message-database.dat" ]; then rm "message-database.dat"; fi
 
         file_no_path=$(basename "$file")
         filename="${file_no_path%.*}"
