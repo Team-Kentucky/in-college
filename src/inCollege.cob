@@ -116,6 +116,10 @@
        01 connection-count                 pic 9(4) value 0.
        01 connection-other                 pic x(30).
 
+*>-----user-connection-variables-----
+       01 connection-status pic xx.
+              88 connected               value "00".
+              88 not-connected        value "23".
 
 *>-----job file variables-----
        01 job-database-status pic xx.
@@ -2172,7 +2176,7 @@
 
               *> Validate that recipient is a connection
               perform checkConnection
-              if connection-not-found
+              if not-connected
                   move message-not-connected to output-buffer
                   perform outputLine
                   exit paragraph
@@ -2195,45 +2199,47 @@
 *>*******************************************************************
 *> Check if two users are connected
 *> Input: current-user (sender), message-recipient-buffer (recipient)
-*> Output: Sets connection-database-status
+*> Output: Sets connection-status
 *>*******************************************************************
-       checkConnection.
+              checkConnection.
+              *> Default to not connected
+              move "23" to connection-status
+              
               *> Build connection keys for both directions
-              move spaces to connection-key
-              string function trim(current-user trailing) delimited by size
-                     '|' delimited by size
-                     function trim(message-recipient-buffer trailing) delimited by size
-                     into connection-key
-              end-string
-
-              open input connection-database
+              open i-o connection-database
               if connection-ok
                   *> Check first direction (current-user|recipient)
+                  move spaces to connection-key
+                  string function trim(current-user trailing) delimited by size
+                         '|' delimited by size
+                         function trim(message-recipient-buffer trailing) delimited by size
+                         into connection-key
+                  end-string
+                  
                   read connection-database
                       key is connection-key
                       invalid key
-                          *> Try reverse direction (recipient|current-user)
+                          *> Not connected in first direction, check reverse
                           move spaces to connection-key
                           string function trim(message-recipient-buffer trailing) delimited by size
                                  '|' delimited by size
                                  function trim(current-user trailing) delimited by size
                                  into connection-key
                           end-string
+                          
                           read connection-database
                               key is connection-key
                               invalid key
-                                  *> Not connected
-                                  move "23" to connection-database-status
+                                  *> Not connected in either direction
+                                  move "23" to connection-status
                               not invalid key
-                                  *> Connected (reverse direction)
-                                  move "00" to connection-database-status
+                                  *> Connected in reverse direction
+                                  move "00" to connection-status
                           end-read
                       not invalid key
-                          *> Connected (forward direction)
-                          move "00" to connection-database-status
+                          *> Connected in forward direction
+                          move "00" to connection-status
                   end-read
-              else
-                  move "23" to connection-database-status
               end-if
               close connection-database
               exit.
