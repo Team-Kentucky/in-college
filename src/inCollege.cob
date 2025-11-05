@@ -251,7 +251,7 @@
        01 message-sent-msg constant as "Message sent successfully!".
        01 message-recipient-prompt constant as "Enter the username of the recipient:".
        01 message-content-prompt constant as "Enter your message:".
-       01 message-not-connected constant as "You can only message users you are connected with.".
+       01 message-not-connected constant as "User not found in your network.".
        01 message-user-not-found constant as "User not found in your network.".
        01 view-messages-uc constant as "View My Messages is under construction.".
 
