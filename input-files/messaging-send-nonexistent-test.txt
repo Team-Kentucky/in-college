@@ -87,11 +87,8 @@ user3
 7
 8
 1
-user2
+user221487
 TestMessage
-1
-user2
-test Message2
 q
 q
 q

@@ -30,8 +30,8 @@ Enter your choice: 1
 Please enter all required information
 ——————————————————————————————————————————————————
 
-Username: testuser1
-Password: Password2!
+Username: user1
+Password: Password1!
 
 Account has successfully been created
 
@@ -47,8 +47,25 @@ Enter your choice: 1
 Please enter all required information
 ——————————————————————————————————————————————————
 
-Username: testuser2
-Password: Password2!
+Username: user2
+Password: Password2@
+
+Account has successfully been created
+
+——————————————————————————————————————————————————
+Welcome to inCollege! Select an option
+——————————————————————————————————————————————————
+ [0] Sign in
+ [1] Create an account
+ [q] Quit
+Enter your choice: 1
+
+——————————————————————————————————————————————————
+Please enter all required information
+——————————————————————————————————————————————————
+
+Username: user3
+Password: Password3#
 
 Account has successfully been created
 
@@ -60,11 +77,11 @@ Welcome to inCollege! Select an option
  [q] Quit
 Enter your choice: 0
 Please enter your username:
-Enter your choice: testuser2
+Enter your choice: user1
 Please enter your password:
-Enter your choice: Password2!
+Enter your choice: Password1!
 You have successfully logged in
-Welcome, testuser2
+Welcome, user1
 [1] Create/Edit My Profile
 [2] View My Profile
 [3] Search for User
@@ -72,19 +89,41 @@ Welcome, testuser2
 [5] Job search/internship
 [6] View My Pending Connection Requests
 [7] View My Connections
+[8] Messages
 [q] Logout
-Enter your choice: 5
-[0] Browse Jobs/Internships
-[1] Post a Job/Internship
-[2] View My Applications
-[q] Back
-> 1
-Enter Job Title (Required): Internship
-Enter Job Description (Required): Job Description Here
-Enter Employer (Required): Big Tech Corp
-Enter Job Location (Required): California
-Enter salary: $0/hr
-Job posted successfully!
+Enter your choice: 1
+--- Create/Edit Profile ---
+Enter First Name:
+Enter your choice: Alice
+Enter Last Name:
+Enter your choice: Smith
+Enter University/College Attended:
+Enter your choice: University of Kentucky
+Enter Major:
+Enter your choice: Computer Science
+Enter Graduation Year (YYYY):
+Enter your choice: 2025
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+Enter your choice: Software development enthusiast.
+Experience #1 - Title:
+Enter your choice: Software Intern
+Experience #1 - Company/Organization:
+Enter your choice: Tech Corp
+Experience #1 - Dates (e.g., Summer 2024):
+Enter your choice: Summer 2024
+Experience #1 - Description (optional, max 100 chars, blank to skip):
+Enter your choice: Developed web applications
+Experience #2 - Title:
+Enter your choice: DONE
+Education #1 - Degree:
+Enter your choice: Bachelor of Science
+Education #1 - University/College:
+Enter your choice: University of Kentucky
+Education #1 - Years Attended (e.g., 2023-2025):
+Enter your choice: 2021-2025
+Education #2 - Degree:
+Enter your choice: DONE
+Profile saved successfully!
 [1] Create/Edit My Profile
 [2] View My Profile
 [3] Search for User
@@ -92,26 +131,7 @@ Job posted successfully!
 [5] Job search/internship
 [6] View My Pending Connection Requests
 [7] View My Connections
-[q] Logout
-Enter your choice: 5
-[0] Browse Jobs/Internships
-[1] Post a Job/Internship
-[2] View My Applications
-[q] Back
-> 1
-Enter Job Title (Required): Internship2
-Enter Job Description (Required): Job Desc
-Enter Employer (Required): Tech Startup
-Enter Job Location (Required): Washington
-Enter salary: $9.9999/hr
-Job posted successfully!
-[1] Create/Edit My Profile
-[2] View My Profile
-[3] Search for User
-[4] Learn a New Skill
-[5] Job search/internship
-[6] View My Pending Connection Requests
-[7] View My Connections
+[8] Messages
 [q] Logout
 Enter your choice: q
 
@@ -123,11 +143,11 @@ Welcome to inCollege! Select an option
  [q] Quit
 Enter your choice: 0
 Please enter your username:
-Enter your choice: testuser1
+Enter your choice: user2
 Please enter your password:
-Enter your choice: Password2!
+Enter your choice: Password2@
 You have successfully logged in
-Welcome, testuser1
+Welcome, user2
 [1] Create/Edit My Profile
 [2] View My Profile
 [3] Search for User
@@ -135,48 +155,232 @@ Welcome, testuser1
 [5] Job search/internship
 [6] View My Pending Connection Requests
 [7] View My Connections
+[8] Messages
 [q] Logout
-Enter your choice: 5
-[0] Browse Jobs/Internships
-[1] Post a Job/Internship
-[2] View My Applications
-[q] Back
+Enter your choice: 1
+--- Create/Edit Profile ---
+Enter First Name:
+Enter your choice: Bob
+Enter Last Name:
+Enter your choice: Johnson
+Enter University/College Attended:
+Enter your choice: University of Louisville
+Enter Major:
+Enter your choice: Engineering
+Enter Graduation Year (YYYY):
+Enter your choice: 2024
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+Enter your choice: Engineering student passionate about innovation.
+Experience #1 - Title:
+Enter your choice: Engineering Intern
+Experience #1 - Company/Organization:
+Enter your choice: Innovation Labs
+Experience #1 - Dates (e.g., Summer 2024):
+Enter your choice: Fall 2023
+Experience #1 - Description (optional, max 100 chars, blank to skip):
+Enter your choice: Worked on automation projects
+Experience #2 - Title:
+Enter your choice: DONE
+Education #1 - Degree:
+Enter your choice: Master of Engineering
+Education #1 - University/College:
+Enter your choice: University of Louisville
+Education #1 - Years Attended (e.g., 2023-2025):
+Enter your choice: 2022-2024
+Education #2 - Degree:
+Enter your choice: DONE
+Profile saved successfully!
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[6] View My Pending Connection Requests
+[7] View My Connections
+[8] Messages
+[q] Logout
+Enter your choice: 3
+Enter the first name to search for:
+Enter your choice: Alice
+Enter the last name to search for:
+Enter your choice: Smith
+User found!
+Displaying profile...
+--- User Profile ---
+Name: Alice Smith
+University: University of Kentucky
+Major: Computer Science
+Graduation Year: 2025
+About Me: Software development enthusiast.
+Experience:
+Title: Software Intern
+Company: Tech Corp
+Dates: Summer 2024
+Description: Developed web applications
+Education:
+Degree: Bachelor of Science
+University: University of Kentucky
+Years: 2021-2025
+--------------------
+[1] Send Connection Request
+[2] Back to Main Menu
+Enter your choice: 1
+Connection request sent to user1.
+--------------------
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[6] View My Pending Connection Requests
+[7] View My Connections
+[8] Messages
+[q] Logout
+Enter your choice: q
+
+——————————————————————————————————————————————————
+Welcome to inCollege! Select an option
+——————————————————————————————————————————————————
+ [0] Sign in
+ [1] Create an account
+ [q] Quit
+Enter your choice: 0
+Please enter your username:
+Enter your choice: user3
+Please enter your password:
+Enter your choice: Password3#
+You have successfully logged in
+Welcome, user3
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[6] View My Pending Connection Requests
+[7] View My Connections
+[8] Messages
+[q] Logout
+Enter your choice: 1
+--- Create/Edit Profile ---
+Enter First Name:
+Enter your choice: Charlie
+Enter Last Name:
+Enter your choice: Wilson
+Enter University/College Attended:
+Enter your choice: Eastern Kentucky University
+Enter Major:
+Enter your choice: Business
+Enter Graduation Year (YYYY):
+Enter your choice: 2026
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+Enter your choice: Business administration student.
+Experience #1 - Title:
+Enter your choice: Marketing Assistant
+Experience #1 - Company/Organization:
+Enter your choice: Business Solutions
+Experience #1 - Dates (e.g., Summer 2024):
+Enter your choice: Spring 2024
+Experience #1 - Description (optional, max 100 chars, blank to skip):
+Enter your choice: Assisted with marketing campaigns
+Experience #2 - Title:
+Enter your choice: DONE
+Education #1 - Degree:
+Enter your choice: Bachelor of Business
+Education #1 - University/College:
+Enter your choice: Eastern Kentucky University
+Education #1 - Years Attended (e.g., 2023-2025):
+Enter your choice: 2022-2026
+Education #2 - Degree:
+Enter your choice: DONE
+Profile saved successfully!
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[6] View My Pending Connection Requests
+[7] View My Connections
+[8] Messages
+[q] Logout
+Enter your choice: 3
+Enter the first name to search for:
+Enter your choice: Alice
+Enter the last name to search for:
+Enter your choice: Smith
+User found!
+Displaying profile...
+--- User Profile ---
+Name: Alice Smith
+University: University of Kentucky
+Major: Computer Science
+Graduation Year: 2025
+About Me: Software development enthusiast.
+Experience:
+Title: Software Intern
+Company: Tech Corp
+Dates: Summer 2024
+Description: Developed web applications
+Education:
+Degree: Bachelor of Science
+University: University of Kentucky
+Years: 2021-2025
+--------------------
+[1] Send Connection Request
+[2] Back to Main Menu
+Enter your choice: 1
+Connection request sent to user1.
+--------------------
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[6] View My Pending Connection Requests
+[7] View My Connections
+[8] Messages
+[q] Logout
+Enter your choice: q
+
+——————————————————————————————————————————————————
+Welcome to inCollege! Select an option
+——————————————————————————————————————————————————
+ [0] Sign in
+ [1] Create an account
+ [q] Quit
+Enter your choice: 0
+Please enter your username:
+Enter your choice: user1
+Please enter your password:
+Enter your choice: Password1!
+You have successfully logged in
+Welcome, user1
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[6] View My Pending Connection Requests
+[7] View My Connections
+[8] Messages
+[q] Logout
+Enter your choice: 6
+
+--- Pending Connection Requests ---
+- user2
+    Bob Johnson
+    Engineering, University of Louisville
+- user3
+    Charlie Wilson
+    Business, Eastern Kentucky University
+--------------------
+Enter the username of the connection request you wish to respond to (q to quit)
+> user2
+[0] Connect with user
+[1] Reject request
+[q] Quit
 > 0
---- Available Job Listings ---
-[0001] Internship at Big Tech Corp (California)
-[0002] Internship2 at Tech Startup (Washington)
-Enter number to view details (q to go back):
-> 1
---- Job Details ---
-Title: Internship
-Employer: Big Tech Corp
-Location: California
-Salary: $0/hr
-Description: Job Description Here
-[1] Apply to this job
-[q] Back
-> 1
-Application submitted successfully!
---- Available Job Listings ---
-[0001] Internship at Big Tech Corp (California)
-[0002] Internship2 at Tech Startup (Washington)
-Enter number to view details (q to go back):
-> 2
---- Job Details ---
-Title: Internship2
-Employer: Tech Startup
-Location: Washington
-Salary: $9.9999/hr
-Description: Job Desc
-[1] Apply to this job
-[q] Back
-> 1
-Application submitted successfully!
---- Available Job Listings ---
-[0001] Internship at Big Tech Corp (California)
-[0002] Internship2 at Tech Startup (Washington)
-Enter number to view details (q to go back):
-> q
+Sucessfully accepted connection request!
+
 [1] Create/Edit My Profile
 [2] View My Profile
 [3] Search for User
@@ -184,27 +388,23 @@ Enter number to view details (q to go back):
 [5] Job search/internship
 [6] View My Pending Connection Requests
 [7] View My Connections
+[8] Messages
 [q] Logout
-Enter your choice: 5
-[0] Browse Jobs/Internships
-[1] Post a Job/Internship
-[2] View My Applications
-[q] Back
-> 2
---- Your Job Applications ---
-Application Summary for testuser1
-------------------------------
-Job Title:Internship
-Employer:Big Tech Corp
-Location:California
----
-Job Title:Internship2
-Employer:Tech Startup
-Location:Washington
----
-------------------------------
-Total Applications: 0002
-------------------------------
+Enter your choice: 6
+
+--- Pending Connection Requests ---
+- user3
+    Charlie Wilson
+    Business, Eastern Kentucky University
+--------------------
+Enter the username of the connection request you wish to respond to (q to quit)
+> user3
+[0] Connect with user
+[1] Reject request
+[q] Quit
+> 0
+Sucessfully accepted connection request!
+
 [1] Create/Edit My Profile
 [2] View My Profile
 [3] Search for User
@@ -212,6 +412,60 @@ Total Applications: 0002
 [5] Job search/internship
 [6] View My Pending Connection Requests
 [7] View My Connections
+[8] Messages
+[q] Logout
+Enter your choice: 7
+--- My Connections ---
+- user2
+    Bob Johnson
+    Engineering, University of Louisville
+- user3
+    Charlie Wilson
+    Business, Eastern Kentucky University
+--------------------
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[6] View My Pending Connection Requests
+[7] View My Connections
+[8] Messages
+[q] Logout
+Enter your choice: 8
+--- Messages ---
+[1] Send a New Message
+[2] View My Messages
+[q] Back to Main Menu
+Enter your choice: 1
+Enter the username of the recipient:
+Enter your choice: user2
+Enter your message:
+Enter your choice: TestMessage
+Message sent successfully!
+--- Messages ---
+[1] Send a New Message
+[2] View My Messages
+[q] Back to Main Menu
+Enter your choice: 1
+Enter the username of the recipient:
+Enter your choice: user2
+Enter your message:
+Enter your choice: test Message2
+Message sent successfully!
+--- Messages ---
+[1] Send a New Message
+[2] View My Messages
+[q] Back to Main Menu
+Enter your choice: q
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[6] View My Pending Connection Requests
+[7] View My Connections
+[8] Messages
 [q] Logout
 Enter your choice: q
 

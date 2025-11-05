@@ -79,9 +79,6 @@ q
 user1
 Password1!
 6
-user2
-0
-6
 user3
 0
 7
@@ -89,9 +86,6 @@ user3
 1
 user2
 TestMessage
-1
-user2
-test Message2
 q
 q
 q

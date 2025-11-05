@@ -20,8 +20,9 @@ InCollege is a LinkedIn-like platform for college students, implemented in COBOL
   - Accept or reject user connection requests
   - View list of user connections
 - Post Job/Internship listings to the persistent database**
-- **NEW: Apply to job/internship listings**
+- NEW: Apply to job/internship listings
   - Report view of all applications
+- **NEW: Message connections**
 
 ## Project Structure
 
@@ -54,6 +55,7 @@ in-college/
     ├── pending-requests.dat     # User connection request database
     ├── connections-database.dat # User connection database
     ├── job-database.dat         # Job listing database
+    ├── message-database.dat     # User messages database
     ├── input.txt                # Input file (copied from input-files/)
     └── output.txt               # Program output file
 ```
