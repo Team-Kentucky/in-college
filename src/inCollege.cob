@@ -2047,17 +2047,17 @@
        viewMyApplications.
               move "--- Your Job Applications ---" to output-buffer
               perform outputLine
-              
+
               move spaces to output-buffer
               string "Application Summary for " delimited by size
                      function trim(current-user trailing) delimited by size
                      into output-buffer
               end-string
               perform outputLine
-              
+
               move "------------------------------" to output-buffer
               perform outputLine
-              
+
               move 0 to application-counter
 
               open input application-database
@@ -2076,7 +2076,7 @@
                                   into output-buffer
                                   end-string
                                   perform outputLine
-                                  
+
                                   move "Employer: " to output-buffer
                                   string
                                       function trim(output-buffer trailing) delimited by size
@@ -2084,7 +2084,7 @@
                                   into output-buffer
                                   end-string
                                   perform outputLine
-                                  
+
                                   move "Location: " to output-buffer
                                   string
                                       function trim(output-buffer trailing) delimited by size
@@ -2092,7 +2092,7 @@
                                   into output-buffer
                                   end-string
                                   perform outputLine
-                                  
+
                                   move "---" to output-buffer
                                   perform outputLine
                               end-if
@@ -2106,17 +2106,17 @@
 
               move "------------------------------" to output-buffer
               perform outputLine
-              
+
               move spaces to output-buffer
               string "Total Applications: " delimited by size
                      application-counter delimited by size
                      into output-buffer
               end-string
               perform outputLine
-              
+
               move "------------------------------" to output-buffer
               perform outputLine
-              
+
               if application-counter = 0
                   move "You have not submitted any applications yet." to output-buffer
                   perform outputLine
@@ -2204,7 +2204,7 @@
               checkConnection.
               *> Default to not connected
               move "23" to connection-status
-              
+
               *> Build connection keys for both directions
               open i-o connection-database
               if connection-ok
@@ -2215,7 +2215,7 @@
                          function trim(message-recipient-buffer trailing) delimited by size
                          into connection-key
                   end-string
-                  
+
                   read connection-database
                       key is connection-key
                       invalid key
@@ -2226,7 +2226,7 @@
                                  function trim(current-user trailing) delimited by size
                                  into connection-key
                           end-string
-                          
+
                           read connection-database
                               key is connection-key
                               invalid key
@@ -2271,14 +2271,14 @@
                   move function trim(message-sender-buffer trailing) to message-sender
                   move function trim(message-recipient-buffer trailing) to message-recipient
                   move function trim(message-content-buffer trailing) to message-content
-                  
+
                   *> Generate timestamp (simple format: using sequence number for now)
                   move spaces to message-timestamp
                   string "MSG-" delimited by size
                          message-id-seq delimited by size
                          into message-timestamp
                   end-string
-                  
+
                   move 'N' to message-read-flag
 
                   *> Write message record
@@ -2297,7 +2297,7 @@
               close message-database
               exit.
 
-*******************************************************************
+*>*******************************************************************
 *> View My Messages
 *>*******************************************************************
        viewMyMessages.
