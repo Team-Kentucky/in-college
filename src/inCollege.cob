@@ -2297,10 +2297,68 @@
               close message-database
               exit.
 
-*>*******************************************************************
-*> View My Messages (Under Construction)
+*******************************************************************
+*> View My Messages
 *>*******************************************************************
        viewMyMessages.
-              move view-messages-uc to output-buffer
+              *> Header
+              move "--- Your Messages ---" to output-buffer
               perform outputLine
+
+              *> Default: none found
+              move 0 to message-counter
+
+              *> Open message store (read-only)
+              open input message-database
+              if message-database-status = "35"
+                  *> No message file yet -> no messages
+                  move "You have no messages at this time." to output-buffer
+                  perform outputLine
+                  exit paragraph
+              end-if
+
+              if message-ok
+                  *> Read sequentially from the beginning
+                  perform until 1 = 2
+                      read message-database next record
+                          at end
+                              exit perform
+                      end-read
+
+                      if function trim(message-recipient) =
+                         function trim(current-user)
+                          *> From:
+                          string "From: "                   delimited by size
+                                 function trim(message-sender trailing)
+                                                           delimited by size
+                                 into output-buffer
+                          perform outputLine
+
+                          *> Message:
+                          string "Message: "                delimited by size
+                                 function trim(message-content trailing)
+                                                           delimited by size
+                                 into output-buffer
+                          perform outputLine
+
+                          *> Separator
+                          move "---------------------" to output-buffer
+                          perform outputLine
+
+                          add 1 to message-counter
+                      end-if
+                  end-perform
+              else
+                  move "Unable to open message database." to output-buffer
+                  perform outputLine
+              end-if
+
+              close message-database
+
+              *> No messages case
+              if message-counter = 0
+                  move "You have no messages at this time." to output-buffer
+                  perform outputLine
+              end-if
+
               exit.
