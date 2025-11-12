@@ -1,0 +1,1 @@
+From: user2\nMessage: Hello Alice, this is Bob\n---------------------\nFrom: user2\nMessage: Hello Alice, this is Bob again\n---------------------\nFrom: user2\nMessage: Hello Alice, Bob here again

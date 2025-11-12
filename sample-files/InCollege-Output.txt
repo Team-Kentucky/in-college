@@ -414,15 +414,21 @@ Sucessfully accepted connection request!
 [7] View My Connections
 [8] Messages
 [q] Logout
-Enter your choice: 7
---- My Connections ---
-- user2
-    Bob Johnson
-    Engineering, University of Louisville
-- user3
-    Charlie Wilson
-    Business, Eastern Kentucky University
---------------------
+Enter your choice: q
+
+——————————————————————————————————————————————————
+Welcome to inCollege! Select an option
+——————————————————————————————————————————————————
+ [0] Sign in
+ [1] Create an account
+ [q] Quit
+Enter your choice: 0
+Please enter your username:
+Enter your choice: user3
+Please enter your password:
+Enter your choice: Password3#
+You have successfully logged in
+Welcome, user3
 [1] Create/Edit My Profile
 [2] View My Profile
 [3] Search for User
@@ -439,20 +445,110 @@ Enter your choice: 8
 [q] Back to Main Menu
 Enter your choice: 1
 Enter the username of the recipient:
-Enter your choice: user2
+Enter your choice: user1
 Enter your message:
-Enter your choice: TestMessage
+Enter your choice: Hello Alice, this is Charlie
 Message sent successfully!
+--- Messages ---
+[1] Send a New Message
+[2] View My Messages
+[q] Back to Main Menu
+Enter your choice: q
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[6] View My Pending Connection Requests
+[7] View My Connections
+[8] Messages
+[q] Logout
+Enter your choice: q
+
+——————————————————————————————————————————————————
+Welcome to inCollege! Select an option
+——————————————————————————————————————————————————
+ [0] Sign in
+ [1] Create an account
+ [q] Quit
+Enter your choice: 0
+Please enter your username:
+Enter your choice: user2
+Please enter your password:
+Enter your choice: Password2@
+You have successfully logged in
+Welcome, user2
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[6] View My Pending Connection Requests
+[7] View My Connections
+[8] Messages
+[q] Logout
+Enter your choice: 8
 --- Messages ---
 [1] Send a New Message
 [2] View My Messages
 [q] Back to Main Menu
 Enter your choice: 1
 Enter the username of the recipient:
-Enter your choice: user2
+Enter your choice: user1
 Enter your message:
-Enter your choice: test Message2
+Enter your choice: Hello Alice, this is Bob
 Message sent successfully!
+--- Messages ---
+[1] Send a New Message
+[2] View My Messages
+[q] Back to Main Menu
+Enter your choice: q
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[6] View My Pending Connection Requests
+[7] View My Connections
+[8] Messages
+[q] Logout
+Enter your choice: q
+
+——————————————————————————————————————————————————
+Welcome to inCollege! Select an option
+——————————————————————————————————————————————————
+ [0] Sign in
+ [1] Create an account
+ [q] Quit
+Enter your choice: 0
+Please enter your username:
+Enter your choice: user1
+Please enter your password:
+Enter your choice: Password1!
+You have successfully logged in
+Welcome, user1
+[1] Create/Edit My Profile
+[2] View My Profile
+[3] Search for User
+[4] Learn a New Skill
+[5] Job search/internship
+[6] View My Pending Connection Requests
+[7] View My Connections
+[8] Messages
+[q] Logout
+Enter your choice: 8
+--- Messages ---
+[1] Send a New Message
+[2] View My Messages
+[q] Back to Main Menu
+Enter your choice: 2
+--- Your Messages ---
+From: user2
+Message: Hello Alice, this is Bob
+---------------------
+From: user3
+Message: Hello Alice, this is Charlie
+---------------------
 --- Messages ---
 [1] Send a New Message
 [2] View My Messages

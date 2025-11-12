@@ -4,9 +4,6 @@ Password1!
 1
 user2
 Password2@
-1
-user3
-Password3#
 0
 user1
 Password1!
@@ -52,56 +49,11 @@ Smith
 1
 q
 0
-user3
-Password3#
-1
-Charlie
-Wilson
-Eastern Kentucky University
-Business
-2026
-Business administration student.
-Marketing Assistant
-Business Solutions
-Spring 2024
-Assisted with marketing campaigns
-DONE
-Bachelor of Business
-Eastern Kentucky University
-2022-2026
-DONE
-3
-Alice
-Smith
-1
-q
-0
 user1
 Password1!
 6
 user2
 0
-6
-user3
-0
-q
-0
-user3
-Password3#
-8
-1
-user1
-Hello Alice, this is Charlie
-q
-q
-0
-user2
-Password2@
-8
-1
-user1
-Hello Alice, this is Bob
-q
 q
 0
 user1
