@@ -84,14 +84,30 @@ user2
 6
 user3
 0
-7
+q
+0
+user3
+Password3#
 8
 1
+user1
+Hello Alice, this is Charlie
+q
+q
+0
 user2
-TestMessage
+Password2@
+8
 1
-user2
-test Message2
+user1
+Hello Alice, this is Bob
+q
+q
+0
+user1
+Password1!
+8
+2
 q
 q
 q
