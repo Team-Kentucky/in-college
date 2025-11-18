@@ -1,1 +1,1 @@
-Enter your message:\nEnter your choice: Super long Test message testing the limits of the message. Hopefully it's still working for you!\nMessage sent successfully!
+> Super long Test message testing the limits of the message. Hopefully it's still working for you!\nMessage sent successfully!
