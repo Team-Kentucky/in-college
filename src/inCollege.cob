@@ -8,7 +8,7 @@
        input-output section.
        file-control.
        *> Input file for automated testing
-           select input-file assign to 'input.txt'
+           select optional input-file assign to 'input.txt'
                organization is line sequential
                file status is input-file-status.
        *> Output file to preserve program output
@@ -64,7 +64,7 @@
 *>-----readInputLine variables-----
 *> Input file record
        fd input-file.
-       01 input-buffer pic x(100).
+       01 input-file-buffer pic x(100).
 
 *>-----outputLine variables-----
 *> Output file record
@@ -170,9 +170,12 @@
 
 
 *>-----readInputLine variables-----
+       01 input-buffer pic x(100).
        01 input-prompt pic x(100).
        01 input-file-status pic xx.
-              88 valid-read value "00".
+       01 input-read-status pic xx value "00".
+           88 valid-read value "00".
+       01 command-line-flag pic x value "0".
 
 *>-----outputLine variables-----
        01 output-buffer pic x(150).
@@ -339,8 +342,9 @@
               *> Open input file for reading user choices
               open input input-file
               if input-file-status not = "00"
-                  move "Error opening input file" to output-buffer
+                  move "Reading input from command line" to output-buffer
                   perform outputLine
+                  move "1" to command-line-flag
               end-if
               exit.
 
@@ -1305,35 +1309,55 @@
 *> Output:    input-buffer - Line from the file
 *> User is responsible for opening and closing the input file when using this
        readInputLine.
-              if input-file-status = "00"
-                  read input-file
-                      not at end
-                          *>Simulating the user entering the input
-                          string
-                              function trim(input-prompt, trailing) delimited by size
-                              " " delimited by size                                   *> Will always have an extra space (even if input has no prompt)
-                              function trim(input-buffer, trailing) delimited by size
-                              into output-buffer
-                          end-string
-                          perform outputLine
-                      at end
-                          move input-prompt to output-buffer
-                          perform outputLine
+              if command-line-flag = "0"
+                  if input-file-status = "00"
+                      move input-file-status to input-read-status
+                      read input-file
+                          not at end
+                              move input-file-buffer to input-buffer
+                              *>Simulating the user entering the input
+                              string
+                                  function trim(input-prompt, trailing) delimited by size
+                                  " " delimited by size                                   *> Will always have an extra space (even if input has no prompt)
+                                  function trim(input-buffer, trailing) delimited by size
+                                  into output-buffer
+                              end-string
+                              perform outputLine
+                          at end
+                              move input-prompt to output-buffer
+                              perform outputLine
 
-                          *> Input-buffer is stale now, so set to spaces
-                          move spaces to input-buffer
-                          *> Notify user
-                          move "Reached end of input file ( ੭ˊᵕˋ)੭" to output-buffer
-                          perform outputLine
-                  end-read
+                              *> Input-buffer is stale now, so set to spaces
+                              move spaces to input-buffer
+                              *> Notify user
+                              move "Reached end of input file ( ੭ˊᵕˋ)੭" to output-buffer
+                              perform outputLine
+                      end-read
+                   else
+                     move input-file-status to input-read-status
+                     string
+                         "Error reading input file: " delimited by size
+                         input-file-status            delimited by size
+                         " (｡•́︿•̀｡)"                   delimited by size
+                         into output-buffer
+                     end-string
+                     perform outputLine
+                   end-if
               else
+                  *> Read from cli
+                  display function trim(input-prompt trailing) with no advancing
+                  display " " with no advancing
+                  accept input-buffer
+                  move "00" to input-read-status
                   string
-                      "Error reading input file: " delimited by size
-                      input-file-status            delimited by size
-                      " (｡•́︿•̀｡)"                   delimited by size
-                      into output-buffer
+                       function trim(input-prompt trailing) delimited by size
+                       " "
+                       input-buffer
+                       into output-line
                   end-string
-                  perform outputLine
+                  open extend output-file
+                  write output-line
+                  close output-file
               end-if
               exit.
 
