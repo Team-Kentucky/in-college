@@ -23,7 +23,10 @@ InCollege is a LinkedIn-like platform for college students, implemented in COBOL
 - Apply to job/internship listings
   - Report view of all applications
 - Send Messages to Connections
-  - **NEW: View Recieved Messages**
+  - View Recieved Messages
+- **NEW: Enhanced User Interface**
+- **NEW: Interactive Mode
+  - **New: Enter program input without input.txt**
 
 ## Project Structure
 
@@ -97,6 +100,8 @@ cp <your input file> bin/input.txt
 cd bin
 ./inCollege
 ```
+
+If you would like to use the program manually, simply ensure there is no input.txt file in the executable directory. The program will then read your input from the command line in an interactive mode.
 
 ## Input/Output Files
 
