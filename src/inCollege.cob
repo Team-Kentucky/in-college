@@ -348,7 +348,21 @@
               end-if
               exit.
 
+*>*******************************************************************
+*> Terminate Program
+*>*******************************************************************
+       cleanup-program.
+              *> Close input file if open
+              close input-file
+              *> Print end-of-program marker
+              move end-marker to output-buffer
+              perform outputLine
+              exit.
 
+
+*>*******************************************************************
+*> User Login functionality
+*>*******************************************************************
 *> Paragraph: welcomePage
 *> Purpose:   First menu of the program. Allows the user to sign in or create an account
 *> Input:     None
@@ -387,7 +401,7 @@
 
 
 *>*******************************************************************
-*> Login process placeholder - will be implemented in commit 3
+*> Login process
 *>*******************************************************************
        login-process.
               *> Unlimited attempts until successful login
@@ -432,8 +446,105 @@
               exit.
 
 
+
 *>*******************************************************************
-*> Post-login menu and navigation
+*> Account Creation Process
+*>*******************************************************************
+       accountCreation.
+              *> Verify that we aren't at max accounts
+              perform findNumAccounts.
+              if num-accounts < 6
+                  initialize acct-record
+                  move "N" to profile-has-data
+
+                  perform outputLine
+                  perform displayDashedLine
+                  move "Please enter all required information" to output-buffer
+                  perform outputLine
+                  perform displayDashedLine
+                  perform outputLine
+
+                  perform with test after until acct-not-found or not valid-read
+                       move "Username: " to input-prompt
+                       perform readInputLine
+                       move input-buffer to buffer-acct-username
+
+                       perform findAcct
+                       if acct-found
+                          move "Username has already been taken" to output-buffer
+                          perform outputLine
+                       end-if
+                  end-perform
+
+                  perform with test after until valid-password or not valid-read
+                      move "Password: " to input-prompt
+                      perform readInputLine
+                      move input-buffer to buffer-acct-password
+
+                      perform validate-password
+                      if not valid-password
+                          move "Password must be between 8-12 characters, contain 1 capital letter, 1 digit, and 1 special character" to output-buffer
+                          perform outputLine
+                      end-if
+                  end-perform
+
+                  if valid-password and valid-read
+                      perform addAcct
+                      *> If all works, run this:
+                      perform outputLine
+                      move "Account has successfully been created" to output-buffer
+                      perform outputLine
+                  end-if
+              else
+                      move "All permitted accounts have been created, please come back later" to output-buffer
+                      perform outputLine
+              end-if
+              exit.
+
+
+*> Password validation routine
+       validate-password.
+              *> Capture and trim raw password from input-buffer
+              move function trim(buffer-acct-password trailing) to pwd-raw
+              compute pwd-length = function length(function trim(pwd-raw trailing))
+
+              *> Initialize result to invalid
+              move 'N' to password-validity
+              move 'N' to has-capital
+              move 'N' to has-digit
+              move 'N' to has-special
+
+              *> Length check 8..12
+              if pwd-length < 8 or pwd-length > 12
+                  exit paragraph
+              end-if
+
+              *> NOT WORKING
+              *> Scan characters
+              perform varying idx from 1 by 1 until idx > pwd-length
+                  move pwd-raw(idx:idx) to pwd-ch
+                  evaluate true
+                      when pwd-ch >= 'A' and pwd-ch <= 'Z'
+                          move 'Y' to has-capital
+                      when pwd-ch >= '0' and pwd-ch <= '9'
+                          move 'Y' to has-digit
+                      when (pwd-ch >= 'a' and pwd-ch <= 'z')
+                          continue
+                      when other
+                          move 'Y' to has-special
+                  end-evaluate
+              end-perform
+
+              if has-capital = 'Y' and has-digit = 'Y' and has-special = 'Y'
+                  move 'Y' to password-validity
+                  move pwd-raw(1:12) to input-password
+              end-if
+              exit.
+
+
+
+*>*******************************************************************
+*> inCollege Main menu
 *>*******************************************************************
        post-login-menu.
               perform until logged-in = 'N' or not valid-read
@@ -487,313 +598,12 @@
               exit.
 
 
-*>*******************************************************************
-*> View established connections for current user
-*>*******************************************************************
-       viewConnections.
-              perform outputLine
-              move connections-title to output-buffer
-              perform outputLine
-              move 0 to connection-count
 
-              open input connection-database
-              if connection-database-status = "00"
-                  perform until connection-database-status not = "00"
-                      read connection-database next record
-                          at end
-                              exit perform
-                          not at end
-                              if function trim(connection-user-1 trailing) = function trim(current-user trailing) or
-                                 function trim(connection-user-2 trailing) = function trim(current-user trailing)
-                                  if function trim(connection-user-1 trailing) = function trim(current-user trailing)
-                                      move connection-user-2 to connection-other
-                                  else
-                                      move connection-user-1 to connection-other
-                                  end-if
-                                  add 1 to connection-count
-
-                                  move spaces to output-buffer
-                                  string "- " delimited by size
-                                         function trim(connection-other trailing) delimited by size
-                                         into output-buffer
-                                  end-string
-                                  perform outputLine
-
-                                  *> connection-other username of connection
-                                  *> Need to search up profile to get first and last name
-                                  move connection-other to buffer-acct-username
-                                  perform findAcct
-
-                                  string
-                                      "    " delimited by size
-                                      function trim(profile-first-name trailing) delimited by size
-                                      " "
-                                      function trim(profile-last-name trailing) delimited by size
-                                      into output-buffer
-                                  end-string
-                                  perform outputLine
-
-                                 string
-                                      "    " delimited by size
-                                      function trim(profile-major trailing) delimited by size
-                                      ", "
-                                      function trim(profile-university trailing) delimited by size
-                                      into output-buffer
-                                  end-string
-                                  perform outputLine
-                              end-if
-                      end-read
-                  end-perform
-              end-if
-              close connection-database
-
-              if connection-count = 0
-                  move connections-empty to output-buffer
-                  perform outputLine
-              end-if
-
-              move "--------------------" to output-buffer
-              perform outputLine
-              exit.
 *>*******************************************************************
 *> Profile Management Procedures
 *>*******************************************************************
 
-*>*******************************************************************
-*> Create or Edit Profile
-*>*******************************************************************
-       create-edit-profile.
-              perform outputLine
-              move profile-create-title to output-buffer
-              perform outputLine
-
-              *> Load existing profile if it exists
-              move current-user to buffer-acct-username
-              perform findAcct
-              if acct-found
-                  *> Sucessfully retrieved account
-                  continue
-              else
-                  *> User somehow does not exist in database yet is signed in
-                  continue
-              end-if
-
-              *> Get required profile information
-              perform get-required-profile-info
-
-              *> Get optional profile information
-              perform get-optional-profile-info
-
-              *> Save profile
-              perform save-profile
-
-              move profile-saved-msg to output-buffer
-              perform outputLine
-              exit.
-
-*>*******************************************************************
-*> Get Required Profile Information
-*>*******************************************************************
-       get-required-profile-info.
-              *> First Name
-              move 'N' to profile-validation
-              perform until profile-valid or not valid-read
-                  move profile-first-name-prompt to input-prompt
-                  perform readInputLine
-
-                  if input-buffer not equal to spaces
-                      move 'Y' to profile-validation
-                      move function trim(input-buffer trailing) to profile-first-name
-                  end-if
-              end-perform
-
-              *> Last Name
-              move 'N' to profile-validation
-              perform until profile-valid or not valid-read
-                  move profile-last-name-prompt to input-prompt
-                  perform readInputLine
-
-                  if input-buffer not equal to spaces
-                      move 'Y' to profile-validation
-                      move function trim(input-buffer trailing) to profile-last-name
-                  end-if
-              end-perform
-
-              *> University
-              move 'N' to profile-validation
-              perform until profile-valid or not valid-read
-                  move profile-university-prompt to input-prompt
-                  perform readInputLine
-
-                  if input-buffer not equal to spaces
-                      move 'Y' to profile-validation
-                      move function trim(input-buffer trailing) to profile-university
-                  end-if
-              end-perform
-
-              *> Major
-              move 'N' to profile-validation
-              perform until profile-valid or not valid-read
-                  move profile-major-prompt to input-prompt
-                  perform readInputLine
-
-                  if input-buffer not equal to spaces
-                      move 'Y' to profile-validation
-                      move function trim(input-buffer trailing) to profile-major
-                  end-if
-              end-perform
-
-              *> Graduation Year with validation
-              move 'N' to profile-validation
-              perform until profile-valid or not valid-read
-                  move profile-graduation-prompt to input-prompt
-                  perform readInputLine
-                  move function trim(input-buffer trailing) to profile-input-buffer
-
-                  perform validate-graduation-year
-                  if not profile-valid
-                      move "Invalid graduation year. Please enter a valid 4-digit year." to output-buffer
-                      perform outputLine
-                  end-if
-              end-perform
-              exit.
-
-*>*******************************************************************
-*> Get Optional Profile Information
-*>*******************************************************************
-       get-optional-profile-info.
-              *> About Me
-              move profile-about-prompt to input-prompt
-              perform readInputLine
-              if function trim(input-buffer trailing) = spaces
-                  move spaces to profile-about-me
-              else
-                  move function trim(input-buffer trailing) to profile-about-me
-              end-if
-
-              *> Experience entries
-              move 1 to profile-counter
-              move 'N' to profile-done-flag
-              perform until profile-done or profile-counter > 3 or not valid-read
-                  move spaces to input-prompt
-                  string "Experience #" delimited by size
-                         profile-counter delimited by size
-                         " - Title:" delimited by size
-                         into input-prompt
-                  end-string
-                  perform readInputLine
-
-                  if function trim(input-buffer trailing) = 'DONE' or
-                     function trim(input-buffer trailing) = 'done'
-                      move 'Y' to profile-done-flag
-                  else
-                      move function trim(input-buffer trailing) to exp-title(profile-counter)
-
-                      move spaces to input-prompt
-                      string "Experience #" delimited by size
-                             profile-counter delimited by size
-                             " - Company/Organization:" delimited by size
-                             into input-prompt
-                      end-string
-                      perform readInputLine
-                      move function trim(input-buffer trailing) to exp-company(profile-counter)
-
-                      move spaces to input-prompt
-                      string "Experience #" delimited by size
-                             profile-counter delimited by size
-                             " - Dates (e.g., Summer 2024):" delimited by size
-                             into input-prompt
-                      end-string
-                      perform readInputLine
-                      move function trim(input-buffer trailing) to exp-dates(profile-counter)
-
-                      move spaces to input-prompt
-                      string "Experience #" delimited by size
-                             profile-counter delimited by size
-                             " - Description (optional, max 100 chars, blank to skip):" delimited by size
-                             into input-prompt
-                      end-string
-                      perform readInputLine
-                      if function trim(input-buffer trailing) = spaces
-                          move spaces to exp-description(profile-counter)
-                      else
-                          move function trim(input-buffer trailing) to exp-description(profile-counter)
-                      end-if
-
-                      add 1 to profile-counter
-                  end-if
-              end-perform
-
-              *> Education entries
-              move 1 to profile-counter
-              move 'N' to profile-done-flag
-              perform until profile-done or profile-counter > 3 or not valid-read
-                  move spaces to input-prompt
-                  string "Education #" delimited by size
-                         profile-counter delimited by size
-                         " - Degree:" delimited by size
-                         into input-prompt
-                  end-string
-                  perform readInputLine
-
-                  if function trim(input-buffer trailing) = 'DONE' or
-                     function trim(input-buffer trailing) = 'done'
-                      move 'Y' to profile-done-flag
-                  else
-                      move function trim(input-buffer trailing) to edu-degree(profile-counter)
-
-                      move spaces to input-prompt
-                      string "Education #" delimited by size
-                             profile-counter delimited by size
-                             " - University/College:" delimited by size
-                             into input-prompt
-                      end-string
-                      perform readInputLine
-                      move function trim(input-buffer trailing) to edu-university(profile-counter)
-
-                      move spaces to input-prompt
-                      string "Education #" delimited by size
-                             profile-counter delimited by size
-                             " - Years Attended (e.g., 2023-2025):" delimited by size
-                             into input-prompt
-                      end-string
-                      perform readInputLine
-                      move function trim(input-buffer trailing) to edu-years(profile-counter)
-
-                      add 1 to profile-counter
-                  end-if
-              end-perform
-              exit.
-
-*>*******************************************************************
-*> Validate Graduation Year
-*>*******************************************************************
-       validate-graduation-year.
-              move 'N' to profile-validation
-
-              *> Check if input is numeric and 4 digits
-              if function length(function trim(profile-input-buffer trailing)) = 4
-                  move profile-input-buffer to graduation-year-num
-                  if graduation-year-num >= min-graduation-year and
-                     graduation-year-num <= max-graduation-year
-                      move graduation-year-num to profile-graduation-year
-                      move 'Y' to profile-validation
-                  end-if
-              end-if
-              exit.
-
-*>*******************************************************************
-*> Save Profile
-*>*******************************************************************
-       save-profile.
-              move 'Y' to profile-has-data
-              move current-user to acct-username
-              perform updateAcct
-              exit.
-
-*>*******************************************************************
-*> View Profile
-*>*******************************************************************
+*> Paragraph: View Profile
        view-profile.
               *> Load profile data
               move current-user to buffer-acct-username
@@ -920,105 +730,264 @@
               end-if
               exit.
 
-*>*******************************************************************
-*> Skills list with option to go back
-*>*******************************************************************
-       skills-menu.
-              perform until not valid-read
-                  perform outputLine
-                  move skills-title to output-buffer
-                  perform outputLine
-                  move skill1 to output-buffer
-                  perform outputLine
-                  move skill2 to output-buffer
-                  perform outputLine
-                  move skill3 to output-buffer
-                  perform outputLine
-                  move skill4 to output-buffer
-                  perform outputLine
-                  move skill5 to output-buffer
-                  perform outputLine
-                  move go-back to output-buffer
-                  perform outputLine
-                  move choice-prompt to input-prompt
-                  perform readInputLine
-                  move input-buffer(1:1) to menu-choice
 
-                  evaluate true
-                      when menu-choice = '1'
-                          move "This skill is under construction." to output-buffer
-                          perform outputLine
-                      when menu-choice = '2'
-                          move "This skill is under construction." to output-buffer
-                          perform outputLine
-                      when menu-choice = '3'
-                          move "This skill is under construction." to output-buffer
-                          perform outputLine
-                      when menu-choice = '4'
-                          move "This skill is under construction." to output-buffer
-                          perform outputLine
-                      when menu-choice = '5'
-                          move "This skill is under construction." to output-buffer
-                          perform outputLine
-                      when menu-choice = 'q' or not valid-read
-                          exit perform
-                      when other
-                          move "Invalid input" to output-buffer
-                          perform outputLine
-                  end-evaluate
+*> Paragraph: Create or Edit Profile
+       create-edit-profile.
+              perform outputLine
+              move profile-create-title to output-buffer
+              perform outputLine
+
+              *> Load existing profile if it exists
+              move current-user to buffer-acct-username
+              perform findAcct
+              if acct-found
+                  *> Sucessfully retrieved account
+                  continue
+              else
+                  *> User somehow does not exist in database yet is signed in
+                  continue
+              end-if
+
+              *> Get required profile information
+              perform get-required-profile-info
+
+              *> Get optional profile information
+              perform get-optional-profile-info
+
+              *> Save profile
+              perform save-profile
+
+              move profile-saved-msg to output-buffer
+              perform outputLine
+              exit.
+
+
+*> Paragraph: Get Required Profile Information
+       get-required-profile-info.
+              *> First Name
+              move 'N' to profile-validation
+              perform until profile-valid or not valid-read
+                  move profile-first-name-prompt to input-prompt
+                  perform readInputLine
+
+                  if input-buffer not equal to spaces
+                      move 'Y' to profile-validation
+                      move function trim(input-buffer trailing) to profile-first-name
+                  end-if
+              end-perform
+
+              *> Last Name
+              move 'N' to profile-validation
+              perform until profile-valid or not valid-read
+                  move profile-last-name-prompt to input-prompt
+                  perform readInputLine
+
+                  if input-buffer not equal to spaces
+                      move 'Y' to profile-validation
+                      move function trim(input-buffer trailing) to profile-last-name
+                  end-if
+              end-perform
+
+              *> University
+              move 'N' to profile-validation
+              perform until profile-valid or not valid-read
+                  move profile-university-prompt to input-prompt
+                  perform readInputLine
+
+                  if input-buffer not equal to spaces
+                      move 'Y' to profile-validation
+                      move function trim(input-buffer trailing) to profile-university
+                  end-if
+              end-perform
+
+              *> Major
+              move 'N' to profile-validation
+              perform until profile-valid or not valid-read
+                  move profile-major-prompt to input-prompt
+                  perform readInputLine
+
+                  if input-buffer not equal to spaces
+                      move 'Y' to profile-validation
+                      move function trim(input-buffer trailing) to profile-major
+                  end-if
+              end-perform
+
+              *> Graduation Year with validation
+              move 'N' to profile-validation
+              perform until profile-valid or not valid-read
+                  move profile-graduation-prompt to input-prompt
+                  perform readInputLine
+                  move function trim(input-buffer trailing) to profile-input-buffer
+
+                  perform validate-graduation-year
+                  if not profile-valid
+                      move "Invalid graduation year. Please enter a valid 4-digit year." to output-buffer
+                      perform outputLine
+                  end-if
               end-perform
               exit.
 
 
-       accountCreation.
-              *> Verify that we aren't at max accounts
-              perform findNumAccounts.
-              if num-accounts < 6
-                  initialize acct-record
-                  move "N" to profile-has-data
-
-                  perform outputLine
-                  perform displayDashedLine
-                  move "Please enter all required information" to output-buffer
-                  perform outputLine
-                  perform displayDashedLine
-                  perform outputLine
-
-                  perform with test after until acct-not-found or not valid-read
-                       move "Username: " to input-prompt
-                       perform readInputLine
-                       move input-buffer to buffer-acct-username
-
-                       perform findAcct
-                       if acct-found
-                          move "Username has already been taken" to output-buffer
-                          perform outputLine
-                       end-if
-                  end-perform
-
-                  perform with test after until valid-password or not valid-read
-                      move "Password: " to input-prompt
-                      perform readInputLine
-                      move input-buffer to buffer-acct-password
-
-                      perform validate-password
-                      if not valid-password
-                          move "Password must be between 8-12 characters, contain 1 capital letter, 1 digit, and 1 special character" to output-buffer
-                          perform outputLine
-                      end-if
-                  end-perform
-
-                  if valid-password and valid-read
-                      perform addAcct
-                      *> If all works, run this:
-                      perform outputLine
-                      move "Account has successfully been created" to output-buffer
-                      perform outputLine
-                  end-if
+*> Paragraph: Get Optional Profile Information
+       get-optional-profile-info.
+              *> About Me
+              move profile-about-prompt to input-prompt
+              perform readInputLine
+              if function trim(input-buffer trailing) = spaces
+                  move spaces to profile-about-me
               else
-                      move "All permitted accounts have been created, please come back later" to output-buffer
-                      perform outputLine
+                  move function trim(input-buffer trailing) to profile-about-me
               end-if
+
+              *> Experience entries
+              move 1 to profile-counter
+              move 'N' to profile-done-flag
+              perform until profile-done or profile-counter > 3 or not valid-read
+                  move spaces to input-prompt
+                  string "Experience #" delimited by size
+                         profile-counter delimited by size
+                         " - Title:" delimited by size
+                         into input-prompt
+                  end-string
+                  perform readInputLine
+
+                  if function trim(input-buffer trailing) = 'DONE' or
+                     function trim(input-buffer trailing) = 'done'
+                      move 'Y' to profile-done-flag
+                  else
+                      move function trim(input-buffer trailing) to exp-title(profile-counter)
+
+                      move spaces to input-prompt
+                      string "Experience #" delimited by size
+                             profile-counter delimited by size
+                             " - Company/Organization:" delimited by size
+                             into input-prompt
+                      end-string
+                      perform readInputLine
+                      move function trim(input-buffer trailing) to exp-company(profile-counter)
+
+                      move spaces to input-prompt
+                      string "Experience #" delimited by size
+                             profile-counter delimited by size
+                             " - Dates (e.g., Summer 2024):" delimited by size
+                             into input-prompt
+                      end-string
+                      perform readInputLine
+                      move function trim(input-buffer trailing) to exp-dates(profile-counter)
+
+                      move spaces to input-prompt
+                      string "Experience #" delimited by size
+                             profile-counter delimited by size
+                             " - Description (optional, max 100 chars, blank to skip):" delimited by size
+                             into input-prompt
+                      end-string
+                      perform readInputLine
+                      if function trim(input-buffer trailing) = spaces
+                          move spaces to exp-description(profile-counter)
+                      else
+                          move function trim(input-buffer trailing) to exp-description(profile-counter)
+                      end-if
+
+                      add 1 to profile-counter
+                  end-if
+              end-perform
+
+              *> Education entries
+              move 1 to profile-counter
+              move 'N' to profile-done-flag
+              perform until profile-done or profile-counter > 3 or not valid-read
+                  move spaces to input-prompt
+                  string "Education #" delimited by size
+                         profile-counter delimited by size
+                         " - Degree:" delimited by size
+                         into input-prompt
+                  end-string
+                  perform readInputLine
+
+                  if function trim(input-buffer trailing) = 'DONE' or
+                     function trim(input-buffer trailing) = 'done'
+                      move 'Y' to profile-done-flag
+                  else
+                      move function trim(input-buffer trailing) to edu-degree(profile-counter)
+
+                      move spaces to input-prompt
+                      string "Education #" delimited by size
+                             profile-counter delimited by size
+                             " - University/College:" delimited by size
+                             into input-prompt
+                      end-string
+                      perform readInputLine
+                      move function trim(input-buffer trailing) to edu-university(profile-counter)
+
+                      move spaces to input-prompt
+                      string "Education #" delimited by size
+                             profile-counter delimited by size
+                             " - Years Attended (e.g., 2023-2025):" delimited by size
+                             into input-prompt
+                      end-string
+                      perform readInputLine
+                      move function trim(input-buffer trailing) to edu-years(profile-counter)
+
+                      add 1 to profile-counter
+                  end-if
+              end-perform
+              exit.
+
+
+*> Paragraph: Validate Graduation Year
+       validate-graduation-year.
+              move 'N' to profile-validation
+
+              *> Check if input is numeric and 4 digits
+              if function length(function trim(profile-input-buffer trailing)) = 4
+                  move profile-input-buffer to graduation-year-num
+                  if graduation-year-num >= min-graduation-year and
+                     graduation-year-num <= max-graduation-year
+                      move graduation-year-num to profile-graduation-year
+                      move 'Y' to profile-validation
+                  end-if
+              end-if
+              exit.
+
+
+
+
+
+*>*******************************************************************
+*> Account database management functions
+*>*******************************************************************
+
+*> Paragraph: addAcct
+*> Purpose:   Adds an account to the account database
+*> Input:     buffer-acct-username
+*>            buffer-acct-password
+*> Output:    None
+*> User should verify if the new record was duplicate
+       addAcct.
+              open i-o acct-database.
+
+              if database-does-not-exist
+                  *> Log file does not exist yet, so create it
+                  open output acct-database
+              end-if
+
+
+              if acct-database-status = "00"
+                  move buffer-acct-username to acct-username
+                  move buffer-acct-password to acct-password
+                  write acct-record
+
+                  if user-already-exists move "3" to acct-status
+                  else move "4" to acct-status
+              else
+                  string
+                      "Error opening account database: " delimited by size
+                      acct-database-status               delimited by size
+                      into output-buffer
+                  end-string
+                  perform outputLine
+              end-if
+              close acct-database.
               exit.
 
 
@@ -1056,42 +1025,7 @@
               exit.
 
 
-*> Paragraph: readInputLine
-*> Purpose:   Adds an account to the account database
-*> Input:     buffer-acct-username
-*>            buffer-acct-password
-*> Output:    None
-*> User should verify if the new record was duplicate
-       addAcct.
-              open i-o acct-database.
-
-              if database-does-not-exist
-                  *> Log file does not exist yet, so create it
-                  open output acct-database
-              end-if
-
-
-              if acct-database-status = "00"
-                  move buffer-acct-username to acct-username
-                  move buffer-acct-password to acct-password
-                  write acct-record
-
-                  if user-already-exists move "3" to acct-status
-                  else move "4" to acct-status
-              else
-                  string
-                      "Error opening account database: " delimited by size
-                      acct-database-status               delimited by size
-                      into output-buffer
-                  end-string
-                  perform outputLine
-              end-if
-              close acct-database.
-              exit.
-
-*>*******************************************************************
 *> Update Account with Profile Data
-*>*******************************************************************
        updateAcct.
               open i-o acct-database.
 
@@ -1117,7 +1051,8 @@
               close acct-database.
               exit.
 
-*> Paragraph: readInputLine
+
+*> Paragraph: findAcct
 *> Purpose:   Finds an account in the account database
 *> Input:     buffer-acct-username
 *> Output:    None
@@ -1148,11 +1083,10 @@
               close acct-database.
 
               exit.
-*>*******************************************************************
+
 *> Find Profile by First and Last Name
 *> Input: buffer-first-name, buffer-last-name
 *> Output: Sets acct-status and loads profile data if found
-*>*******************************************************************
        findProfile.
               open input acct-database.
 
@@ -1191,11 +1125,10 @@
               close acct-database.
               exit.
 
-*>*******************************************************************
+
 *> Search User by Name - Uses findProfile function
 *> Input: Takes first and last name input from user
 *> Output: Displays profile if found, error message if not
-*>*******************************************************************
        searchUserProfile.
               perform outputLine
               move "Enter the first name to search for:" to input-prompt
@@ -1249,206 +1182,132 @@
               exit.
 
 
-*>*******************************************************************
-*> Password validation routine
-*>*******************************************************************
-       validate-password.
-              *> Capture and trim raw password from input-buffer
-              move function trim(buffer-acct-password trailing) to pwd-raw
-              compute pwd-length = function length(function trim(pwd-raw trailing))
-
-              *> Initialize result to invalid
-              move 'N' to password-validity
-              move 'N' to has-capital
-              move 'N' to has-digit
-              move 'N' to has-special
-
-              *> Length check 8..12
-              if pwd-length < 8 or pwd-length > 12
-                  exit paragraph
-              end-if
-
-              *> NOT WORKING
-              *> Scan characters
-              perform varying idx from 1 by 1 until idx > pwd-length
-                  move pwd-raw(idx:idx) to pwd-ch
-                  evaluate true
-                      when pwd-ch >= 'A' and pwd-ch <= 'Z'
-                          move 'Y' to has-capital
-                      when pwd-ch >= '0' and pwd-ch <= '9'
-                          move 'Y' to has-digit
-                      when (pwd-ch >= 'a' and pwd-ch <= 'z')
-                          continue
-                      when other
-                          move 'Y' to has-special
-                  end-evaluate
-              end-perform
-
-              if has-capital = 'Y' and has-digit = 'Y' and has-special = 'Y'
-                  move 'Y' to password-validity
-                  move pwd-raw(1:12) to input-password
-              end-if
+*> Save Profile
+       save-profile.
+              move 'Y' to profile-has-data
+              move current-user to acct-username
+              perform updateAcct
               exit.
 
 
 *>*******************************************************************
-*> Clean up resources before exit
+*> Connections
 *>*******************************************************************
-       cleanup-program.
-              *> Close input file if open
-              close input-file
-              *> Print end-of-program marker
-              move end-marker to output-buffer
+       viewConnections.
+              perform outputLine
+              move connections-title to output-buffer
+              perform outputLine
+              move 0 to connection-count
+
+              open input connection-database
+              if connection-database-status = "00"
+                  perform until connection-database-status not = "00"
+                      read connection-database next record
+                          at end
+                              exit perform
+                          not at end
+                              if function trim(connection-user-1 trailing) = function trim(current-user trailing) or
+                                 function trim(connection-user-2 trailing) = function trim(current-user trailing)
+                                  if function trim(connection-user-1 trailing) = function trim(current-user trailing)
+                                      move connection-user-2 to connection-other
+                                  else
+                                      move connection-user-1 to connection-other
+                                  end-if
+                                  add 1 to connection-count
+
+                                  move spaces to output-buffer
+                                  string "- " delimited by size
+                                         function trim(connection-other trailing) delimited by size
+                                         into output-buffer
+                                  end-string
+                                  perform outputLine
+
+                                  *> connection-other username of connection
+                                  *> Need to search up profile to get first and last name
+                                  move connection-other to buffer-acct-username
+                                  perform findAcct
+
+                                  string
+                                      "    " delimited by size
+                                      function trim(profile-first-name trailing) delimited by size
+                                      " "
+                                      function trim(profile-last-name trailing) delimited by size
+                                      into output-buffer
+                                  end-string
+                                  perform outputLine
+
+                                 string
+                                      "    " delimited by size
+                                      function trim(profile-major trailing) delimited by size
+                                      ", "
+                                      function trim(profile-university trailing) delimited by size
+                                      into output-buffer
+                                  end-string
+                                  perform outputLine
+                              end-if
+                      end-read
+                  end-perform
+              end-if
+              close connection-database
+
+              if connection-count = 0
+                  move connections-empty to output-buffer
+                  perform outputLine
+              end-if
+
+              move "--------------------" to output-buffer
               perform outputLine
               exit.
 
 
-*> Paragraph: readInputLine
-*> Purpose:   Reads in the next line of the input file
-*> Input:     None
-*> Output:    input-buffer - Line from the file
-*> User is responsible for opening and closing the input file when using this
-       readInputLine.
-              if command-line-flag = "0"
-                  if input-file-status = "00"
-                      move input-file-status to input-read-status
-                      read input-file
-                          not at end
-                              move input-file-buffer to input-buffer
-                              *>Simulating the user entering the input
-                              string
-                                  function trim(input-prompt, trailing) delimited by size
-                                  " " delimited by size                                   *> Will always have an extra space (even if input has no prompt)
-                                  function trim(input-buffer, trailing) delimited by size
-                                  into output-buffer
-                              end-string
-                              perform outputLine
-                          at end
-                              move input-prompt to output-buffer
-                              perform outputLine
+*> Check if two users are connected
+*> Input: current-user (sender), message-recipient-buffer (recipient)
+*> Output: Sets connection-status
+              checkConnection.
+              *> Default to not connected
+              move "23" to connection-status
 
-                              *> Input-buffer is stale now, so set to spaces
-                              move spaces to input-buffer
-                              *> Notify user
-                              move "Reached end of input file ( ੭ˊᵕˋ)੭" to output-buffer
-                              perform outputLine
-                      end-read
-                   else
-                     move input-file-status to input-read-status
-                     string
-                         "Error reading input file: " delimited by size
-                         input-file-status            delimited by size
-                         " (｡•́︿•̀｡)"                   delimited by size
-                         into output-buffer
-                     end-string
-                     perform outputLine
-                   end-if
-              else
-                  *> Read from cli
-                  display function trim(input-prompt trailing) with no advancing
-                  display " " with no advancing
-                  accept input-buffer
-                  move "00" to input-read-status
-                  string
-                       function trim(input-prompt trailing) delimited by size
-                       " "
-                       input-buffer
-                       into output-line
+              *> Build connection keys for both directions
+              open i-o connection-database
+              if connection-ok
+                  *> Check first direction (current-user|recipient)
+                  move spaces to connection-key
+                  string function trim(current-user trailing) delimited by size
+                         '|' delimited by size
+                         function trim(message-recipient-buffer trailing) delimited by size
+                         into connection-key
                   end-string
-                  open extend output-file
-                  write output-line
-                  close output-file
+
+                  read connection-database
+                      key is connection-key
+                      invalid key
+                          *> Not connected in first direction, check reverse
+                          move spaces to connection-key
+                          string function trim(message-recipient-buffer trailing) delimited by size
+                                 '|' delimited by size
+                                 function trim(current-user trailing) delimited by size
+                                 into connection-key
+                          end-string
+
+                          read connection-database
+                              key is connection-key
+                              invalid key
+                                  *> Not connected in either direction
+                                  move "23" to connection-status
+                              not invalid key
+                                  *> Connected in reverse direction
+                                  move "00" to connection-status
+                          end-read
+                      not invalid key
+                          *> Connected in forward direction
+                          move "00" to connection-status
+                  end-read
               end-if
+              close connection-database
               exit.
 
 
-*> Paragraph: outputLine
-*> Purpose:   Prints string in buffer to console and saves to output log
-*> Input:     output-buffer - string you want to be output. Will be cleared
-*> Output:    None
-       outputLine.
-              open extend output-file.
-
-              if output-file-status = "35"
-                  *> Log file does not exist yet, so create it
-                  open output output-file
-              end-if
-
-              *> Ensure file opened properly
-              if output-file-status = "00"
-                  *> If we want to ensure that the console and output file are the same,
-                  *> console output can only happen if output file opens
-                  move output-buffer to output-line
-                  display function trim(output-line, trailing) *> Will make logged output have extra spaces compared to command line. Do we care?
-                  write output-line
-
-                  close output-file
-              else
-                  display "Error opening output file: " output-file-status " (っ- ‸ - ς)"
-              end-if
-
-              *> Some characters get 'stuck', manually clearing fixes it though
-              move spaces to output-buffer.
-              exit.
-
-
-*> Paragraph: displayLogo
-*> Purpose:   Prints the beautiful ascii logo for us
-*> Input:     None
-*> Output:    None
-*> ASCII art was created with https://patorjk.com/software/taag/
-       displayLogo.
-              perform displayASCIILine.
-              perform outputLine.
-              move "           /##            /######            /## /##                                        " to output-buffer.
-              perform outputLine.
-              move "          |__/           /##__  ##          | ##| ##                                        " to output-buffer.
-              perform outputLine.
-              move "           /## /####### | ##  \__/  /###### | ##| ##  /######   /######   /######           " to output-buffer.
-              perform outputLine.
-              move "          | ##| ##__  ##| ##       /##__  ##| ##| ## /##__  ## /##__  ## /##__  ##          " to output-buffer.
-              perform outputLine.
-              move "          | ##| ##  \ ##| ##      | ##  \ ##| ##| ##| ########| ##  \ ##| ########          " to output-buffer.
-              perform outputLine.
-              move "          | ##| ##  | ##| ##    ##| ##  | ##| ##| ##| ##_____/| ##  | ##| ##_____/          " to output-buffer.
-              perform outputLine.
-              move "          | ##| ##  | ##|  ######/|  ######/| ##| ##|  #######|  #######|  #######          " to output-buffer.
-              perform outputLine.
-              move "          |__/|__/  |__/ \______/  \______/ |__/|__/ \_______/ \____  ## \_______/          " to output-buffer.
-              perform outputLine.
-              move "                                                               /##  \ ##                    " to output-buffer.
-              perform outputLine.
-              move "                                                              |  ######/                    " to output-buffer.
-              perform outputLine.
-              move "                                                               \______/                      " to output-buffer.
-              perform outputLine.
-              move "                                                                             ฅ^•ﻌ•^ฅ        " to output-buffer.
-              perform outputLine.
-              perform displayASCIILine.
-              move "                                                                    Created by Team Kentucky" to output-buffer.
-              perform outputLine.
-              move "                            The world's best job site for students                          " to output-buffer.
-              perform outputLine.
-              perform outputLine.
-              perform outputLine.
-              exit.
-
-
-       displayASCIILine.
-              move "############################################################################################" to output-buffer.
-              perform outputLine.
-              exit.
-
-
-       displayDashedLine.
-              move "————————————————————————————————————————————————————————————————————————————————————————————" to output-buffer.
-              perform outputLine.
-              exit.
-
-
-*>*******************************************************************
 *> View list of pending connection requests for current user
-*>*******************************************************************
        viewPendingRequests.
               perform outputLine
               move pending-title to output-buffer
@@ -1617,9 +1476,7 @@
               exit.
 
 
-*>*******************************************************************
 *> Send a connection request from pending-sender to pending-recipient
-*>*******************************************************************
        sendConnectionRequest.
               if function trim(pending-sender trailing) = function trim(pending-recipient trailing)
                   move conn-invalid-msg to output-buffer
@@ -1750,6 +1607,201 @@
               close pending-requests
               exit.
 
+
+
+*>*******************************************************************
+*> Messaging
+*>*******************************************************************
+       messaging-menu.
+              perform until not valid-read
+                  perform outputLine
+                  move messages-title to output-buffer
+                  perform outputLine
+                  move messages-menu-1 to output-buffer
+                  perform outputLine
+                  move messages-menu-2 to output-buffer
+                  perform outputLine
+                  move messages-back to output-buffer
+                  perform outputLine
+                  move choice-prompt to input-prompt
+                  perform readInputLine
+                  move input-buffer(1:1) to menu-choice
+
+                  evaluate true
+                      when menu-choice = '1'
+                          perform sendNewMessage
+                      when menu-choice = '2'
+                          perform viewMyMessages
+                      when menu-choice = 'q' or not valid-read
+                          exit perform
+                      when other
+                          move "Invalid choice. Please try again." to output-buffer
+                          perform outputLine
+                  end-evaluate
+              end-perform
+              exit.
+
+
+*> Send a New Message
+*> Validates that recipient is a connection before sending
+       sendNewMessage.
+              perform outputLine
+              *> Prompt for recipient username
+              move message-recipient-prompt to input-prompt
+              perform readInputLine
+              move function trim(input-buffer trailing) to message-recipient-buffer
+
+              *> Validate recipient exists
+              move message-recipient-buffer to buffer-acct-username
+              perform findAcct
+              if not acct-found
+                  move message-user-not-found to output-buffer
+                  perform outputLine
+                  exit paragraph
+              end-if
+
+              *> Validate that recipient is a connection
+              perform checkConnection
+              if not-connected
+                  move message-not-connected to output-buffer
+                  perform outputLine
+                  exit paragraph
+              end-if
+
+              *> Prompt for message content
+              move message-content-prompt to input-prompt
+              perform readInputLine
+              move function trim(input-buffer trailing) to message-content-buffer
+
+              *> Save message to database
+              move current-user to message-sender-buffer
+              perform saveMessage
+
+              move message-sent-msg to output-buffer
+              perform outputLine
+              exit.
+
+
+*> Save Message to Database
+*> Input: message-sender-buffer, message-recipient-buffer, message-content-buffer
+       saveMessage.
+              open i-o message-database
+              if message-database-status = "35"
+                  open output message-database
+                  close message-database
+                  open i-o message-database
+              end-if
+
+              if message-ok
+                  *> Build unique message key using sender, recipient and sequence
+                  move spaces to message-key
+                  string function trim(message-sender-buffer trailing) delimited by size
+                         '|' delimited by size
+                         function trim(message-recipient-buffer trailing) delimited by size
+                         '|' delimited by size
+                         message-id-seq delimited by size
+                         into message-key
+                  end-string
+
+                  *> Set message fields
+                  move function trim(message-sender-buffer trailing) to message-sender
+                  move function trim(message-recipient-buffer trailing) to message-recipient
+                  move function trim(message-content-buffer trailing) to message-content
+
+                  *> Generate timestamp (simple format: using sequence number for now)
+                  move spaces to message-timestamp
+                  string "MSG-" delimited by size
+                         message-id-seq delimited by size
+                         into message-timestamp
+                  end-string
+
+                  move 'N' to message-read-flag
+
+                  *> Write message record
+                  write message-record
+
+                  if message-ok
+                      add 1 to message-id-seq
+                  else
+                      move "Error saving message." to output-buffer
+                      perform outputLine
+                  end-if
+              else
+                  move "Unable to open message database." to output-buffer
+                  perform outputLine
+              end-if
+              close message-database
+              exit.
+
+
+*> View My Messages
+       viewMyMessages.
+              *> Header
+              move "--- Your Messages ---" to output-buffer
+              perform outputLine
+
+              *> Default: none found
+              move 0 to message-counter
+
+              *> Open message store (read-only)
+              open input message-database
+              if message-database-status = "35"
+                  *> No message file yet -> no messages
+                  move "You have no messages at this time." to output-buffer
+                  perform outputLine
+                  exit paragraph
+              end-if
+
+              if message-ok
+                  *> Read sequentially from the beginning
+                  perform until 1 = 2
+                      read message-database next record
+                          at end
+                              exit perform
+                      end-read
+
+                      if function trim(message-recipient) =
+                         function trim(current-user)
+                          *> From:
+                          string "From: "                   delimited by size
+                                 function trim(message-sender trailing)
+                                                           delimited by size
+                                 into output-buffer
+                          perform outputLine
+
+                          *> Message:
+                          string "Message: "                delimited by size
+                                 function trim(message-content trailing)
+                                                           delimited by size
+                                 into output-buffer
+                          perform outputLine
+
+                          *> Separator
+                          move "---------------------" to output-buffer
+                          perform outputLine
+
+                          add 1 to message-counter
+                      end-if
+                  end-perform
+              else
+                  move "Unable to open message database." to output-buffer
+                  perform outputLine
+              end-if
+
+              close message-database
+
+              *> No messages case
+              if message-counter = 0
+                  move "You have no messages at this time." to output-buffer
+                  perform outputLine
+              end-if
+
+              exit.
+
+
+*>*******************************************************************
+*> Job Functions
+*>*******************************************************************
        jobSearch.
               perform outputLine
               move "[0] Browse Jobs/Internships" to output-buffer.
@@ -1862,9 +1914,8 @@
               close job-database.
               exit.
 
-*>*******************************************************************
+
 *> Browse available jobs and view details
-*>*******************************************************************
        browseJobs.
               *> Browse loop
               move 'N' to browse-done-flag
@@ -1930,10 +1981,9 @@
               end-perform
               exit.
 
-*>*******************************************************************
+
 *> View full details for a single job
 *> Input: application-job-key-buffer (job-key)
-*>*******************************************************************
        viewJobDetails.
               perform outputLine
               *> Ensure key is properly trimmed for lookup
@@ -2013,10 +2063,9 @@
               close job-database
               exit.
 
-*>*******************************************************************
+
 *> Create an application record for the current user for a job
 *> Relies on application-* fields populated: application-username, application-job-key, application-job-title, application-employer, application-location
-*>*******************************************************************
        createApplication.
               open i-o application-database
               if application-database-status = "35"
@@ -2060,9 +2109,8 @@
               close application-database
               exit.
 
-*>*******************************************************************
+
 *> View applications submitted by current user
-*>*******************************************************************
        viewMyApplications.
               perform outputLine
               move "--- Your Job Applications ---" to output-buffer
@@ -2143,19 +2191,27 @@
               end-if
               exit.
 
+
+
 *>*******************************************************************
-*> Messaging Menu
+*> Skills menu
 *>*******************************************************************
-       messaging-menu.
+       skills-menu.
               perform until not valid-read
                   perform outputLine
-                  move messages-title to output-buffer
+                  move skills-title to output-buffer
                   perform outputLine
-                  move messages-menu-1 to output-buffer
+                  move skill1 to output-buffer
                   perform outputLine
-                  move messages-menu-2 to output-buffer
+                  move skill2 to output-buffer
                   perform outputLine
-                  move messages-back to output-buffer
+                  move skill3 to output-buffer
+                  perform outputLine
+                  move skill4 to output-buffer
+                  perform outputLine
+                  move skill5 to output-buffer
+                  perform outputLine
+                  move go-back to output-buffer
                   perform outputLine
                   move choice-prompt to input-prompt
                   perform readInputLine
@@ -2163,222 +2219,173 @@
 
                   evaluate true
                       when menu-choice = '1'
-                          perform sendNewMessage
+                          move "This skill is under construction." to output-buffer
+                          perform outputLine
                       when menu-choice = '2'
-                          perform viewMyMessages
+                          move "This skill is under construction." to output-buffer
+                          perform outputLine
+                      when menu-choice = '3'
+                          move "This skill is under construction." to output-buffer
+                          perform outputLine
+                      when menu-choice = '4'
+                          move "This skill is under construction." to output-buffer
+                          perform outputLine
+                      when menu-choice = '5'
+                          move "This skill is under construction." to output-buffer
+                          perform outputLine
                       when menu-choice = 'q' or not valid-read
                           exit perform
                       when other
-                          move "Invalid choice. Please try again." to output-buffer
+                          move "Invalid input" to output-buffer
                           perform outputLine
                   end-evaluate
               end-perform
               exit.
 
-*>*******************************************************************
-*> Send a New Message
-*> Validates that recipient is a connection before sending
-*>*******************************************************************
-       sendNewMessage.
-              perform outputLine
-              *> Prompt for recipient username
-              move message-recipient-prompt to input-prompt
-              perform readInputLine
-              move function trim(input-buffer trailing) to message-recipient-buffer
 
-              *> Validate recipient exists
-              move message-recipient-buffer to buffer-acct-username
-              perform findAcct
-              if not acct-found
-                  move message-user-not-found to output-buffer
-                  perform outputLine
-                  exit paragraph
-              end-if
-
-              *> Validate that recipient is a connection
-              perform checkConnection
-              if not-connected
-                  move message-not-connected to output-buffer
-                  perform outputLine
-                  exit paragraph
-              end-if
-
-              *> Prompt for message content
-              move message-content-prompt to input-prompt
-              perform readInputLine
-              move function trim(input-buffer trailing) to message-content-buffer
-
-              *> Save message to database
-              move current-user to message-sender-buffer
-              perform saveMessage
-
-              move message-sent-msg to output-buffer
-              perform outputLine
-              exit.
 
 *>*******************************************************************
-*> Check if two users are connected
-*> Input: current-user (sender), message-recipient-buffer (recipient)
-*> Output: Sets connection-status
+*> Utility Functions
 *>*******************************************************************
-              checkConnection.
-              *> Default to not connected
-              move "23" to connection-status
-
-              *> Build connection keys for both directions
-              open i-o connection-database
-              if connection-ok
-                  *> Check first direction (current-user|recipient)
-                  move spaces to connection-key
-                  string function trim(current-user trailing) delimited by size
-                         '|' delimited by size
-                         function trim(message-recipient-buffer trailing) delimited by size
-                         into connection-key
-                  end-string
-
-                  read connection-database
-                      key is connection-key
-                      invalid key
-                          *> Not connected in first direction, check reverse
-                          move spaces to connection-key
-                          string function trim(message-recipient-buffer trailing) delimited by size
-                                 '|' delimited by size
-                                 function trim(current-user trailing) delimited by size
-                                 into connection-key
-                          end-string
-
-                          read connection-database
-                              key is connection-key
-                              invalid key
-                                  *> Not connected in either direction
-                                  move "23" to connection-status
-                              not invalid key
-                                  *> Connected in reverse direction
-                                  move "00" to connection-status
-                          end-read
-                      not invalid key
-                          *> Connected in forward direction
-                          move "00" to connection-status
-                  end-read
-              end-if
-              close connection-database
-              exit.
-
-*>*******************************************************************
-*> Save Message to Database
-*> Input: message-sender-buffer, message-recipient-buffer, message-content-buffer
-*>*******************************************************************
-       saveMessage.
-              open i-o message-database
-              if message-database-status = "35"
-                  open output message-database
-                  close message-database
-                  open i-o message-database
-              end-if
-
-              if message-ok
-                  *> Build unique message key using sender, recipient and sequence
-                  move spaces to message-key
-                  string function trim(message-sender-buffer trailing) delimited by size
-                         '|' delimited by size
-                         function trim(message-recipient-buffer trailing) delimited by size
-                         '|' delimited by size
-                         message-id-seq delimited by size
-                         into message-key
-                  end-string
-
-                  *> Set message fields
-                  move function trim(message-sender-buffer trailing) to message-sender
-                  move function trim(message-recipient-buffer trailing) to message-recipient
-                  move function trim(message-content-buffer trailing) to message-content
-
-                  *> Generate timestamp (simple format: using sequence number for now)
-                  move spaces to message-timestamp
-                  string "MSG-" delimited by size
-                         message-id-seq delimited by size
-                         into message-timestamp
-                  end-string
-
-                  move 'N' to message-read-flag
-
-                  *> Write message record
-                  write message-record
-
-                  if message-ok
-                      add 1 to message-id-seq
-                  else
-                      move "Error saving message." to output-buffer
-                      perform outputLine
-                  end-if
-              else
-                  move "Unable to open message database." to output-buffer
-                  perform outputLine
-              end-if
-              close message-database
-              exit.
-
-*>*******************************************************************
-*> View My Messages
-*>*******************************************************************
-       viewMyMessages.
-              *> Header
-              move "--- Your Messages ---" to output-buffer
-              perform outputLine
-
-              *> Default: none found
-              move 0 to message-counter
-
-              *> Open message store (read-only)
-              open input message-database
-              if message-database-status = "35"
-                  *> No message file yet -> no messages
-                  move "You have no messages at this time." to output-buffer
-                  perform outputLine
-                  exit paragraph
-              end-if
-
-              if message-ok
-                  *> Read sequentially from the beginning
-                  perform until 1 = 2
-                      read message-database next record
+*> Paragraph: readInputLine
+*> Purpose:   Reads in the next line of the input file
+*> Input:     None
+*> Output:    input-buffer - Line from the file
+*> User is responsible for opening and closing the input file when using this
+       readInputLine.
+              if command-line-flag = "0"
+                  if input-file-status = "00"
+                      move input-file-status to input-read-status
+                      read input-file
+                          not at end
+                              move input-file-buffer to input-buffer
+                              *>Simulating the user entering the input
+                              string
+                                  function trim(input-prompt, trailing) delimited by size
+                                  " " delimited by size                                   *> Will always have an extra space (even if input has no prompt)
+                                  function trim(input-buffer, trailing) delimited by size
+                                  into output-buffer
+                              end-string
+                              perform outputLine
                           at end
-                              exit perform
+                              move input-prompt to output-buffer
+                              perform outputLine
+
+                              *> Input-buffer is stale now, so set to spaces
+                              move spaces to input-buffer
+                              *> Notify user
+                              move "Reached end of input file ( ੭ˊᵕˋ)੭" to output-buffer
+                              perform outputLine
                       end-read
-
-                      if function trim(message-recipient) =
-                         function trim(current-user)
-                          *> From:
-                          string "From: "                   delimited by size
-                                 function trim(message-sender trailing)
-                                                           delimited by size
-                                 into output-buffer
-                          perform outputLine
-
-                          *> Message:
-                          string "Message: "                delimited by size
-                                 function trim(message-content trailing)
-                                                           delimited by size
-                                 into output-buffer
-                          perform outputLine
-
-                          *> Separator
-                          move "---------------------" to output-buffer
-                          perform outputLine
-
-                          add 1 to message-counter
-                      end-if
-                  end-perform
+                   else
+                     move input-file-status to input-read-status
+                     string
+                         "Error reading input file: " delimited by size
+                         input-file-status            delimited by size
+                         " (｡•́︿•̀｡)"                   delimited by size
+                         into output-buffer
+                     end-string
+                     perform outputLine
+                   end-if
               else
-                  move "Unable to open message database." to output-buffer
-                  perform outputLine
+                  *> Read from cli
+                  display function trim(input-prompt trailing) with no advancing
+                  display " " with no advancing
+                  accept input-buffer
+                  move "00" to input-read-status
+                  string
+                       function trim(input-prompt trailing) delimited by size
+                       " "
+                       input-buffer
+                       into output-line
+                  end-string
+                  open extend output-file
+                  write output-line
+                  close output-file
               end-if
-
-              close message-database
-
-              *> No messages case
-              if message-counter = 0
-                  move "You have no messages at this time." to output-buffer
-                  perform outputLine
-              end-if
-
               exit.
+
+
+*> Paragraph: outputLine
+*> Purpose:   Prints string in buffer to console and saves to output log
+*> Input:     output-buffer - string you want to be output. Will be cleared
+*> Output:    None
+       outputLine.
+              open extend output-file.
+
+              if output-file-status = "35"
+                  *> Log file does not exist yet, so create it
+                  open output output-file
+              end-if
+
+              *> Ensure file opened properly
+              if output-file-status = "00"
+                  *> If we want to ensure that the console and output file are the same,
+                  *> console output can only happen if output file opens
+                  move output-buffer to output-line
+                  display function trim(output-line, trailing) *> Will make logged output have extra spaces compared to command line. Do we care?
+                  write output-line
+
+                  close output-file
+              else
+                  display "Error opening output file: " output-file-status " (っ- ‸ - ς)"
+              end-if
+
+              *> Some characters get 'stuck', manually clearing fixes it though
+              move spaces to output-buffer.
+              exit.
+
+
+*> Paragraph: displayLogo
+*> Purpose:   Prints the beautiful ascii logo for us
+*> Input:     None
+*> Output:    None
+*> ASCII art was created with https://patorjk.com/software/taag/
+       displayLogo.
+              perform displayASCIILine.
+              perform outputLine.
+              move "           /##            /######            /## /##                                        " to output-buffer.
+              perform outputLine.
+              move "          |__/           /##__  ##          | ##| ##                                        " to output-buffer.
+              perform outputLine.
+              move "           /## /####### | ##  \__/  /###### | ##| ##  /######   /######   /######           " to output-buffer.
+              perform outputLine.
+              move "          | ##| ##__  ##| ##       /##__  ##| ##| ## /##__  ## /##__  ## /##__  ##          " to output-buffer.
+              perform outputLine.
+              move "          | ##| ##  \ ##| ##      | ##  \ ##| ##| ##| ########| ##  \ ##| ########          " to output-buffer.
+              perform outputLine.
+              move "          | ##| ##  | ##| ##    ##| ##  | ##| ##| ##| ##_____/| ##  | ##| ##_____/          " to output-buffer.
+              perform outputLine.
+              move "          | ##| ##  | ##|  ######/|  ######/| ##| ##|  #######|  #######|  #######          " to output-buffer.
+              perform outputLine.
+              move "          |__/|__/  |__/ \______/  \______/ |__/|__/ \_______/ \____  ## \_______/          " to output-buffer.
+              perform outputLine.
+              move "                                                               /##  \ ##                    " to output-buffer.
+              perform outputLine.
+              move "                                                              |  ######/                    " to output-buffer.
+              perform outputLine.
+              move "                                                               \______/                      " to output-buffer.
+              perform outputLine.
+              move "                                                                             ฅ^•ﻌ•^ฅ        " to output-buffer.
+              perform outputLine.
+              perform displayASCIILine.
+              move "                                                                    Created by Team Kentucky" to output-buffer.
+              perform outputLine.
+              move "                            The world's best job site for students                          " to output-buffer.
+              perform outputLine.
+              perform outputLine.
+              perform outputLine.
+              exit.
+
+
+       displayASCIILine.
+              move "############################################################################################" to output-buffer.
+              perform outputLine.
+              exit.
+
+
+       displayDashedLine.
+              move "————————————————————————————————————————————————————————————————————————————————————————————" to output-buffer.
+              perform outputLine.
+              exit.
+
