@@ -8,7 +8,7 @@
        input-output section.
        file-control.
        *> Input file for automated testing
-           select input-file assign to 'input.txt'
+           select optional input-file assign to 'input.txt'
                organization is line sequential
                file status is input-file-status.
        *> Output file to preserve program output
@@ -64,7 +64,7 @@
 *>-----readInputLine variables-----
 *> Input file record
        fd input-file.
-       01 input-buffer pic x(100).
+       01 input-file-buffer pic x(100).
 
 *>-----outputLine variables-----
 *> Output file record
@@ -170,9 +170,12 @@
 
 
 *>-----readInputLine variables-----
+       01 input-buffer pic x(100).
        01 input-prompt pic x(100).
        01 input-file-status pic xx.
-              88 valid-read value "00".
+       01 input-read-status pic xx value "00".
+           88 valid-read value "00".
+       01 command-line-flag pic x value "0".
 
 *>-----outputLine variables-----
        01 output-buffer pic x(150).
@@ -221,7 +224,7 @@
        01 success-login-msg   constant as "You have successfully logged in".
        01 welcome-user-prefix constant as "Welcome, ".
        01 welcome-user-line   pic x(60).
-       01 choice-prompt constant as "Enter your choice:".
+       01 choice-prompt constant as ">".
        01 post-login-1 constant as "[1] Create/Edit My Profile".
        01 post-login-2 constant as "[2] View My Profile".
        01 post-login-3 constant as "[3] Search for User".
@@ -238,7 +241,7 @@
        01 conn-invalid-msg constant as "You cannot send a request to yourself.".
        01 pending-title constant as "--- Pending Connection Requests ---".
        01 pending-empty constant as "You have no pending connection requests at this time.".
-       01 conn-choice-prompt constant as "Enter your choice:".
+       01 conn-choice-prompt constant as ">".
        01 post-login-7 constant as "[7] View My Connections".
        01 connections-title constant as "--- My Connections ---".
        01 connections-empty constant as "You have no connections".
@@ -249,8 +252,8 @@
        01 messages-menu-2 constant as "[2] View My Messages".
        01 messages-back constant as "[q] Back to Main Menu".
        01 message-sent-msg constant as "Message sent successfully!".
-       01 message-recipient-prompt constant as "Enter the username of the recipient:".
-       01 message-content-prompt constant as "Enter your message:".
+       01 message-recipient-prompt constant as "To (username):".
+       01 message-content-prompt constant as ">".
        01 message-not-connected constant as "User not found in your network.".
        01 message-user-not-found constant as "User not found in your network.".
        01 view-messages-uc constant as "View My Messages is under construction.".
@@ -339,8 +342,9 @@
               *> Open input file for reading user choices
               open input input-file
               if input-file-status not = "00"
-                  move "Error opening input file" to output-buffer
+                  move "Reading input from command line" to output-buffer
                   perform outputLine
+                  move "1" to command-line-flag
               end-if
               exit.
 
@@ -388,13 +392,12 @@
        login-process.
               *> Unlimited attempts until successful login
               perform until logged-in = 'Y' or not valid-read
-                  move "Please enter your username:" to output-buffer
-                  perform outputLine
+                  perform outputLine *> Output Blank Line
+                  move "Please enter your username:" to input-prompt
                   perform readInputLine
                   move function trim(input-buffer trailing) to input-username
 
-                  move "Please enter your password:" to output-buffer
-                  perform outputLine
+                  move "Please enter your password:" to input-prompt
                   perform readInputLine
                   move function trim(input-buffer trailing) to input-password
 
@@ -434,6 +437,7 @@
 *>*******************************************************************
        post-login-menu.
               perform until logged-in = 'N' or not valid-read
+                  perform outputLine
                   move post-login-1 to output-buffer
                   perform outputLine
                   move post-login-2 to output-buffer
@@ -487,6 +491,7 @@
 *> View established connections for current user
 *>*******************************************************************
        viewConnections.
+              perform outputLine
               move connections-title to output-buffer
               perform outputLine
               move 0 to connection-count
@@ -558,6 +563,7 @@
 *> Create or Edit Profile
 *>*******************************************************************
        create-edit-profile.
+              perform outputLine
               move profile-create-title to output-buffer
               perform outputLine
 
@@ -592,8 +598,7 @@
               *> First Name
               move 'N' to profile-validation
               perform until profile-valid or not valid-read
-                  move profile-first-name-prompt to output-buffer
-                  perform outputLine
+                  move profile-first-name-prompt to input-prompt
                   perform readInputLine
 
                   if input-buffer not equal to spaces
@@ -605,8 +610,7 @@
               *> Last Name
               move 'N' to profile-validation
               perform until profile-valid or not valid-read
-                  move profile-last-name-prompt to output-buffer
-                  perform outputLine
+                  move profile-last-name-prompt to input-prompt
                   perform readInputLine
 
                   if input-buffer not equal to spaces
@@ -618,8 +622,7 @@
               *> University
               move 'N' to profile-validation
               perform until profile-valid or not valid-read
-                  move profile-university-prompt to output-buffer
-                  perform outputLine
+                  move profile-university-prompt to input-prompt
                   perform readInputLine
 
                   if input-buffer not equal to spaces
@@ -631,8 +634,7 @@
               *> Major
               move 'N' to profile-validation
               perform until profile-valid or not valid-read
-                  move profile-major-prompt to output-buffer
-                  perform outputLine
+                  move profile-major-prompt to input-prompt
                   perform readInputLine
 
                   if input-buffer not equal to spaces
@@ -644,8 +646,7 @@
               *> Graduation Year with validation
               move 'N' to profile-validation
               perform until profile-valid or not valid-read
-                  move profile-graduation-prompt to output-buffer
-                  perform outputLine
+                  move profile-graduation-prompt to input-prompt
                   perform readInputLine
                   move function trim(input-buffer trailing) to profile-input-buffer
 
@@ -662,8 +663,7 @@
 *>*******************************************************************
        get-optional-profile-info.
               *> About Me
-              move profile-about-prompt to output-buffer
-              perform outputLine
+              move profile-about-prompt to input-prompt
               perform readInputLine
               if function trim(input-buffer trailing) = spaces
                   move spaces to profile-about-me
@@ -675,13 +675,12 @@
               move 1 to profile-counter
               move 'N' to profile-done-flag
               perform until profile-done or profile-counter > 3 or not valid-read
-                  move spaces to output-buffer
+                  move spaces to input-prompt
                   string "Experience #" delimited by size
                          profile-counter delimited by size
                          " - Title:" delimited by size
-                         into output-buffer
+                         into input-prompt
                   end-string
-                  perform outputLine
                   perform readInputLine
 
                   if function trim(input-buffer trailing) = 'DONE' or
@@ -690,33 +689,30 @@
                   else
                       move function trim(input-buffer trailing) to exp-title(profile-counter)
 
-                      move spaces to output-buffer
+                      move spaces to input-prompt
                       string "Experience #" delimited by size
                              profile-counter delimited by size
                              " - Company/Organization:" delimited by size
-                             into output-buffer
+                             into input-prompt
                       end-string
-                      perform outputLine
                       perform readInputLine
                       move function trim(input-buffer trailing) to exp-company(profile-counter)
 
-                      move spaces to output-buffer
+                      move spaces to input-prompt
                       string "Experience #" delimited by size
                              profile-counter delimited by size
                              " - Dates (e.g., Summer 2024):" delimited by size
-                             into output-buffer
+                             into input-prompt
                       end-string
-                      perform outputLine
                       perform readInputLine
                       move function trim(input-buffer trailing) to exp-dates(profile-counter)
 
-                      move spaces to output-buffer
+                      move spaces to input-prompt
                       string "Experience #" delimited by size
                              profile-counter delimited by size
                              " - Description (optional, max 100 chars, blank to skip):" delimited by size
-                             into output-buffer
+                             into input-prompt
                       end-string
-                      perform outputLine
                       perform readInputLine
                       if function trim(input-buffer trailing) = spaces
                           move spaces to exp-description(profile-counter)
@@ -732,13 +728,12 @@
               move 1 to profile-counter
               move 'N' to profile-done-flag
               perform until profile-done or profile-counter > 3 or not valid-read
-                  move spaces to output-buffer
+                  move spaces to input-prompt
                   string "Education #" delimited by size
                          profile-counter delimited by size
                          " - Degree:" delimited by size
-                         into output-buffer
+                         into input-prompt
                   end-string
-                  perform outputLine
                   perform readInputLine
 
                   if function trim(input-buffer trailing) = 'DONE' or
@@ -747,23 +742,21 @@
                   else
                       move function trim(input-buffer trailing) to edu-degree(profile-counter)
 
-                      move spaces to output-buffer
+                      move spaces to input-prompt
                       string "Education #" delimited by size
                              profile-counter delimited by size
                              " - University/College:" delimited by size
-                             into output-buffer
+                             into input-prompt
                       end-string
-                      perform outputLine
                       perform readInputLine
                       move function trim(input-buffer trailing) to edu-university(profile-counter)
 
-                      move spaces to output-buffer
+                      move spaces to input-prompt
                       string "Education #" delimited by size
                              profile-counter delimited by size
                              " - Years Attended (e.g., 2023-2025):" delimited by size
-                             into output-buffer
+                             into input-prompt
                       end-string
-                      perform outputLine
                       perform readInputLine
                       move function trim(input-buffer trailing) to edu-years(profile-counter)
 
@@ -808,6 +801,7 @@
 
               if acct-found and function trim(profile-first-name trailing) not = spaces
                   move display_profile to output-buffer
+                  perform outputLine
                   perform outputLine
                   move profile-view-title to output-buffer
                   perform outputLine
@@ -931,6 +925,7 @@
 *>*******************************************************************
        skills-menu.
               perform until not valid-read
+                  perform outputLine
                   move skills-title to output-buffer
                   perform outputLine
                   move skill1 to output-buffer
@@ -1202,13 +1197,12 @@
 *> Output: Displays profile if found, error message if not
 *>*******************************************************************
        searchUserProfile.
-              move "Enter the first name to search for:" to output-buffer
               perform outputLine
+              move "Enter the first name to search for:" to input-prompt
               perform readInputLine
               move function trim(input-buffer trailing) to buffer-first-name
 
-              move "Enter the last name to search for:" to output-buffer
-              perform outputLine
+              move "Enter the last name to search for:" to input-prompt
               perform readInputLine
               move function trim(input-buffer trailing) to buffer-last-name
 
@@ -1315,35 +1309,55 @@
 *> Output:    input-buffer - Line from the file
 *> User is responsible for opening and closing the input file when using this
        readInputLine.
-              if input-file-status = "00"
-                  read input-file
-                      not at end
-                          *>Simulating the user entering the input
-                          string
-                              function trim(input-prompt, trailing) delimited by size
-                              " " delimited by size                                   *> Will always have an extra space (even if input has no prompt)
-                              function trim(input-buffer, trailing) delimited by size
-                              into output-buffer
-                          end-string
-                          perform outputLine
-                      at end
-                          move input-prompt to output-buffer
-                          perform outputLine
+              if command-line-flag = "0"
+                  if input-file-status = "00"
+                      move input-file-status to input-read-status
+                      read input-file
+                          not at end
+                              move input-file-buffer to input-buffer
+                              *>Simulating the user entering the input
+                              string
+                                  function trim(input-prompt, trailing) delimited by size
+                                  " " delimited by size                                   *> Will always have an extra space (even if input has no prompt)
+                                  function trim(input-buffer, trailing) delimited by size
+                                  into output-buffer
+                              end-string
+                              perform outputLine
+                          at end
+                              move input-prompt to output-buffer
+                              perform outputLine
 
-                          *> Input-buffer is stale now, so set to spaces
-                          move spaces to input-buffer
-                          *> Notify user
-                          move "Reached end of input file ( ੭ˊᵕˋ)੭" to output-buffer
-                          perform outputLine
-                  end-read
+                              *> Input-buffer is stale now, so set to spaces
+                              move spaces to input-buffer
+                              *> Notify user
+                              move "Reached end of input file ( ੭ˊᵕˋ)੭" to output-buffer
+                              perform outputLine
+                      end-read
+                   else
+                     move input-file-status to input-read-status
+                     string
+                         "Error reading input file: " delimited by size
+                         input-file-status            delimited by size
+                         " (｡•́︿•̀｡)"                   delimited by size
+                         into output-buffer
+                     end-string
+                     perform outputLine
+                   end-if
               else
+                  *> Read from cli
+                  display function trim(input-prompt trailing) with no advancing
+                  display " " with no advancing
+                  accept input-buffer
+                  move "00" to input-read-status
                   string
-                      "Error reading input file: " delimited by size
-                      input-file-status            delimited by size
-                      " (｡•́︿•̀｡)"                   delimited by size
-                      into output-buffer
+                       function trim(input-prompt trailing) delimited by size
+                       " "
+                       input-buffer
+                       into output-line
                   end-string
-                  perform outputLine
+                  open extend output-file
+                  write output-line
+                  close output-file
               end-if
               exit.
 
@@ -1494,7 +1508,7 @@
                   perform outputLine
                   move "Enter the username of the connection request you wish to respond to (q to quit)" to output-buffer
                   perform outputLine
-                  move "> " to input-prompt
+                  move ">" to input-prompt
                   perform readInputLine
                   move input-buffer to pending-searched-user
 
@@ -1529,6 +1543,7 @@
                               if function trim(req-recipient trailing) = function trim(current-user trailing)
                               and function trim(req-sender trailing) = function trim(pending-searched-user)
                                   *> Menu asking to accept or reject connection
+                                  perform outputLine
                                   move "[0] Connect with user" to output-buffer
                                   perform outputLine
                                   move "[1] Reject request" to output-buffer
@@ -1536,7 +1551,7 @@
                                   move "[q] Quit" to output-buffer
                                   perform outputLine
 
-                                  move "> " to input-prompt
+                                  move ">" to input-prompt
                                   perform readInputLine
 
                                   evaluate true
@@ -1736,6 +1751,7 @@
               exit.
 
        jobSearch.
+              perform outputLine
               move "[0] Browse Jobs/Internships" to output-buffer.
               perform outputLine.
               move "[1] Post a Job/Internship" to output-buffer.
@@ -1772,6 +1788,7 @@
               end-if
 
               if job-database-ok
+                  perform outputLine
                   *> Get Job Title (Loop)
                   move 'N' to profile-validation
                   perform until profile-valid or not valid-read
@@ -1852,6 +1869,7 @@
               *> Browse loop
               move 'N' to browse-done-flag
               perform until browse-done or not valid-read
+                  perform outputLine
                   move "--- Available Job Listings ---" to output-buffer
                   perform outputLine
                   move 0 to browse-index
@@ -1893,7 +1911,7 @@
 
                   move "Enter number to view details (q to go back):" to output-buffer
                   perform outputLine
-                  move "> " to input-prompt
+                  move ">" to input-prompt
                   perform readInputLine
                   if input-buffer = 'q' or not valid-read
                       move 'Y' to browse-done-flag
@@ -1917,6 +1935,7 @@
 *> Input: application-job-key-buffer (job-key)
 *>*******************************************************************
        viewJobDetails.
+              perform outputLine
               *> Ensure key is properly trimmed for lookup
               move function trim(application-job-key-buffer trailing) to job-key
               open input job-database
@@ -1969,7 +1988,7 @@
                                   perform outputLine
                                   move "[q] Back" to output-buffer
                                   perform outputLine
-                                  move "> " to input-prompt
+                                  move ">" to input-prompt
                                   perform readInputLine
                                   evaluate true
                                       when input-buffer = '1'
@@ -2045,6 +2064,7 @@
 *> View applications submitted by current user
 *>*******************************************************************
        viewMyApplications.
+              perform outputLine
               move "--- Your Job Applications ---" to output-buffer
               perform outputLine
 
@@ -2128,6 +2148,7 @@
 *>*******************************************************************
        messaging-menu.
               perform until not valid-read
+                  perform outputLine
                   move messages-title to output-buffer
                   perform outputLine
                   move messages-menu-1 to output-buffer
@@ -2159,9 +2180,9 @@
 *> Validates that recipient is a connection before sending
 *>*******************************************************************
        sendNewMessage.
-              *> Prompt for recipient username
-              move message-recipient-prompt to output-buffer
               perform outputLine
+              *> Prompt for recipient username
+              move message-recipient-prompt to input-prompt
               perform readInputLine
               move function trim(input-buffer trailing) to message-recipient-buffer
 
@@ -2183,8 +2204,7 @@
               end-if
 
               *> Prompt for message content
-              move message-content-prompt to output-buffer
-              perform outputLine
+              move message-content-prompt to input-prompt
               perform readInputLine
               move function trim(input-buffer trailing) to message-content-buffer
 

@@ -1,1 +1,1 @@
-User found!\nDisplaying profile...\n--- User Profile ---\nName: John Smith
+User found!\nDisplaying profile...\n\n--- User Profile ---\nName: John Smith

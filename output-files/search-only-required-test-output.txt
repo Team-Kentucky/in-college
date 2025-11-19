@@ -1,1 +1,1 @@
-User found!\nDisplaying profile...\n--- User Profile ---\nName: Jane Doe\nUniversity: State University\nMajor: Computer Science\nGraduation Year: 2025\nExperience:\nEducation:
+User found!\nDisplaying profile...\n\n--- User Profile ---\nName: Jane Doe\nUniversity: State University\nMajor: Computer Science\nGraduation Year: 2025\nExperience:\nEducation:
